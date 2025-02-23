@@ -1,6 +1,16 @@
-import './assets/main.css'
+// 引入 normalize.css 重置浏览器样式
+import 'normalize.css';
 
-import { createApp } from 'vue'
-import App from './App.vue'
+// 引入自定义样式
+import './assets/css/main.scss';
 
-createApp(App).mount('#app')
+// 创建应用程序
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import pinia from './store';
+
+const app = createApp(App);
+app.use(router);
+app.use(pinia);
+app.mount('#app');

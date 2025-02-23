@@ -1,39 +1,31 @@
-# frontend
+### 安装的库
 
-This template should help get you started developing with Vue 3 in Vite.
+- 引入 normalize.css 重置浏览器样式
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
+```
+npm install normalize.css
 ```
 
-### Compile and Hot-Reload for Development
+- 引入 sass 环境
 
-```sh
-npm run dev
+```
+npm install -D sass-embedded
 ```
 
-### Type-Check, Compile and Minify for Production
+- vue-router 路由管理工具
 
-```sh
-npm run build
+```
+npm install vue-router
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+- pinia 状态管理工具
 
-```sh
-npm run lint
+```
+npm install pinia
+```
+
+- axios 请求库
+
+```
+npm install axios
 ```
