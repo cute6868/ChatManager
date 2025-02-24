@@ -1,5 +1,5 @@
 <template>
-  <h1>App</h1>
+  <h3>index</h3>
 </template>
 <script setup lang="ts"></script>
 <style scoped lang="scss"></style>
