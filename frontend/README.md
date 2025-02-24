@@ -29,3 +29,15 @@ npm install pinia
 ```
 npm install axios
 ```
+
+- element-plus 组件库
+
+```
+npm install element-plus --save
+```
+
+- element-plus 自动导入组件工具
+
+```
+npm install -D unplugin-vue-components unplugin-auto-import
+```

@@ -1,5 +1,13 @@
 <template>
-  <h1>App</h1>
+  <div class="app">Hi</div>
 </template>
-<script setup lang="ts"></script>
-<style scoped lang="scss"></style>
+
+<script lang="ts" setup></script>
+
+<style scoped lang="scss">
+.app {
+  width: 100vw;
+  height: 100vh;
+  // background-color: pink;
+}
+</style>
