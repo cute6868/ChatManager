@@ -41,3 +41,9 @@ npm install element-plus --save
 ```
 npm install -D unplugin-vue-components unplugin-auto-import
 ```
+
+- element-plus 图标库
+
+```
+npm install @element-plus/icons-vue
+```
