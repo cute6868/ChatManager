@@ -3,54 +3,76 @@
     <!-- 标题 -->
     <div class="title">测试测试测试</div>
 
-    <!-- 登录方式tabs -->
-    <el-tabs type="border-card" stretch>
-      <!-- 账号登录 -->
-      <el-tab-pane class="account-login">
-        <template v-slot:label>
-          <el-icon><Cellphone /></el-icon>
-          <span>账号登录</span>
-        </template>
+    <!-- 登录方式 tabs -->
+    <div class="tabs">
+      <el-tabs type="border-card" stretch v-model="activeName">
+        <!-- 账号登录 -->
+        <el-tab-pane name="byAccount">
+          <!-- 顶部标签 -->
+          <template v-slot:label>
+            <div class="label">
+              <el-icon><User /></el-icon>
+              <span>账号登录</span>
+            </div>
+          </template>
 
-        <el-input class="input" v-model="account" style="width: 240px" placeholder="请输入账号名" />
-        <el-input
-          v-model="password"
-          style="width: 240px"
-          placeholder="请输入登录密码"
-          type="password"
-          show-password
-        />
-      </el-tab-pane>
+          <!-- 具体内容 -->
+          <AccountPanel ref="accountPanel" />
+        </el-tab-pane>
 
-      <!-- 手机登录 -->
-      <el-tab-pane label="手机登录" class="phone-login">
-        <el-input v-model="account" style="width: 240px" placeholder="请输入手机号" />
-        <el-input v-model="account" style="width: 240px" placeholder="请输入验证码" />
-      </el-tab-pane>
-    </el-tabs>
+        <!-- 手机登录 -->
+        <el-tab-pane name="byCellphone">
+          <!-- 顶部标签 -->
+          <template v-slot:label>
+            <div class="label">
+              <el-icon><Cellphone /></el-icon>
+              <span>手机登录</span>
+            </div>
+          </template>
 
-    <!-- 其他 -->
-    <div class="other">
-      <el-checkbox v-model="remembered" label="记住密码" size="large" />
+          <!-- 具体内容 -->
+          <CellphonePanel />
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+
+    <!-- 可选控制区 -->
+    <div class="control">
+      <el-checkbox v-model="remembered" label="记住密码" />
       <el-link href="#" target="_blank" :underline="false" type="primary">忘记密码</el-link>
     </div>
 
     <!-- 登录按钮 -->
-    <el-button type="primary" :loading="loading" size="large" @click="run">立即登录</el-button>
+    <el-button class="login-btn" type="primary" size="large" @click="loginHandler">
+      立即登录
+    </el-button>
 
     <!-- 注册链接 -->
-    <el-link href="#" target="_blank">没有账号？前往注册</el-link>
+    <el-link class="register-link" href="#" target="_blank">没有账号？前往注册</el-link>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import AccountPanel from './AccountPanel.vue';
+import CellphonePanel from './CellphonePanel.vue';
+
+// 登录的方式
+const activeName = ref('byAccount');
+
+// 是否记住了密码
 const remembered = ref(true);
-const loading = ref(false);
-const account = ref('');
-const password = ref('');
-function run() {
-  loading.value = !loading.value;
+
+// 获取AccountPanel组件的实例
+const accountPanel = ref();
+
+// 登录操作转移
+function loginHandler() {
+  if (activeName.value === 'byAccount') {
+    accountPanel.value.login();
+  } else {
+    console.log('手机登录');
+  }
 }
 </script>
 
@@ -69,32 +91,50 @@ function run() {
   align-items: center;
 
   // 设置面板容器与里面元素之间内部间距
-  padding: 2%;
+  padding-top: max(2%, 20px);
+  padding-right: max(2%, 12px);
+  padding-bottom: max(1.5%, 16px);
+  padding-left: max(2%, 12px);
 
   // 标题
   .title {
     width: 90%;
     text-align: center;
-    margin-bottom: 4%;
+    margin-bottom: 5%;
 
     // 标题字体设置
     font-size: max(1.5vw, 20px);
     font-weight: bold;
   }
 
-  // 登录方式tabs
-  .account-login {
-    width: 100%;
-    background-color: pink;
-    // display: flex;
-    // justify-content: center;
+  // 登录方式 tabs
+  .tabs {
+    // label设置
+    .label {
+      width: 70%;
+      display: flex;
+      justify-content: space-between;
+    }
   }
-  // other容器两边对齐
-  // .other {
-  //   width: 100%;
-  //   background-color: pink;
-  //   display: flex;
-  //   justify-content: space-between;
-  // }
+
+  // 可选控制区
+  .control {
+    width: 96%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4%;
+  }
+
+  // 登录按钮
+  .login-btn {
+    width: 100%;
+    margin-top: 2%;
+  }
+
+  // 注册链接
+  .register-link {
+    margin-top: 5%;
+    font-size: max(84%, 13px);
+  }
 }
 </style>
