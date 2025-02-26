@@ -15,6 +15,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import type { FormRules, FormInstance } from 'element-plus';
+import { accountLoginRequest } from '@/service/api/login';
 
 // 表单数据
 const form = reactive({
@@ -26,14 +27,15 @@ const form = reactive({
 const rules: FormRules = {
   account: [
     { required: true, message: '请输入账号', trigger: 'blur' },
-    { min: 6, max: 20, message: '账号长度为6到20位', trigger: 'blur' },
-    { pattern: /^[a-zA-Z0-9]+$/, message: '账号只能包含数字和字母', trigger: 'blur' }
+    { min: 6, max: 20, message: '账号长度为6到20位', trigger: 'change' },
+    { pattern: /^[a-zA-Z0-9]+$/, message: '账号只能包含数字和字母', trigger: 'change' }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
     {
       pattern: /^(?!(?:\d{8,32})$)[A-Za-z\d\W_~!@#$%^&*()\-_=+$${}|;:'",.<>?/\\]{8,32}$/,
-      message: '密码格式错误'
+      message: '密码格式错误',
+      trigger: 'blur'
     }
   ]
 };
@@ -46,14 +48,24 @@ function login() {
   // 检查 formRef 对象是否存在，如果不存在则直接返回，不执行后续操作
   if (!formRef.value) return;
 
-  formRef.value.validate((valid, fields) => {
+  formRef.value.validate((valid) => {
     // validate 方法接受一个回调函数作为参数，该回调函数会在验证完成后被调用
     // valid 是一个布尔值，表示表单验证是否通过
     // fields 是一个包含验证失败字段信息的对象
     if (valid) {
+      // 获取用户输入的账号和密码
+      const account = form.account;
+      const password = form.password;
+
+      // 向服务器发送网络请求，进行登录验证
+      accountLoginRequest(account, password);
       console.log('已经发送登录请求');
     } else {
-      console.log('请求错误', fields);
+      // 账号和密码格式不正确，弹出错误提示框
+      ElMessage({
+        message: '登录失败，账号或密码错误！',
+        type: 'error'
+      });
     }
   });
 }
