@@ -1,10 +1,10 @@
 <template>
-  <div class="cellphone-panel">cellphone-panel</div>
+  <div class="email-panel">email-panel</div>
 </template>
 
 <script setup lang="ts"></script>
 
 <style scoped lang="scss">
-.cellphone-panel {
+.email-panel {
 }
 </style>

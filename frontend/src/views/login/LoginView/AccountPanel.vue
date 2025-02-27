@@ -15,7 +15,8 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import type { FormRules, FormInstance } from 'element-plus';
-import { accountLoginRequest } from '@/service/api/login';
+import useLoginStore from '@/store/login';
+const loginStore = useLoginStore();
 
 // 表单数据
 const form = reactive({
@@ -43,29 +44,25 @@ const rules: FormRules = {
 // 获取 formRef 对象
 const formRef = ref<FormInstance | undefined>();
 
-// 账号登录的逻辑
+// 编写账号登录的逻辑
 function login() {
   // 检查 formRef 对象是否存在，如果不存在则直接返回，不执行后续操作
   if (!formRef.value) return;
 
+  // valid 是一个布尔值，表示表单验证是否通过
   formRef.value.validate((valid) => {
-    // validate 方法接受一个回调函数作为参数，该回调函数会在验证完成后被调用
-    // valid 是一个布尔值，表示表单验证是否通过
-    // fields 是一个包含验证失败字段信息的对象
     if (valid) {
       // 获取用户输入的账号和密码
       const account = form.account;
       const password = form.password;
 
-      // 向服务器发送网络请求，进行登录验证
-      accountLoginRequest(account, password);
-      console.log('已经发送登录请求');
-    } else {
-      // 账号和密码格式不正确，弹出错误提示框
-      ElMessage({
-        message: '登录失败，账号或密码错误！',
-        type: 'error'
+      // 执行账号登录行为
+      loginStore.accountLoginAction(account, password).then((res) => {
+        ElMessage({ message: res, type: 'error' });
       });
+    } else {
+      // 格式不正确，弹出错误提示
+      ElMessage({ message: '登录失败，账号或密码错误！', type: 'error' });
     }
   });
 }

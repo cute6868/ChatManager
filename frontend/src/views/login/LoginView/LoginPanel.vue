@@ -20,18 +20,18 @@
           <AccountPanel ref="accountPanel" />
         </el-tab-pane>
 
-        <!-- 手机登录 -->
-        <el-tab-pane name="byCellphone">
+        <!-- 邮箱登录 -->
+        <el-tab-pane name="byEmail">
           <!-- 顶部标签 -->
           <template v-slot:label>
             <div class="label">
-              <el-icon><Cellphone /></el-icon>
-              <span>手机登录</span>
+              <el-icon><Message /></el-icon>
+              <span>邮箱登录</span>
             </div>
           </template>
 
           <!-- 具体内容 -->
-          <CellphonePanel />
+          <EmailPanel ref="emailPanel" />
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -55,7 +55,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import AccountPanel from './AccountPanel.vue';
-import CellphonePanel from './CellphonePanel.vue';
+import EmailPanel from './EmailPanel.vue';
 
 // 登录的方式
 const activeName = ref('byAccount');
@@ -66,12 +66,17 @@ const remembered = ref(true);
 // 获取AccountPanel组件的实例
 const accountPanel = ref();
 
+// 获取EmailPanel组件的实例
+const emailPanel = ref();
+
 // 登录操作转移
 function loginHandler() {
   if (activeName.value === 'byAccount') {
+    // 调用AccountPanel组件的login方法，进行账号登录
     accountPanel.value.login();
   } else {
-    console.log('手机登录');
+    // 调用EmailPanel组件的login方法，进行邮箱登录
+    emailPanel.value.login();
   }
 }
 </script>
@@ -111,7 +116,7 @@ function loginHandler() {
   .tabs {
     // label设置
     .label {
-      width: 70%;
+      width: 74%;
       display: flex;
       justify-content: space-between;
     }
