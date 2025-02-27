@@ -1,10 +1,7 @@
 import { defineStore } from 'pinia';
 import { accountLoginRequest } from '@/service/api/login';
 import { localCache } from '@/utils/cache';
-
-// 定义一些常量，用于存键名
-const UID = 'user-id';
-const LOGIN_TOKEN = 'login-token';
+import { UID, LOGIN_TOKEN } from '@/global/constant';
 
 const useLoginStore = defineStore('login', () => {
   // 刷新后，自动读取本地存储中的数据，如果没有，则设置为空字符串

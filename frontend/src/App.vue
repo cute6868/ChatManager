@@ -1,12 +1,10 @@
 <template>
   <div class="app">
-    <LoginView />
+    <RouterView />
   </div>
 </template>
 
-<script lang="ts" setup>
-import LoginView from '@/views/login/LoginView.vue';
-</script>
+<script lang="ts" setup></script>
 
 <style scoped lang="scss">
 .app {

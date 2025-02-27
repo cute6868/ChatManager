@@ -1,5 +1,5 @@
 <template>
-  <div class="panel">
+  <div class="login-panel">
     <!-- 标题 -->
     <div class="title">测试测试测试</div>
 
@@ -82,7 +82,7 @@ function loginHandler() {
 </script>
 
 <style scoped lang="scss">
-.panel {
+.login-panel {
   width: max(20%, 304px);
   background-color: white;
 

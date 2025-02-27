@@ -1,10 +1,10 @@
 <template>
-  <div class="chat">chat</div>
+  <div class="ai-config">ai-config</div>
 </template>
 
 <script setup lang="ts"></script>
 
 <style scoped lang="scss">
-.chat {
+.ai-config {
 }
 </style>

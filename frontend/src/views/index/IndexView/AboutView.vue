@@ -1,10 +1,10 @@
 <template>
-  <div class="chat">chat</div>
+  <div class="about">about</div>
 </template>
 
 <script setup lang="ts"></script>
 
 <style scoped lang="scss">
-.chat {
+.about {
 }
 </style>
