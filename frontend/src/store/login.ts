@@ -4,7 +4,7 @@ import { localCache } from '@/utils/cache';
 import { UID, LOGIN_TOKEN } from '@/global/constant';
 
 const useLoginStore = defineStore('login', () => {
-  // 刷新后，自动读取本地存储中的数据，如果没有，则设置为空字符串
+  // 刷新后，优先读取本地存储中的数据，如果没有，则设置为空字符串
   let uid = localCache.getItem(UID) ?? '';
   let token = localCache.getItem(LOGIN_TOKEN) ?? '';
 
@@ -31,10 +31,16 @@ const useLoginStore = defineStore('login', () => {
     }
   }
 
+  // 邮箱登录行为
+  async function emailLoginAction(email: string, verificationCode: string) {
+    return { email, verificationCode };
+  }
+
   return {
     uid,
     token,
-    accountLoginAction
+    accountLoginAction,
+    emailLoginAction
   };
 });
 

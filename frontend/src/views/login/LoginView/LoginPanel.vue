@@ -63,6 +63,11 @@ const activeName = ref('byAccount');
 // 是否记住了密码
 const remembered = ref(true);
 
+// 切换到邮箱登录时，禁用"记住密码"
+//function uncheck() {
+//  remembered.value;
+// }
+
 // 获取AccountPanel组件的实例
 const accountPanel = ref();
 

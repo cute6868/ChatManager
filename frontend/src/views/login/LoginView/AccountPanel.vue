@@ -1,6 +1,6 @@
 <template>
   <div class="account-panel">
-    <el-form ref="formRef" :model="form" :rules="rules" style="min-width: 260px" label-width="auto">
+    <el-form ref="formRef" :model="form" :rules="rules" style="width: 260px" label-width="auto">
       <el-form-item label="账号" prop="account">
         <el-input v-model="form.account" />
       </el-form-item>
@@ -73,4 +73,7 @@ defineExpose({
 });
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.account-panel {
+}
+</style>
