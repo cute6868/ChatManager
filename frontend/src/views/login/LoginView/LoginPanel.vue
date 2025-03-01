@@ -5,7 +5,7 @@
 
     <!-- 登录方式 tabs -->
     <div class="tabs">
-      <el-tabs type="border-card" stretch v-model="activeName">
+      <el-tabs type="border-card" stretch v-model="activeName" @tab-change="tabChangeHandler">
         <!-- 账号登录 -->
         <el-tab-pane name="byAccount">
           <!-- 顶部标签 -->
@@ -38,8 +38,10 @@
 
     <!-- 可选控制区 -->
     <div class="control">
-      <el-checkbox v-model="remembered" label="记住密码" />
-      <el-link href="#" target="_blank" :underline="false" type="primary">忘记密码</el-link>
+      <el-checkbox id="remember-pwd" v-model="remembered" label="记住密码" @change="saveState" />
+      <el-link id="forget-pwd" href="#" target="_blank" :underline="false" type="primary">
+        忘记密码
+      </el-link>
     </div>
 
     <!-- 登录按钮 -->
@@ -56,17 +58,33 @@
 import { ref } from 'vue';
 import AccountPanel from './AccountPanel.vue';
 import EmailPanel from './EmailPanel.vue';
+import { localCache } from '@/utils/cache';
 
-// 登录的方式
+// 默认登录方式为账号登录
 const activeName = ref('byAccount');
 
-// 是否记住了密码
-const remembered = ref(true);
+// 局部常量，本地存储的存键值
+const STATE = 'remember-pwd-state';
 
-// 切换到邮箱登录时，禁用"记住密码"
-//function uncheck() {
-//  remembered.value;
-// }
+// 优先从本地缓存中获取状态，如果没有，则默认设置为 false
+const remembered = ref(localCache.getItem(STATE) ?? false);
+// 将"记住密码的勾选状态"保存到本地缓存中
+function saveState() {
+  localCache.setItem(STATE, remembered.value);
+}
+function tabChangeHandler() {
+  if (activeName.value === 'byEmail') {
+    // 切换到邮箱登录时，取消勾选，并禁用"记住密码"，同时禁止点击"忘记密码"
+    remembered.value = false;
+    document.querySelector('#remember-pwd')?.setAttribute('disabled', 'disabled');
+    document.querySelector('#forget-pwd')?.classList.add('disabled-element');
+  } else {
+    // 切换到账号登录时，解封"记住密码"，并恢复原来的勾选状态，同时解封"忘记密码"
+    document.querySelector('#remember-pwd')?.removeAttribute('disabled');
+    remembered.value = localCache.getItem(STATE);
+    document.querySelector('#forget-pwd')?.classList.remove('disabled-element');
+  }
+}
 
 // 获取AccountPanel组件的实例
 const accountPanel = ref();
@@ -78,7 +96,8 @@ const emailPanel = ref();
 function loginHandler() {
   if (activeName.value === 'byAccount') {
     // 调用AccountPanel组件的login方法，进行账号登录
-    accountPanel.value.login();
+    const state: boolean = remembered.value;
+    accountPanel.value.login(state);
   } else {
     // 调用EmailPanel组件的login方法，进行邮箱登录
     emailPanel.value.login();
@@ -146,5 +165,10 @@ function loginHandler() {
     margin-top: 5%;
     font-size: max(84%, 13px);
   }
+}
+
+// 禁用元素（切换到邮箱登录时，禁止点击"忘记密码"）
+.disabled-element {
+  pointer-events: none;
 }
 </style>

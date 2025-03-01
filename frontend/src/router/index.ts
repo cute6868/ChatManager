@@ -33,25 +33,25 @@ const router = createRouter({
 });
 
 // 导航守卫
-router.beforeEach((to) => {
-  // 当前的登录状态
-  const token = localCache.getItem(LOGIN_TOKEN) ?? '';
+// router.beforeEach((to) => {
+//   // 当前的登录状态
+//   const token = localCache.getItem(LOGIN_TOKEN) ?? '';
 
-  // 如果已经登录，想访问login页面，将强制跳转到index页面
+//   // 如果已经登录，想访问login页面，将强制跳转到index页面
 
-  if (token) {
-    if (to.path === '/login') {
-      return '/index'; // 放行到index页面
-    }
-  }
-  // 如果没有登录，想访问chat、manage页面，将强制跳转到login页面
-  else {
-    if (to.path === '/chat' || to.path === '/manage') {
-      return '/login';
-    }
-  }
+//   if (token) {
+//     if (to.path === '/login') {
+//       return '/index'; // 放行到index页面
+//     }
+//   }
+//   // 如果没有登录，想访问chat、manage页面，将强制跳转到login页面
+//   else {
+//     if (to.path === '/chat' || to.path === '/manage') {
+//       return '/login';
+//     }
+//   }
 
-  return; // 直接放行
-});
+//   return; // 直接放行
+// });
 
 export default router;

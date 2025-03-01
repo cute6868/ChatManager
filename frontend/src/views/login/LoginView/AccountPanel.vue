@@ -13,15 +13,17 @@
 </template>
 
 <script setup lang="ts">
+import { ACCOUNT, PASSWORD } from '@/global/constant';
 import { reactive, ref } from 'vue';
 import type { FormRules, FormInstance } from 'element-plus';
 import useLoginStore from '@/store/login';
+import { localCache } from '@/utils/cache';
 const loginStore = useLoginStore();
 
 // 表单数据
 const form = reactive({
-  account: '',
-  password: ''
+  account: localCache.getItem(ACCOUNT) ?? '',
+  password: localCache.getItem(PASSWORD) ?? ''
 });
 
 // 表单校验规则
@@ -45,21 +47,22 @@ const rules: FormRules = {
 const formRef = ref<FormInstance | undefined>();
 
 // 编写账号登录的逻辑
-function login() {
+async function login(state: boolean) {
   // 检查 formRef 对象是否存在，如果不存在则直接返回，不执行后续操作
   if (!formRef.value) return;
 
   // valid 是一个布尔值，表示表单验证是否通过
-  formRef.value.validate((valid) => {
+  formRef.value.validate(async (valid) => {
     if (valid) {
       // 获取用户输入的账号和密码
       const account = form.account;
       const password = form.password;
 
       // 执行账号登录行为
-      loginStore.accountLoginAction(account, password).then((res) => {
-        ElMessage({ message: res, type: 'error' });
-      });
+      const result = await loginStore.accountLoginAction(account, password, state);
+      if (result) {
+        ElMessage({ message: result, type: 'error' });
+      }
     } else {
       // 格式不正确，弹出错误提示
       ElMessage({ message: '登录失败，账号或密码错误！', type: 'error' });
@@ -73,7 +76,4 @@ defineExpose({
 });
 </script>
 
-<style scoped lang="scss">
-.account-panel {
-}
-</style>
+<style scoped lang="scss"></style>

@@ -11,8 +11,9 @@
       <el-form-item label="验证码" prop="verificationCode">
         <el-input v-model="form.verificationCode">
           <template #suffix>
-            <div>
-              <span class="get-code" @click="handler">获取验证码</span>
+            <div class="get-code" @click="getCode">
+              <span v-show="!flag">获取验证码</span>
+              <span v-show="flag">重新获取({{ second }}秒)</span>
             </div>
           </template>
         </el-input>
@@ -24,10 +25,10 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import type { FormRules, FormInstance } from 'element-plus';
+import useEmailStore from '@/store/email';
 import useLoginStore from '@/store/login';
-import useVerificationStore from '@/store/verification';
+const emailStore = useEmailStore();
 const loginStore = useLoginStore();
-const verificationStore = useVerificationStore();
 
 // 表单数据
 const form = reactive({
@@ -48,36 +49,56 @@ const rules: FormRules = {
   ]
 };
 
+const second = ref(60); // 倒计时的秒数
+const flag = ref(false); // 显示倒计时的开关
+
 // 编写获取验证码的逻辑
-function handler() {
+async function getCode() {
   // 判断邮箱格式是否符合规范
   const regex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
-  if (!regex.test(form.email)) return;
-  // 申请获得验证码
-  verificationStore.getVerificationCodeAction();
-  // 倒计时
-  setTimeout(() => {
-    // xxxxxxxxxxxxxxx
-  }, 60 * 1000);
+  if (!regex.test(form.email)) {
+    ElMessage({ message: '邮箱格式不正确', type: 'error' });
+    return;
+  }
+
+  // 如果格式符合规范，则执行获取验证码行为
+  const result = await emailStore.getEmailVerificationCodeAction(form.email);
+  if (result.state) {
+    ElMessage({ message: result.content, type: 'success' }); // 获取验证码成功
+
+    // 显示倒计时60秒，并且期间不得再申请验证码
+    second.value = 60; // 初始化
+    flag.value = true; // 显示
+    document.querySelector('.get-code')?.classList.add('disabled-element'); //禁止操作
+
+    // 进行倒计时
+    const timer = setInterval(() => {
+      second.value--;
+      if (second.value === 0) {
+        flag.value = false; // 隐藏
+        document.querySelector('.get-code')?.classList.remove('disabled-element'); // 允许操作
+        clearInterval(timer);
+      }
+    }, 1000);
+  } else {
+    ElMessage({ message: result.content, type: 'error' }); // 获取验证码失败
+  }
 }
 
 // 获取邮箱登录的表单实例 formref
 const formRef = ref<FormInstance | undefined>();
 
 // 编写邮箱登录的逻辑
-function login() {
+async function login() {
   if (!formRef.value) return;
-  formRef.value.validate((valid) => {
+  formRef.value.validate(async (valid) => {
     if (valid) {
-      const email = form.email;
-      const verificationCode = form.verificationCode;
-
-      loginStore.emailLoginAction(email, verificationCode).then((res) => {
-        // ElMessage({ message: res, type: 'error' });
-      });
+      const result = await loginStore.emailLoginAction(form.email, form.verificationCode);
+      if (result) {
+        ElMessage({ message: result, type: 'error' });
+      }
     } else {
-      // 格式不正确，弹出错误提示
-      ElMessage({ message: '格式错误，请重试', type: 'error' });
+      ElMessage({ message: '格式错误，请重试', type: 'error' }); // 格式不正确，弹出错误提示
     }
   });
 }
@@ -96,14 +117,25 @@ defineExpose({
   }
 
   .get-code {
-    width: 76px;
-    border-left: 2px solid rgb(192, 186, 186);
-    font-size: 12px;
-    padding-left: 10px;
+    width: 62px;
+    height: 14px;
+    letter-spacing: 1px;
+    font-size: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
     &:hover {
       color: rgb(64, 158, 255);
     }
+    &:active {
+      color: rgb(181, 213, 246);
+    }
+  }
+
+  // 禁用元素
+  .disabled-element {
+    pointer-events: none;
   }
 }
 </style>

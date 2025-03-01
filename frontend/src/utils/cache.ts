@@ -22,7 +22,9 @@ class Cache {
 
   // 取数据
   getItem(key: string) {
-    this.cache.getItem(key);
+    const res = this.cache.getItem(key);
+    if (res === null) return null;
+    return JSON.parse(res);
   }
 
   // 删数据
