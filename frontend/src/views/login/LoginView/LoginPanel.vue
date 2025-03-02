@@ -45,10 +45,9 @@
         :class="{ 'disabled-element': isDisabled }"
       />
       <el-link
-        href="#"
-        target="_blank"
         :underline="false"
         type="primary"
+        @click="goToForget"
         :class="{ 'disabled-element': isDisabled }"
       >
         忘记密码
@@ -61,7 +60,7 @@
     </el-button>
 
     <!-- 注册链接 -->
-    <el-link class="register-link" href="#" target="_blank">没有账号？前往注册</el-link>
+    <el-link class="register-link" @click="goToRegister">没有账号？前往注册</el-link>
   </div>
 </template>
 
@@ -81,6 +80,14 @@ const { activeTabName, isDisabled, tabChangeHandler } = useTabs(checkboxState, C
 // 登录按钮相关的数据和方法
 import useLoginButton from '@/hooks/login/login-panel/useLoginButton';
 const { accountPanel, emailPanel, wrapLoginHandler } = useLoginButton(activeTabName, checkboxState);
+
+// 忘记密码相关的数据和方法
+import useForgetPassword from '@/hooks/login/login-panel/useForgetPassword';
+const { goToForget } = useForgetPassword();
+
+// 注册链接相关的数据和方法
+import useRegisterLink from '@/hooks/login/login-panel/useRegisterLink';
+const { goToRegister } = useRegisterLink();
 </script>
 
 <style scoped lang="scss">

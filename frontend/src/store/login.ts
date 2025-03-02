@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import type { AxiosResponse } from 'axios';
 import { localCache } from '@/utils/cache';
-import { LOGIN_TOKEN, ACCOUNT, PASSWORD } from '@/global/constant';
+import { LOGIN_TOKEN, ACCOUNT, PASSWORD } from '@/global/constant/login';
 import { accountLoginRequest, emailLoginRequest } from '@/service/api/login';
 
 const useLoginStore = defineStore('login', () => {

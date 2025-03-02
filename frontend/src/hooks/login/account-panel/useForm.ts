@@ -1,6 +1,6 @@
 import { reactive } from 'vue';
 import { localCache } from '@/utils/cache';
-import { ACCOUNT, PASSWORD } from '@/global/constant';
+import { ACCOUNT, PASSWORD } from '@/global/constant/login';
 import type { FormRules } from 'element-plus';
 
 export default function useForm() {
