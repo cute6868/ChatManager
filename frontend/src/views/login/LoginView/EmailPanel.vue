@@ -23,85 +23,17 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
-import type { FormRules, FormInstance } from 'element-plus';
-import useEmailStore from '@/store/email';
-import useLoginStore from '@/store/login';
-const emailStore = useEmailStore();
-const loginStore = useLoginStore();
+// 表单相关的数据和方法
+import useForm from '@/hooks/login/email-panel/useForm';
+const { form, rules } = useForm();
 
-// 表单数据
-const form = reactive({
-  email: '',
-  verificationCode: ''
-});
+// 验证码相关的数据和方法
+import useVerificationCode from '@/hooks/login/email-panel/useVerificationCode';
+const { flag, second, getCode } = useVerificationCode(form);
 
-// 表单验证规则
-const rules: FormRules = {
-  email: [
-    { required: true, message: '请输入邮箱', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
-  ],
-  verificationCode: [
-    { required: true, message: '请输入验证码', trigger: 'blur' },
-    { min: 6, max: 6, message: '验证码长度为6位', trigger: 'change' },
-    { pattern: /^[0-9]+$/, message: '验证码只能是数字', trigger: 'change' }
-  ]
-};
-
-const second = ref(60); // 倒计时的秒数
-const flag = ref(false); // 显示倒计时的开关
-
-// 编写获取验证码的逻辑
-async function getCode() {
-  // 判断邮箱格式是否符合规范
-  const regex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
-  if (!regex.test(form.email)) {
-    ElMessage({ message: '邮箱格式不正确', type: 'error' });
-    return;
-  }
-
-  // 如果格式符合规范，则执行获取验证码行为
-  const result = await emailStore.getEmailVerificationCodeAction(form.email);
-  if (result.state) {
-    ElMessage({ message: result.content, type: 'success' }); // 获取验证码成功
-
-    // 显示倒计时60秒，并且期间不得再申请验证码
-    second.value = 60; // 初始化
-    flag.value = true; // 显示
-    document.querySelector('.get-code')?.classList.add('disabled-element'); //禁止操作
-
-    // 进行倒计时
-    const timer = setInterval(() => {
-      second.value--;
-      if (second.value === 0) {
-        flag.value = false; // 隐藏
-        document.querySelector('.get-code')?.classList.remove('disabled-element'); // 允许操作
-        clearInterval(timer);
-      }
-    }, 1000);
-  } else {
-    ElMessage({ message: result.content, type: 'error' }); // 获取验证码失败
-  }
-}
-
-// 获取邮箱登录的表单实例 formref
-const formRef = ref<FormInstance | undefined>();
-
-// 编写邮箱登录的逻辑
-async function login() {
-  if (!formRef.value) return;
-  formRef.value.validate(async (valid) => {
-    if (valid) {
-      const result = await loginStore.emailLoginAction(form.email, form.verificationCode);
-      if (result) {
-        ElMessage({ message: result, type: 'error' });
-      }
-    } else {
-      ElMessage({ message: '格式错误，请重试', type: 'error' }); // 格式不正确，弹出错误提示
-    }
-  });
-}
+// 邮箱登录相关的数据和方法
+import useEmailLogin from '@/hooks/login/email-panel/useEmailLogin';
+const { formRef, login } = useEmailLogin(form);
 
 // 对外暴露
 defineExpose({

@@ -1,11 +1,11 @@
 <template>
   <div class="login-panel">
     <!-- 标题 -->
-    <div class="title">测试测试测试</div>
+    <div class="title">AI聊天管家</div>
 
     <!-- 登录方式 tabs -->
     <div class="tabs">
-      <el-tabs type="border-card" stretch v-model="activeName" @tab-change="tabChangeHandler">
+      <el-tabs v-model="activeTabName" type="border-card" @tab-change="tabChangeHandler" stretch>
         <!-- 账号登录 -->
         <el-tab-pane name="byAccount">
           <!-- 顶部标签 -->
@@ -38,14 +38,25 @@
 
     <!-- 可选控制区 -->
     <div class="control">
-      <el-checkbox id="remember-pwd" v-model="remembered" label="记住密码" @change="saveState" />
-      <el-link id="forget-pwd" href="#" target="_blank" :underline="false" type="primary">
+      <el-checkbox
+        v-model="checkboxState"
+        @change="saveCheckboxState"
+        label="记住密码"
+        :class="{ 'disabled-element': isDisabled }"
+      />
+      <el-link
+        href="#"
+        target="_blank"
+        :underline="false"
+        type="primary"
+        :class="{ 'disabled-element': isDisabled }"
+      >
         忘记密码
       </el-link>
     </div>
 
     <!-- 登录按钮 -->
-    <el-button class="login-btn" type="primary" size="large" @click="loginHandler">
+    <el-button class="login-btn" type="primary" size="large" @click="wrapLoginHandler">
       立即登录
     </el-button>
 
@@ -55,54 +66,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+// 引入子组件
 import AccountPanel from './AccountPanel.vue';
 import EmailPanel from './EmailPanel.vue';
-import { localCache } from '@/utils/cache';
 
-// 默认登录方式为账号登录
-const activeName = ref('byAccount');
+// 复选框相关的数据和方法
+import useCheckbox from '@/hooks/login/login-panel/useCheckbox';
+const { checkboxState, CHECKBOX_STATE, saveCheckboxState } = useCheckbox();
 
-// 局部常量，本地存储的存键值
-const STATE = 'remember-pwd-state';
+// tabs相关的数据和方法
+import useTabs from '@/hooks/login/login-panel/useTabs';
+const { activeTabName, isDisabled, tabChangeHandler } = useTabs(checkboxState, CHECKBOX_STATE);
 
-// 优先从本地缓存中获取状态，如果没有，则默认设置为 false
-const remembered = ref(localCache.getItem(STATE) ?? false);
-// 将"记住密码的勾选状态"保存到本地缓存中
-function saveState() {
-  localCache.setItem(STATE, remembered.value);
-}
-function tabChangeHandler() {
-  if (activeName.value === 'byEmail') {
-    // 切换到邮箱登录时，取消勾选，并禁用"记住密码"，同时禁止点击"忘记密码"
-    remembered.value = false;
-    document.querySelector('#remember-pwd')?.setAttribute('disabled', 'disabled');
-    document.querySelector('#forget-pwd')?.classList.add('disabled-element');
-  } else {
-    // 切换到账号登录时，解封"记住密码"，并恢复原来的勾选状态，同时解封"忘记密码"
-    document.querySelector('#remember-pwd')?.removeAttribute('disabled');
-    remembered.value = localCache.getItem(STATE);
-    document.querySelector('#forget-pwd')?.classList.remove('disabled-element');
-  }
-}
-
-// 获取AccountPanel组件的实例
-const accountPanel = ref();
-
-// 获取EmailPanel组件的实例
-const emailPanel = ref();
-
-// 登录操作转移
-function loginHandler() {
-  if (activeName.value === 'byAccount') {
-    // 调用AccountPanel组件的login方法，进行账号登录
-    const state: boolean = remembered.value;
-    accountPanel.value.login(state);
-  } else {
-    // 调用EmailPanel组件的login方法，进行邮箱登录
-    emailPanel.value.login();
-  }
-}
+// 登录按钮相关的数据和方法
+import useLoginButton from '@/hooks/login/login-panel/useLoginButton';
+const { accountPanel, emailPanel, wrapLoginHandler } = useLoginButton(activeTabName, checkboxState);
 </script>
 
 <style scoped lang="scss">
@@ -112,6 +90,9 @@ function loginHandler() {
 
   // 让面板容器上移一点
   margin-bottom: 6%;
+
+  // 让面板容器的四个角为圆角
+  border-radius: 1%;
 
   // 让面板容器里面元素居中
   display: flex;
@@ -167,8 +148,9 @@ function loginHandler() {
   }
 }
 
-// 禁用元素（切换到邮箱登录时，禁止点击"忘记密码"）
+// 禁用元素（切换到邮箱登录时，禁止点击"记住密码"和"忘记密码"）
 .disabled-element {
   pointer-events: none;
+  color: #c0c4cc;
 }
 </style>
