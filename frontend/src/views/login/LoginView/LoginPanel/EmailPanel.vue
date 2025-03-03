@@ -11,7 +11,7 @@
       <el-form-item label="验证码" prop="verificationCode">
         <el-input v-model="form.verificationCode">
           <template #suffix>
-            <div class="get-code" @click="getCode">
+            <div class="get-code" @click="wrapGetCode">
               <span v-show="!flag">获取验证码</span>
               <span v-show="flag">重新获取({{ second }}秒)</span>
             </div>
@@ -29,7 +29,7 @@ const { form, rules } = useForm();
 
 // 验证码相关的数据和方法
 import useVerificationCode from '@/hooks/login/email-panel/useVerificationCode';
-const { flag, second, getCode } = useVerificationCode(form);
+const { flag, second, wrapGetCode } = useVerificationCode(form);
 
 // 邮箱登录相关的数据和方法
 import useEmailLogin from '@/hooks/login/email-panel/useEmailLogin';

@@ -66,8 +66,8 @@
 
 <script setup lang="ts">
 // 引入子组件
-import AccountPanel from './AccountPanel.vue';
-import EmailPanel from './EmailPanel.vue';
+import AccountPanel from './LoginPanel/AccountPanel.vue';
+import EmailPanel from './LoginPanel/EmailPanel.vue';
 
 // 复选框相关的数据和方法
 import useCheckbox from '@/hooks/login/login-panel/useCheckbox';

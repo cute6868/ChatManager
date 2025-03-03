@@ -6,7 +6,6 @@
 </template>
 
 <script setup lang="ts">
-// 引入子组件
 import LoginPanel from './LoginView/LoginPanel.vue';
 </script>
 

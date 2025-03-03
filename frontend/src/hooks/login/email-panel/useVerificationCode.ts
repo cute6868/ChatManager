@@ -1,5 +1,6 @@
 import type { FormDataTypeB } from '@/types';
 import { ref } from 'vue';
+import debounce from '@/utils/debounce';
 import useEmailStore from '@/store/email';
 const emailStore = useEmailStore();
 
@@ -24,7 +25,7 @@ export default function useVerificationCode(form: FormDataTypeB) {
       // 显示倒计时60秒，并且期间不得再申请验证码
       second.value = 60; // 初始化
       flag.value = true; // 显示
-      document.querySelector('.get-code')?.classList.add('disabled-element'); //禁止操作
+      document.querySelector('.get-code')?.classList.add('disabled-element'); // 禁止操作
 
       // 进行倒计时
       const timer = setInterval(() => {
@@ -40,9 +41,12 @@ export default function useVerificationCode(form: FormDataTypeB) {
     }
   }
 
+  // 包装获取验证码的函数，实现防抖
+  const wrapGetCode = debounce(getCode, 500);
+
   return {
     flag,
     second,
-    getCode
+    wrapGetCode
   };
 }
