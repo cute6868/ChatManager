@@ -19,7 +19,10 @@
       </div>
 
       <!-- 底部按钮 -->
-      <el-button class="btn" type="primary" @click="wrapClickHandler">下一步</el-button>
+      <el-button class="btn" type="primary" @click="wrapClickHandler">
+        <span v-if="active !== 2">下一步</span>
+        <span v-if="active === 2">确认</span>
+      </el-button>
     </div>
   </div>
 </template>
@@ -44,8 +47,8 @@ const LA = ref<InstanceType<typeof LoginAgain>>();
 // 点击操作
 function clickHandler() {
   if (active.value === 0) VI.value?.check();
-  // else if (active.value === 1) RP.value?.reset();
-  // else if (active.value === 2) LA.value?.login();
+  else if (active.value === 1) RP.value?.reset();
+  else if (active.value === 2) LA.value?.redirect();
 }
 
 // 包装点击操作，进行防抖
@@ -57,7 +60,7 @@ const wrapClickHandler = debounce(clickHandler, 500);
 .forget-panel {
   // 面板大小
   width: max(28%, 300px);
-  height: max(36%, 270px);
+  height: max(36%, 286px);
 
   // 面板颜色
   background-color: white;
@@ -69,6 +72,7 @@ const wrapClickHandler = debounce(clickHandler, 500);
   margin-bottom: 4%;
 
   // 面板内容元素间隔
+  padding: 2px;
   padding-top: max(2%, 34px);
 
   // 步骤条
@@ -88,8 +92,9 @@ const wrapClickHandler = debounce(clickHandler, 500);
 
     // 操作框
     .action-frame {
-      width: max(76%, 274px);
+      width: max(76%, 260px);
       height: 140px;
+      padding: 4px;
 
       display: flex;
       justify-content: center;
@@ -101,7 +106,7 @@ const wrapClickHandler = debounce(clickHandler, 500);
 
     // 底部按钮
     .btn {
-      width: max(77%, 276px);
+      width: max(77%, 274px);
       margin-top: 13px;
     }
   }

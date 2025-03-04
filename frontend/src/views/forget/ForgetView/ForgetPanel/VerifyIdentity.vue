@@ -11,12 +11,14 @@ import EmailPanel from '@/views/login/LoginView/LoginPanel/EmailPanel.vue';
 // 定义一个名为“update:active”的事件，这个事件与父组件有关联
 const emits = defineEmits(['update:active']);
 
-// 验证身份，验证通过后自动切换到下一个面板
+// 验证身份
 import { ref } from 'vue';
 const emailPanel = ref<InstanceType<typeof EmailPanel>>();
 async function check() {
   const isSuccess = await emailPanel.value?.login();
-  if (isSuccess) emits('update:active'); // 运行“update:active”事件
+
+  // 运行“update:active”事件，从而触发父组件的事件，实现自动切换到下一个面板
+  if (isSuccess) emits('update:active');
 }
 
 // 对外暴露
