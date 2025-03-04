@@ -1,5 +1,6 @@
 import { reactive } from 'vue';
 import type { FormRules } from 'element-plus';
+import { EMAIL_VERIFICATION_CODE_REGEX } from '@/global/constant/rule';
 
 export default function useForm() {
   // 表单数据
@@ -17,7 +18,7 @@ export default function useForm() {
     verificationCode: [
       { required: true, message: '请输入验证码', trigger: 'blur' },
       { min: 6, max: 6, message: '验证码长度为6位', trigger: 'change' },
-      { pattern: /^[0-9]+$/, message: '验证码只能是数字', trigger: 'change' }
+      { pattern: EMAIL_VERIFICATION_CODE_REGEX, message: '验证码只能是数字', trigger: 'change' }
     ]
   };
 

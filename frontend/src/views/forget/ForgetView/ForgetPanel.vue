@@ -28,32 +28,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-const active = ref(0);
-function updateActiveData() {
-  if (active.value < 3) active.value++;
-}
-
 // 引入子组件
-import VerifyIdentity from './ForgetPanel/VerifyIdentity.vue';
-import ResetPassword from './ForgetPanel/ResetPassword.vue';
-import LoginAgain from './ForgetPanel/LoginAgain.vue';
+import VerifyIdentity from '@/views/forget/ForgetView/ForgetPanel/VerifyIdentity.vue';
+import ResetPassword from '@/views/forget/ForgetView/ForgetPanel/ResetPassword.vue';
+import LoginAgain from '@/views/forget/ForgetView/ForgetPanel/LoginAgain.vue';
 
-// 获取子组件对象
-const VI = ref<InstanceType<typeof VerifyIdentity>>();
-const RP = ref<InstanceType<typeof ResetPassword>>();
-const LA = ref<InstanceType<typeof LoginAgain>>();
+// active相关的数据和方法
+import useActive from '@/hooks/forget/forget-panel/useActive';
+const { active, updateActiveData } = useActive();
 
-// 点击操作
-function clickHandler() {
-  if (active.value === 0) VI.value?.check();
-  else if (active.value === 1) RP.value?.reset();
-  else if (active.value === 2) LA.value?.redirect();
-}
-
-// 包装点击操作，进行防抖
-import debounce from '@/utils/debounce';
-const wrapClickHandler = debounce(clickHandler, 500);
+// 按钮相关的数据和方法
+import useButton from '@/hooks/forget/forget-panel/useButton';
+const { VI, RP, LA, wrapClickHandler } = useButton(active);
 </script>
 
 <style scoped lang="scss">

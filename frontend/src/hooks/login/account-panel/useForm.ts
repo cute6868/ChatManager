@@ -2,6 +2,7 @@ import { reactive } from 'vue';
 import { localCache } from '@/utils/cache';
 import { ACCOUNT, PASSWORD } from '@/global/constant/login';
 import type { FormRules } from 'element-plus';
+import { ACCOUNT_REGEX, PASSWORD_REGEX } from '@/global/constant/rule';
 
 export default function useForm() {
   // 表单数据
@@ -15,12 +16,12 @@ export default function useForm() {
     account: [
       { required: true, message: '请输入账号', trigger: 'blur' },
       { min: 6, max: 20, message: '账号长度为6到20位', trigger: 'change' },
-      { pattern: /^[a-zA-Z0-9]+$/, message: '账号只能包含数字和字母', trigger: 'change' }
+      { pattern: ACCOUNT_REGEX, message: '账号只能包含数字和字母', trigger: 'change' }
     ],
     password: [
       { required: true, message: '请输入密码', trigger: 'blur' },
       {
-        pattern: /^(?!(?:\d{8,32})$)[A-Za-z\d\W_~!@#$%^&*()\-_=+$${}|;:'",.<>?/\\]{8,32}$/,
+        pattern: PASSWORD_REGEX,
         message: '密码格式错误',
         trigger: 'blur'
       }

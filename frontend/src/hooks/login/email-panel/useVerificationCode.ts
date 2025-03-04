@@ -30,10 +30,10 @@ export default function useVerificationCode(form: FormDataTypeB) {
       // 进行倒计时
       const timer = setInterval(() => {
         second.value--;
-        if (second.value === 0) {
+        if (second.value <= 0) {
           flag.value = false; // 隐藏
           document.querySelector('.get-code')?.classList.remove('disabled-element'); // 允许操作
-          clearInterval(timer);
+          clearInterval(timer); // 清除定时器
         }
       }, 1000);
     } else {

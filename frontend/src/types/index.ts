@@ -12,4 +12,10 @@ type FormDataTypeB = Reactive<{
   verificationCode: string;
 }>;
 
-export type { FormDataTypeA, FormDataTypeB };
+// 重置密码表单数据类型
+type FormDataTypeC = Reactive<{
+  password: string;
+  confirm: string;
+}>;
+
+export type { FormDataTypeA, FormDataTypeB, FormDataTypeC };

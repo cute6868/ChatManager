@@ -52,7 +52,7 @@ const useLoginStore = defineStore('login', () => {
     } catch (error) {
       // 网络异常
       console.log(error);
-      return '登录失败，网络异常！';
+      return '网络异常';
     }
   }
 
@@ -69,7 +69,7 @@ const useLoginStore = defineStore('login', () => {
       }
     } catch (error) {
       console.log(error);
-      return '登录失败，网络异常！';
+      return '网络异常';
     }
   }
 
