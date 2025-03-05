@@ -40,95 +40,17 @@
 </template>
 
 <script setup lang="ts">
-// 表单数据 =======================================================
-import { reactive } from 'vue';
-const formData = reactive({
-  account: '',
-  password: '',
-  confirm: '',
-  email: '',
-  verificationCode: ''
-});
+// 表单相关的数据和方法
+import useForm from '@/hooks/register/register-panel/useForm';
+const { formData, formRules } = useForm();
 
 // 验证码相关的数据和方法
 import useVerificationCode from '@/hooks/login/email-panel/useVerificationCode';
 const { flag, second, wrapGetCode } = useVerificationCode(formData);
 
-// 表单校验====================================================
-import {
-  ACCOUNT_REGEX,
-  PASSWORD_REGEX,
-  EMAIL_VERIFICATION_CODE_REGEX
-} from '@/global/constant/rule';
-// 确认密码的校验逻辑
-function validatorFunc(rule: unknown, value: unknown, callback: (error?: Error) => void) {
-  if (value === formData.password) callback();
-  else callback(new Error('两次输入的密码不一致'));
-}
-
-import type { FormRules } from 'element-plus';
-
-const formRules = reactive<FormRules>({
-  account: [
-    { required: true, message: '请设置您的账号', trigger: 'blur' },
-    { min: 6, max: 20, message: '账号长度为6到20位', trigger: ['blur', 'change'] },
-    { pattern: ACCOUNT_REGEX, message: '账号只能含有数字、字母', trigger: ['blur', 'change'] }
-  ],
-  password: [
-    { required: true, message: '请输入您的密码', trigger: 'blur' },
-    {
-      pattern: PASSWORD_REGEX,
-      message: '长度为8到32位，不能全是数字，可以包含字母、特殊符号',
-      trigger: 'blur'
-    }
-  ],
-  confirm: [
-    { required: true, message: '请再次输入密码', trigger: 'blur' },
-    { validator: validatorFunc, trigger: 'blur' }
-  ],
-  email: [
-    { required: true, message: '请输入邮箱', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
-  ],
-  verificationCode: [
-    { required: true, message: '请输入验证码', trigger: 'blur' },
-    { min: 6, max: 6, message: '验证码长度为6位', trigger: ['blur', 'change'] },
-    {
-      pattern: EMAIL_VERIFICATION_CODE_REGEX,
-      message: '验证码只能是数字',
-      trigger: ['blur', 'change']
-    }
-  ]
-});
-
-// 注册按钮 =======================================================
-import { ref } from 'vue';
-const formRef = ref();
-import useRegisterStore from '@/store/register';
-const registerStore = useRegisterStore();
-function registerHandler() {
-  if (!formRef.value) return; // 检查表单对象是否存在
-
-  // 进行表单验证
-  formRef.value.validate(async (valid: boolean) => {
-    if (valid) {
-      // 验证通过，执行注册行为
-      const result = await registerStore.registerAction(
-        formData.account,
-        formData.password,
-        formData.email,
-        formData.verificationCode
-      );
-      if (result) ElMessage({ message: result, type: 'error' }); // 注册失败，弹出原因
-    } else {
-      ElMessage({ message: '格式错误，请重试', type: 'error' }); // 验证失败，弹出提示
-    }
-  });
-}
-
-// 包装点击注册操作，防抖
-import debounce from '@/utils/debounce';
-const wrapRegisterHandler = debounce(registerHandler, 500);
+// 注册按钮相关的数据和方法
+import useButton from '@/hooks/register/register-panel/useButton';
+const { formRef, wrapRegisterHandler } = useButton(formData);
 </script>
 
 <style scoped lang="scss">
