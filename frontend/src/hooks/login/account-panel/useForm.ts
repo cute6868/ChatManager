@@ -15,8 +15,8 @@ export default function useForm() {
   const formRules: FormRules = {
     account: [
       { required: true, message: '请输入账号', trigger: 'blur' },
-      { min: 6, max: 20, message: '账号长度为6到20位', trigger: 'change' },
-      { pattern: ACCOUNT_REGEX, message: '账号只能包含数字和字母', trigger: 'change' }
+      { min: 6, max: 20, message: '账号长度为6到20位', trigger: ['blur', 'change'] },
+      { pattern: ACCOUNT_REGEX, message: '账号只能包含数字和字母', trigger: ['blur', 'change'] }
     ],
     password: [
       { required: true, message: '请输入密码', trigger: 'blur' },

@@ -1,10 +1,10 @@
-import type { FormDataTypeB } from '@/types';
+import type { FormDataTypeB, FormDataTypeD } from '@/types';
 import { ref } from 'vue';
 import debounce from '@/utils/debounce';
 import useEmailStore from '@/store/email';
 const emailStore = useEmailStore();
 
-export default function useVerificationCode(form: FormDataTypeB) {
+export default function useVerificationCode(form: FormDataTypeB | FormDataTypeD) {
   const second = ref(60); // 倒计时的秒数
   const flag = ref(false); // 显示倒计时的开关
 

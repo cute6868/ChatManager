@@ -14,7 +14,7 @@ import LoginPanel from './LoginView/LoginPanel.vue';
   width: 100%;
   height: 100%;
 
-  // 让容器里面的元素居中（比如：登录面板）
+  // 让容器里面的元素居中
   display: flex;
   justify-content: center;
   align-items: center;

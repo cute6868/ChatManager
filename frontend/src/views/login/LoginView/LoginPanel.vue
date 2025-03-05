@@ -1,7 +1,7 @@
 <template>
   <div class="login-panel">
     <!-- 标题 -->
-    <div class="title">AI聊天管家</div>
+    <div class="title">登录</div>
 
     <!-- 登录方式 tabs -->
     <div class="tabs">
@@ -120,8 +120,9 @@ const { goToRegister } = useRegisterLink();
     margin-bottom: 5%;
 
     // 标题字体设置
-    font-size: max(1.5vw, 20px);
-    font-weight: bold;
+    font-size: 24px;
+    letter-spacing: 4px;
+    font-weight: 600;
   }
 
   // 登录方式 tabs

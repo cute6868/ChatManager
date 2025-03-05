@@ -18,4 +18,13 @@ type FormDataTypeC = Reactive<{
   confirm: string;
 }>;
 
-export type { FormDataTypeA, FormDataTypeB, FormDataTypeC };
+// 注册账号表单数据类型
+type FormDataTypeD = Reactive<{
+  account: string;
+  password: string;
+  confirm: string;
+  email: string;
+  verificationCode: string;
+}>;
+
+export type { FormDataTypeA, FormDataTypeB, FormDataTypeC, FormDataTypeD };
