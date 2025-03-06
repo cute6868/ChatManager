@@ -59,7 +59,7 @@ useScroll();
   width: 100%;
   position: fixed;
   top: 0; // 初始时让导航栏在视口上方的0px位置，即暂时不隐藏
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // 添加阴影效果
+  // box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // 添加阴影效果
   transition: top 0.5s ease; // 过渡效果
   z-index: 1000; // 确保导航栏在其他元素之上
 }

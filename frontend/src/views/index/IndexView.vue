@@ -1,39 +1,38 @@
 <template>
   <div class="index">
     <!-- 导航栏 -->
-    <nav>
-      <NavigationBar />
-    </nav>
+    <NavigationBar />
 
-    <!-- 正文内容 -->
-    <main>
-      <MainContent />
-    </main>
+    <!-- 主体部分 -->
+    <div class="main">
+      <SectionOne />
+      <SectionTwo />
+    </div>
 
     <!-- 底部备案 -->
-    <footer id="footer">
+    <div class="footer">
       <p>备案号：粤 ICP 备 12345678 号</p>
-    </footer>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 // 引入子组件
 import NavigationBar from './IndexView/NavigationBar.vue';
-import MainContent from './IndexView/MainContent.vue';
+import SectionOne from './IndexView/SectionOne.vue';
+import SectionTwo from './IndexView/SectionTwo.vue';
 </script>
 
 <style scoped lang="scss">
 // 样式布局
 .index {
-  // 导航栏
-  nav {
-    width: 100%;
-    height: 80px;
+  // 主体部分
+  .main {
+    margin-top: clamp(58px, 10vh, 76px);
   }
 
   // 备案信息
-  #footer {
+  .footer {
     width: 100%;
     height: 50px;
     background-color: pink;
