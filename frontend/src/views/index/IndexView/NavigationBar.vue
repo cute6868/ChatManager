@@ -1,6 +1,6 @@
 <template>
   <div class="navigation-bar">
-    <el-menu :ellipsis="isEllipsis" mode="horizontal">
+    <el-menu :ellipsis="isEllipsis" mode="horizontal" :collapse="false">
       <!-- 左侧logo -->
       <el-menu-item index="0">
         <a :href="ROUTE.PATH.INDEX">
@@ -18,28 +18,18 @@
 
 <script setup lang="ts">
 import ROUTE from '@/global/constant/route';
-import { ref, onMounted, onUnmounted } from 'vue';
 
-const isEllipsis = ref(false);
+// ellipsis相关的数据和方法
+import useEllipsis from '@/hooks/index/navigation-bar/useEllipsis';
+const { isEllipsis } = useEllipsis();
 
-// 导航栏右侧内容自动伸缩功能
-function handleResize() {
-  // 宽度阈值576px
-  if (window.innerWidth <= 576) isEllipsis.value = true;
-  else isEllipsis.value = false;
-}
-
-onMounted(() => {
-  window.addEventListener('resize', handleResize); // 设置事件监听器
-  handleResize(); // 初始化时设置一次
-});
-
-onUnmounted(() => {
-  window.removeEventListener('resize', handleResize); // 移除事件监听器
-});
+// scroll相关的数据和方法
+import useScroll from '@/hooks/index/navigation-bar/useScroll';
+useScroll();
 </script>
 
 <style scoped lang="scss">
+// 展示样式
 .navigation-bar {
   .el-menu--horizontal {
     // 导航栏的高度
@@ -62,5 +52,15 @@ onUnmounted(() => {
   .el-menu--horizontal > .el-menu-item:last-child {
     margin-right: 4vw; // 最后一个item距离右边的间距
   }
+}
+
+// 隐藏样式
+.navigation-bar {
+  width: 100%;
+  position: fixed;
+  top: 0; // 初始时让导航栏在视口上方的0px位置，即暂时不隐藏
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // 添加阴影效果
+  transition: top 0.5s ease; // 过渡效果
+  z-index: 1000; // 确保导航栏在其他元素之上
 }
 </style>

@@ -6,14 +6,14 @@
     </nav>
 
     <!-- 正文内容 -->
-    <!-- <main>
+    <main>
       <MainContent />
-    </main> -->
+    </main>
 
     <!-- 底部备案 -->
-    <!-- <footer id="footer">
+    <footer id="footer">
       <p>备案号：粤 ICP 备 12345678 号</p>
-    </footer> -->
+    </footer>
   </div>
 </template>
 
@@ -30,7 +30,6 @@ import MainContent from './IndexView/MainContent.vue';
   nav {
     width: 100%;
     height: 80px;
-    background-color: pink;
   }
 
   // 备案信息
