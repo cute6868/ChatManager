@@ -23,7 +23,7 @@ export default function useAccountLogin(formData: FormDataTypeA) {
         );
         if (result) ElMessage({ message: result, type: 'error' }); // 弹出错误提示
       } else {
-        ElMessage({ message: '登录失败，账号或密码错误！', type: 'error' }); // 格式错误，弹出提示
+        ElMessage({ message: '账号或密码错误', type: 'error' }); // 格式错误，弹出提示
       }
     });
   }

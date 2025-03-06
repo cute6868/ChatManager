@@ -3,7 +3,7 @@
     <div class="content">
       <div id="error">404</div>
       <h1>未找到相关页面</h1>
-      <p>抱歉，您访问的页面可能不存在或者被删除！</p>
+      <p>抱歉，您访问的页面可能不存在或者被删除</p>
       <el-button type="primary" @click="goToIndex">返回首页</el-button>
     </div>
   </div>
@@ -62,7 +62,7 @@ function goToIndex() {
     margin-bottom: 12px;
   }
 
-  // 抱歉，您访问的页面可能不存在或者被删除！
+  // 抱歉，您访问的页面可能不存在或者被删除
   p {
     width: 100%;
     font-size: 14px;
