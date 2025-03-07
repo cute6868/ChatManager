@@ -5,13 +5,8 @@
       <h1 id="title">{{ displayText }}</h1>
 
       <!-- 卡片介绍 -->
-      <ul id="introduction">
-        <li
-          v-for="(item, index) in data"
-          :key="index"
-          v-show="item.show"
-          :class="{ 'fade-in': item.show }"
-        >
+      <ul id="introduction" v-show="isShow" :class="{ 'fade-in-top-to-bottom': isShow }">
+        <li v-for="(item, index) in data" :key="index">
           <div class="tip">
             <el-icon class="tip-icon"><SuccessFilled style="color: green" /></el-icon>
             <span>{{ item.tip }}</span>
@@ -25,7 +20,13 @@
       </ul>
 
       <!-- 体验按钮 -->
-      <el-button id="btn" type="primary">立即体验</el-button>
+      <el-button
+        v-show="isShow"
+        :class="{ 'fade-in-right-to-left': isShow }"
+        id="btn"
+        type="primary"
+        >立即体验</el-button
+      >
     </div>
   </div>
 </template>
@@ -33,13 +34,12 @@
 <script setup lang="ts">
 // v-for的内容
 import { Link, Sort, Setting, Lock } from '@element-plus/icons-vue';
-import { reactive } from 'vue';
-const data = reactive([
-  { show: false, tip: '免费连接', icon: Link, text: '这是我的内容，我的秘密是我' },
-  { show: false, tip: '自由切换', icon: Sort, text: '这是我的内容，我的秘密是我' },
-  { show: false, tip: '智能管理', icon: Setting, text: '这是我的内容，我的秘密是我' },
-  { show: false, tip: '隐私安全', icon: Lock, text: '这是我的内容，我的秘密是我' }
-]);
+const data = [
+  { tip: '免费连接', icon: Link, text: '这是我的内容，我的秘密是我' },
+  { tip: '自由切换', icon: Sort, text: '这是我的内容，我的秘密是我' },
+  { tip: '智能管理', icon: Setting, text: '这是我的内容，我的秘密是我' },
+  { tip: '隐私安全', icon: Lock, text: '这是我的内容，我的秘密是我' }
+];
 
 //  ==========================  打字效果    =================================
 import { ref, onMounted } from 'vue';
@@ -47,7 +47,13 @@ const fullText = 'ChatManager，连接无限可能！'; // 完整文本
 const displayText = ref(''); // 用于显示的文本，初始为空
 const typingSpeed = 80; // 每个字符显示的时间间隔（毫秒）
 
+const isShow = ref(false);
 onMounted(() => {
+  // 执行其他内容的显示逻辑
+  // setTimeout(() => {
+  isShow.value = true;
+  // }, 100);
+
   // 在组件挂载后开始打字效果
   let index = 0;
   const intervalId = setInterval(() => {
@@ -56,18 +62,9 @@ onMounted(() => {
       index++;
     } else {
       clearInterval(intervalId); // 当所有字符都显示完后，清除定时器
-
-      // 在组件挂载后执行逐个显示的逻辑
-      data.forEach((item, index) => {
-        setTimeout(() => {
-          item.show = true;
-        }, index * 400); // 每个 <li> 间隔 300 毫秒显示
-      });
     }
   }, typingSpeed);
 });
-
-// li标签淡入效果=========================================
 
 onMounted(() => {});
 </script>
@@ -203,20 +200,36 @@ onMounted(() => {});
   margin-top: 36px;
 }
 
-/* 定义淡入动画 */
-@keyframes fadeIn {
+// 定义从上到下的淡入动画
+@keyframes fadeInFromTopToBottom {
   from {
-    opacity: 0;
-    transform: translateY(-20px);
+    opacity: 0; // 初始状态为透明
+    transform: translateY(-46px); // 初始状态在上面40像素
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 1; // 最终状态不透明
+    transform: translateY(0); // 最终状态在下面0像素
   }
 }
 
-/* 应用动画的类 */
-.fade-in {
-  animation: fadeIn 3s ease-out forwards;
+// 定义从右到左的淡入动画
+@keyframes fadeInFromRightToLeft {
+  from {
+    opacity: 0; // 初始状态为透明
+    transform: translateX(46px); // 初始状态在右边40像素
+  }
+  to {
+    opacity: 1; // 最终状态不透明
+    transform: translateX(0); // 最终状态在右边0像素
+  }
+}
+
+// 应用动画
+.fade-in-top-to-bottom {
+  animation: fadeInFromTopToBottom 2s ease-out forwards; // 应用淡入动画，持续2秒，淡入效果，向前播放
+}
+
+.fade-in-right-to-left {
+  animation: fadeInFromRightToLeft 3s ease-out forwards; // 应用淡入动画，持续2秒，淡入效果，向前播放
 }
 </style>

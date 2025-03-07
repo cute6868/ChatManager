@@ -1,7 +1,9 @@
 <template>
   <div class="index">
     <!-- 导航栏 -->
-    <NavigationBar />
+    <nav>
+      <NavigationBar />
+    </nav>
 
     <!-- 主体部分 -->
     <div class="main">
@@ -26,6 +28,13 @@ import SectionTwo from './IndexView/SectionTwo.vue';
 <style scoped lang="scss">
 // 样式布局
 .index {
+  width: 100%;
+
+  nav {
+    width: 100%;
+    position: relative;
+  }
+
   // 主体部分
   .main {
     margin-top: clamp(58px, 10vh, 76px);
