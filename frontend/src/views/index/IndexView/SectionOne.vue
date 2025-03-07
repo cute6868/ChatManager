@@ -6,7 +6,12 @@
 
       <!-- 卡片介绍 -->
       <ul id="introduction">
-        <li v-for="(item, index) in data" :key="index">
+        <li
+          v-for="(item, index) in data"
+          :key="index"
+          v-show="item.show"
+          :class="{ 'fade-in': item.show }"
+        >
           <div class="tip">
             <el-icon class="tip-icon"><SuccessFilled style="color: green" /></el-icon>
             <span>{{ item.tip }}</span>
@@ -20,7 +25,7 @@
       </ul>
 
       <!-- 体验按钮 -->
-      <el-button id="btn" type="primary" size="large">立即体验</el-button>
+      <el-button id="btn" type="primary">立即体验</el-button>
     </div>
   </div>
 </template>
@@ -28,22 +33,22 @@
 <script setup lang="ts">
 // v-for的内容
 import { Link, Sort, Setting, Lock } from '@element-plus/icons-vue';
-const data = [
-  { tip: '免费连接', icon: Link, text: '这是我的内容，我的秘密是我' },
-  { tip: '自由切换', icon: Sort, text: '这是我的内容，我的秘密是我' },
-  { tip: '智能管理', icon: Setting, text: '这是我的内容，我的秘密是我' },
-  { tip: '隐私安全', icon: Lock, text: '这是我的内容，我的秘密是我' }
-];
+import { reactive } from 'vue';
+const data = reactive([
+  { show: false, tip: '免费连接', icon: Link, text: '这是我的内容，我的秘密是我' },
+  { show: false, tip: '自由切换', icon: Sort, text: '这是我的内容，我的秘密是我' },
+  { show: false, tip: '智能管理', icon: Setting, text: '这是我的内容，我的秘密是我' },
+  { show: false, tip: '隐私安全', icon: Lock, text: '这是我的内容，我的秘密是我' }
+]);
 
 //  ==========================  打字效果    =================================
 import { ref, onMounted } from 'vue';
-// const fullText = 'ChatManager，连接无限可能！'; // 完整文本
-const fullText = '你好，世界'; // 完整文本
+const fullText = 'ChatManager，连接无限可能！'; // 完整文本
 const displayText = ref(''); // 用于显示的文本，初始为空
 const typingSpeed = 80; // 每个字符显示的时间间隔（毫秒）
 
-// 在组件挂载后开始打字效果
 onMounted(() => {
+  // 在组件挂载后开始打字效果
   let index = 0;
   const intervalId = setInterval(() => {
     if (index < fullText.length) {
@@ -51,9 +56,20 @@ onMounted(() => {
       index++;
     } else {
       clearInterval(intervalId); // 当所有字符都显示完后，清除定时器
+
+      // 在组件挂载后执行逐个显示的逻辑
+      data.forEach((item, index) => {
+        setTimeout(() => {
+          item.show = true;
+        }, index * 400); // 每个 <li> 间隔 300 毫秒显示
+      });
     }
   }, typingSpeed);
 });
+
+// li标签淡入效果=========================================
+
+onMounted(() => {});
 </script>
 
 <style scoped lang="scss">
@@ -79,7 +95,7 @@ onMounted(() => {
 // 内容的基本样式
 .content {
   width: 100%;
-  margin-bottom: max(6%, 100px);
+  padding: 6%;
 
   // 所有的内容都默认垂直居中
   display: flex;
@@ -90,9 +106,11 @@ onMounted(() => {
 
 // 大标题
 #title {
-  font-size: 54px;
-  font-weight: 300;
-  // background-color: gray;
+  font-size: min(10vw, 54px);
+  font-weight: 600;
+  line-height: 2;
+  text-align: center;
+  margin: 0 0 60px;
 }
 
 // 卡片介绍
@@ -109,7 +127,7 @@ onMounted(() => {
     width: 200px;
     height: 288px;
 
-    margin: min(1%, 14px);
+    margin: 0 min(2%, 14px) 22px;
     border-radius: 4px;
     background-color: white;
 
@@ -177,6 +195,28 @@ onMounted(() => {
 // 按钮
 #btn {
   width: 300px;
-  background-color: blue;
+  height: 46px;
+
+  letter-spacing: 1px;
+  font-weight: 500;
+
+  margin-top: 36px;
+}
+
+/* 定义淡入动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 应用动画的类 */
+.fade-in {
+  animation: fadeIn 3s ease-out forwards;
 }
 </style>
