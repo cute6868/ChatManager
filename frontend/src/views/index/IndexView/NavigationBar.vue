@@ -1,6 +1,11 @@
 <template>
   <div class="navigation-bar">
-    <el-menu :ellipsis="isEllipsis" mode="horizontal" :collapse="false">
+    <el-menu
+      :ellipsis="isEllipsis"
+      mode="horizontal"
+      :collapse="false"
+      style="background-color: rgba(0, 0, 0, 0)"
+    >
       <!-- 左侧logo -->
       <el-menu-item index="0">
         <a :href="ROUTE.PATH.INDEX">
@@ -29,6 +34,10 @@ useScroll();
 </script>
 
 <style scoped lang="scss">
+.navigation-bar {
+  width: 100%;
+}
+
 // 展示样式
 .navigation-bar {
   .el-menu--horizontal {
@@ -58,8 +67,7 @@ useScroll();
 .navigation-bar {
   width: 100%;
   position: fixed;
-  top: 0; // 初始时让导航栏在视口上方的0px位置，即暂时不隐藏
-  // box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // 添加阴影效果
+  top: 0px; // 初始时让导航栏在视口上方的0px位置，即暂时不隐藏
   transition: top 0.5s ease; // 过渡效果
   z-index: 1000; // 确保导航栏在其他元素之上
 }

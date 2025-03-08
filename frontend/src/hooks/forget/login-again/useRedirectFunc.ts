@@ -1,13 +1,13 @@
 import { ref } from 'vue';
-import ROUTE from '@/global/constant/route';
 import { useRouter } from 'vue-router';
+import ROUTE from '@/global/constant/route';
+const router = useRouter();
 
 export default function useRedirectFunc(
   emits: (event: 'update:active', ...args: unknown[]) => void
 ) {
   const flag = ref(false); // 倒计时的显示开关
   const second = ref(3); // 初始化倒计时的秒数
-  const router = useRouter(); // 获取路由实例（默认单例模式，不用担心资源浪费）
 
   // 跳转到登录页
   function redirect() {

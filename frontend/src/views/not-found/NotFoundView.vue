@@ -10,9 +10,10 @@
 </template>
 
 <script setup lang="ts">
-import ROUTE from '@/global/constant/route';
 import { useRouter } from 'vue-router';
+import ROUTE from '@/global/constant/route';
 const router = useRouter();
+
 function goToIndex() {
   router.push(ROUTE.PATH.INDEX);
 }

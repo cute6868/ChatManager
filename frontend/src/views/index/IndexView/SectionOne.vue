@@ -25,20 +25,37 @@
         :class="{ 'fade-in-right-to-left': isShow }"
         id="btn"
         type="primary"
-        >立即体验</el-button
+        @click="gotoChat"
       >
+        立即体验
+      </el-button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
+import ROUTE from '@/global/constant/route';
+const router = useRouter();
+function gotoChat() {
+  router.push(ROUTE.PATH.CHAT);
+}
+
 // v-for的内容
 import { Link, Sort, Setting, Lock } from '@element-plus/icons-vue';
 const data = [
-  { tip: '免费连接', icon: Link, text: '这是我的内容，我的秘密是我' },
-  { tip: '自由切换', icon: Sort, text: '这是我的内容，我的秘密是我' },
-  { tip: '智能管理', icon: Setting, text: '这是我的内容，我的秘密是我' },
-  { tip: '隐私安全', icon: Lock, text: '这是我的内容，我的秘密是我' }
+  { tip: '免费连接', icon: Link, text: '使用个人第三方服务接口，连接完全免费' },
+  { tip: '自由切换', icon: Sort, text: '配置多个人工智能，可随意切换使用，聊天更自由' },
+  {
+    tip: '智能管理',
+    icon: Setting,
+    text: '提供智能化管理服务，定制专属聊天体验，释放您的时间与精力'
+  },
+  {
+    tip: '隐私安全',
+    icon: Lock,
+    text: '严格保护隐私，不泄露信息，仅将数据用于打造智能管家'
+  }
 ];
 
 //  ==========================  打字效果    =================================
@@ -73,15 +90,10 @@ onMounted(() => {});
 // 基础样式
 .section-one {
   width: 100%;
-  height: 100%;
-
   background-image: url('@/assets/img/index/bg0.svg');
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-
-  // 圆角
-  border-radius: 10px;
 
   // 内容居中
   display: flex;
@@ -92,7 +104,7 @@ onMounted(() => {});
 // 内容的基本样式
 .content {
   width: 100%;
-  padding: 6%;
+  margin-top: clamp(58px, 10vh, 76px); // 留位置给导航栏浮现，因为导航栏是动态高度，所以它也动态变化
 
   // 所有的内容都默认垂直居中
   display: flex;
@@ -103,11 +115,11 @@ onMounted(() => {});
 
 // 大标题
 #title {
-  font-size: min(10vw, 54px);
+  font-size: max(3.6vw, 36px);
   font-weight: 600;
   line-height: 2;
   text-align: center;
-  margin: 0 0 60px;
+  margin: 66px 0 80px;
 }
 
 // 卡片介绍
@@ -133,6 +145,14 @@ onMounted(() => {});
     align-items: center;
 
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); // 添加阴影
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      transition:
+        transform 0.3s ease-in-out,
+        box-shadow 0.3s ease-in-out;
+    }
   }
 
   // 具体每个元素的样式
@@ -197,7 +217,7 @@ onMounted(() => {});
   letter-spacing: 1px;
   font-weight: 500;
 
-  margin-top: 36px;
+  margin: 36px 0 28px;
 }
 
 // 定义从上到下的淡入动画
