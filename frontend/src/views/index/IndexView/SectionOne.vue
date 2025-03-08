@@ -90,6 +90,10 @@ onMounted(() => {});
 // 基础样式
 .section-one {
   width: 100%;
+  border-radius: 48px;
+  margin-bottom: 60px;
+
+  // 背景图片
   background-image: url('@/assets/img/index/bg0.svg');
   background-repeat: no-repeat;
   background-position: center;
@@ -217,7 +221,7 @@ onMounted(() => {});
   letter-spacing: 1px;
   font-weight: 500;
 
-  margin: 36px 0 28px;
+  margin: 36px 0 42px;
 }
 
 // 定义从上到下的淡入动画

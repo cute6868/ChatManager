@@ -65,7 +65,6 @@ useScroll();
 
 // 隐藏样式
 .navigation-bar {
-  width: 100%;
   position: fixed;
   top: 0px; // 初始时让导航栏在视口上方的0px位置，即暂时不隐藏
   transition: top 0.5s ease; // 过渡效果

@@ -22,8 +22,8 @@ function goToIndex() {
 <style scoped lang="scss">
 // 整体样式
 .not-found {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
 
   display: flex;
   justify-content: center;

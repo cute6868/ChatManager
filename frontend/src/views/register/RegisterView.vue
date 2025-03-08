@@ -10,8 +10,8 @@ import RegisterPanel from './RegisterView/RegisterPanel.vue';
 
 <style scoped lang="scss">
 .register {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
 
   // 让容器里面的元素居中
   display: flex;

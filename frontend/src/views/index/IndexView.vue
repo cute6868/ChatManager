@@ -6,13 +6,13 @@
     <!-- 主体部分 -->
     <div class="main">
       <SectionOne />
-      <!-- <SectionTwo /> -->
+      <SectionTwo />
     </div>
 
     <!-- 底部备案 -->
-    <!-- <div class="footer">
+    <div class="footer">
       <p>备案号：粤 ICP 备 12345678 号</p>
-    </div> -->
+    </div>
   </div>
 </template>
 
@@ -28,12 +28,13 @@ import SectionTwo from './IndexView/SectionTwo.vue';
 .index {
   width: 100%;
   position: relative;
-  // overflow-x: hidden;
 }
 
 // 主体部分
 .main {
   width: 100%;
+  border-radius: 48px;
+  margin-bottom: 60px;
 }
 
 // 备案信息
