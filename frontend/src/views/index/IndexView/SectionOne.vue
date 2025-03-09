@@ -90,7 +90,6 @@ onMounted(() => {});
 // 基础样式
 .section-one {
   width: 100%;
-  border-radius: 48px;
   margin-bottom: 60px;
 
   // 背景图片

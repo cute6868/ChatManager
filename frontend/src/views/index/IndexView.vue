@@ -11,7 +11,14 @@
 
     <!-- 底部备案 -->
     <div class="footer">
-      <p>备案号：粤 ICP 备 12345678 号</p>
+      <!-- 版权声明 -->
+      <span>&copy;2025-2035 版权所有 ChatManager 运营者 </span>
+
+      <!-- ICP备案信息 -->
+      <a href="#" target="_blank">粤ICP备2024000001号</a>
+
+      <!-- 公安备案信息 -->
+      <a href="#" target="_blank">粤公网安备44010102000001号</a>
     </div>
   </div>
 </template>
@@ -34,13 +41,20 @@ import SectionTwo from './IndexView/SectionTwo.vue';
 .main {
   width: 100%;
   border-radius: 48px;
-  margin-bottom: 60px;
 }
 
 // 备案信息
 .footer {
   width: 100%;
-  height: 50px;
-  background-color: pink;
+  padding: 10px 0;
+  background-color: rgb(251, 251, 251);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 12px;
+  line-height: 1.5;
 }
 </style>

@@ -1,15 +1,10 @@
 <template>
   <div class="navigation-bar">
-    <el-menu
-      :ellipsis="isEllipsis"
-      mode="horizontal"
-      :collapse="false"
-      style="background-color: rgba(0, 0, 0, 0)"
-    >
+    <el-menu :ellipsis="isEllipsis" mode="horizontal" :collapse="false">
       <!-- 左侧logo -->
       <el-menu-item index="0">
         <a :href="ROUTE.PATH.INDEX">
-          <img src="/src/assets/img/index/logo.png" alt="ChatManager logo" style="width: 180px" />
+          <img src="/src/assets/img/index/logo.png" alt="ChatManager Logo" style="width: 180px" />
         </a>
       </el-menu-item>
 
