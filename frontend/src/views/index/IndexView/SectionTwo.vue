@@ -12,6 +12,10 @@
 </template>
 
 <script setup lang="ts">
+// 要展示的文本数据
+// 一段文本对应一个case图片，比如：
+// '你好，世界' -> case0.jpg
+// '你好，人类' -> case1.jpg
 const data = [
   '通过 ChatManager，您可以在不同的AI聊天对话中自由切换。除了切换，您还可以同时提问，这样可以大大提升您的工作效率。',
   '此外，ChatManager 会根据您访问的 AI 数据和行为分析信息，并智能地为您推荐感兴趣的内容或与您感兴趣的 AI 相关的信息。',

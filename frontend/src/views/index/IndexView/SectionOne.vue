@@ -5,7 +5,7 @@
       <h1 id="title">{{ displayText }}</h1>
 
       <!-- 卡片介绍 -->
-      <ul id="introduction" v-show="isShow" :class="{ 'fade-in-top-to-bottom': isShow }">
+      <ul id="card" v-show="isShow" :class="{ 'fade-in-top-to-bottom': isShow }">
         <li v-for="(item, index) in data" :key="index">
           <div class="tip">
             <el-icon class="tip-icon"><SuccessFilled style="color: green" /></el-icon>
@@ -34,56 +34,17 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-import ROUTE from '@/global/constant/route';
-const router = useRouter();
-function gotoChat() {
-  router.push(ROUTE.PATH.CHAT);
-}
+// 打字效果相关的数据和方法
+import useTypingEffect from '@/hooks/index/section-one/useTypingEffect.ts';
+const { displayText } = useTypingEffect();
 
-// v-for的内容
-import { Link, Sort, Setting, Lock } from '@element-plus/icons-vue';
-const data = [
-  { tip: '免费连接', icon: Link, text: '使用个人第三方服务接口，连接完全免费' },
-  { tip: '自由切换', icon: Sort, text: '配置多个人工智能，可随意切换使用，聊天更自由' },
-  {
-    tip: '智能管理',
-    icon: Setting,
-    text: '提供智能化管理服务，定制专属聊天体验，释放您的时间与精力'
-  },
-  {
-    tip: '隐私安全',
-    icon: Lock,
-    text: '严格保护隐私，不泄露信息，仅将数据用于打造智能管家'
-  }
-];
+// 卡片相关的数据和方法
+import useCard from '@/hooks/index/section-one/useCard.ts';
+const { isShow, data } = useCard();
 
-//  ==========================  打字效果    =================================
-import { ref, onMounted } from 'vue';
-const fullText = 'ChatManager，连接无限可能！'; // 完整文本
-const displayText = ref(''); // 用于显示的文本，初始为空
-const typingSpeed = 80; // 每个字符显示的时间间隔（毫秒）
-
-const isShow = ref(false);
-onMounted(() => {
-  // 执行其他内容的显示逻辑
-  // setTimeout(() => {
-  isShow.value = true;
-  // }, 100);
-
-  // 在组件挂载后开始打字效果
-  let index = 0;
-  const intervalId = setInterval(() => {
-    if (index < fullText.length) {
-      displayText.value += fullText[index]; // 逐步添加字符到显示文本中
-      index++;
-    } else {
-      clearInterval(intervalId); // 当所有字符都显示完后，清除定时器
-    }
-  }, typingSpeed);
-});
-
-onMounted(() => {});
+// 按钮相关的数据和方法
+import useButton from '@/hooks/index/section-one/useButton.ts';
+const { gotoChat } = useButton();
 </script>
 
 <style scoped lang="scss">
@@ -126,7 +87,7 @@ onMounted(() => {});
 }
 
 // 卡片介绍
-#introduction {
+#card {
   width: 100%;
 
   display: flex;
