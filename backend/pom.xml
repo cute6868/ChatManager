@@ -22,7 +22,7 @@
     <junit.version>5.8.2</junit.version>
     <logback.version>1.4.13</logback.version>
     <lombok.version>1.18.28</lombok.version>
-    <mybatis.version>3.2.3</mybatis.version>
+    <mybatis.version>3.0.2</mybatis.version>
     <mysql.version>8.0.33</mysql.version>
     <druid.version>1.2.18</druid.version>
   </properties>
