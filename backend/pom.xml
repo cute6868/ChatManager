@@ -20,7 +20,6 @@
     <java.version>17</java.version>
     <spring-boot.version>3.3.9</spring-boot.version>
     <junit.version>5.8.2</junit.version>
-    <logback.version>1.4.13</logback.version>
     <lombok.version>1.18.28</lombok.version>
     <mybatis.version>3.0.2</mybatis.version>
     <mysql.version>8.0.33</mysql.version>
@@ -49,12 +48,6 @@
         <artifactId>junit-jupiter-engine</artifactId>
         <version>${junit.version}</version>
         <scope>test</scope>
-      </dependency>
-      <!-- Logback -->
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>${logback.version}</version>
       </dependency>
       <!-- Lombok -->
       <dependency>
