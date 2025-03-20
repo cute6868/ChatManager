@@ -1,5 +1,8 @@
-package site.chatmanager.pojo;
+package site.chatmanager.pojo.general;
 
+import lombok.Getter;
+
+@Getter
 public class Result {
 
     private Integer code; // 业务状态码：0表示成功，1、2、3...表示不同原因的失败
@@ -46,11 +49,11 @@ public class Result {
         return result;
     }
 
-    public static Result failure(String msg, Object data) {
+    public static Result failure(Integer code, String msg) {
         Result result = new Result();
-        result.code = 1;
+        result.code = code;
         result.msg = msg;
-        result.data = data;
+        result.data = null;
         return result;
     }
 
