@@ -4,15 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import site.chatmanager.pojo.CoreData;
+import site.chatmanager.pojo.Result;
 import site.chatmanager.service.LoginService;
-import site.chatmanager.service.pojo.Result;
 
 @Slf4j
 @Component
 public class LoginServiceImpl implements LoginService {
 
     @Override
-    public ResponseEntity<Result> sendVerificationCode(String email) {
+    public ResponseEntity<Result> sendVerificationCode(CoreData coreData) {
+        log.info("sendVerificationCode");
         // 邮箱格式是否合法
         // 如果邮箱不存在，就不发送验证码
         // 如果邮箱存在，但是账号被封禁或已注销，就不发送验证码
@@ -21,7 +23,8 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public ResponseEntity<Result> emailLogin(String email, String verificationCode) {
+    public ResponseEntity<Result> emailLogin(CoreData coreData) {
+        log.info("emailLogin");
         // 邮箱格式是否合法
         // 如果邮箱不存在，就不允许登录
         // 如果邮箱存在，但是账号被封禁或已注销，就不允许登录
@@ -32,7 +35,8 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public ResponseEntity<Result> accountLogin(String account, String password) {
+    public ResponseEntity<Result> accountLogin(CoreData coreData) {
+        log.info("accountLogin");
         // 账号格式是否合法
         // 如果账号不存在，就不允许登录
         // 如果账号存在，但是账号被封禁或已注销，就不允许登录

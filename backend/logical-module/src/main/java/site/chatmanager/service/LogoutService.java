@@ -1,0 +1,12 @@
+package site.chatmanager.service;
+
+import org.springframework.http.ResponseEntity;
+import site.chatmanager.pojo.Result;
+
+public interface LogoutService {
+
+    // 退出登录
+    ResponseEntity<Result> logout(String uid);
+
+}
+

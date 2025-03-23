@@ -1,16 +1,18 @@
 package site.chatmanager.service;
 
 import org.springframework.http.ResponseEntity;
-import site.chatmanager.service.pojo.Result;
+import site.chatmanager.pojo.CoreData;
+import site.chatmanager.pojo.Result;
 
 public interface LoginService {
 
     // 发送验证码
-    public ResponseEntity<Result> sendVerificationCode(String email);
+    ResponseEntity<Result> sendVerificationCode(CoreData coreData);
 
-    // 邮箱登录
-    public ResponseEntity<Result> emailLogin(String email, String verificationCode);
+    // 进行邮箱登录
+    ResponseEntity<Result> emailLogin(CoreData coreData);
 
-    // 账号登录
-    public ResponseEntity<Result> accountLogin(String account, String password);
+    // 进行账号登录
+    ResponseEntity<Result> accountLogin(CoreData coreData);
+
 }

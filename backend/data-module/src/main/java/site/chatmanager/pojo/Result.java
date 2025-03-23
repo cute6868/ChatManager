@@ -1,4 +1,4 @@
-package site.chatmanager.service.pojo;
+package site.chatmanager.pojo;
 
 import lombok.Getter;
 
