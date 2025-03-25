@@ -11,4 +11,9 @@ public class PresenceCheck {
     public static boolean checkEmail(String email) {
         return true;
     }
+
+    // 手机存在性校验
+    public static boolean checkCellphone(String phone) {
+        return true;
+    }
 }

@@ -1,7 +1,13 @@
 spring:
   datasource:
+    # 连接MySQL配置
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     url: jdbc:mysql://192.168.217.128:3306/CMDB
     username: CMDB-Administrator
     password: 123456
+
+mybatis:
+#  mapper-locations: classpath*:mapper/*.xml # 指定XML映射配置文件路径
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 输出MySQL操作日志

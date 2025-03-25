@@ -1,4 +1,4 @@
-package site.chatmanager.Controller;
+package site.chatmanager.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
