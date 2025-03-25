@@ -1,10 +1,11 @@
 package site.chatmanager.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Update;
 
 import java.time.LocalDateTime;
 
+@Mapper
 public interface UpdateMapper {
 
     // ===================== users_basic_info 表 =====================

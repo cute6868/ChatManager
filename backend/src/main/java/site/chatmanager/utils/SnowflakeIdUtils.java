@@ -148,8 +148,9 @@ public class SnowflakeIdUtils {
 
         // 提取时间戳部分
         long timestampPart = (uid >> TIMESTAMP_LEFT_SHIFT) + START_TIMESTAMP;
-        // 检查时间戳是否在合理范围内（大于起始时间戳）
-        if (timestampPart < START_TIMESTAMP) {
+        // 检查时间戳是否在合理范围内（大于起始时间戳且小于当前时间戳）
+        long currentTimestamp = System.currentTimeMillis();
+        if (timestampPart < START_TIMESTAMP || timestampPart > currentTimestamp) {
             return false;
         }
 

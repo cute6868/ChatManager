@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 import site.chatmanager.pojo.data.CoreData;
 import site.chatmanager.pojo.Result;
 import site.chatmanager.service.RegisterService;
-import site.chatmanager.service.checker.FormatChecker;
+import site.chatmanager.utils.FormatChecker;
+import site.chatmanager.utils.PresenceCheck;
 
 @Slf4j
 @Component
@@ -15,20 +16,27 @@ public class RegisterServiceImpl implements RegisterService {
 
     @Override
     public ResponseEntity<Result> checkAccount(CoreData coreData) {
-        boolean available = false;  // 初始化
-        String account = coreData.getAccount(); // 获取账号
+
+        // 获取账号
+        String account = coreData.getAccount();
+        System.out.println(account);
 
         // 检查账号格式
-        available = FormatChecker.checkAccount(account);
-        if (!available) {
+        boolean isLegal = FormatChecker.checkAccount(account);
+        if (!isLegal) {
             Result result = Result.failure("账号格式错误");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
 
-        // 检查账号存在性(如果账号存在，哪怕账号被封禁或已注销，也不允许注册)
+        // 检查账号存在性 (如果账号存在，哪怕账号被封禁或已注销，也不允许注册)
+        boolean isPresent = PresenceCheck.checkAccount(account);
+        if (isPresent) {
+            Result result = Result.failure("账号已存在");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
 
-
-        Result result = Result.success();
+        // 账号合法
+        Result result = Result.success("该账号可以注册");
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
