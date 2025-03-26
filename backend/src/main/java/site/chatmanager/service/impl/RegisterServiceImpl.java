@@ -31,7 +31,7 @@ public class RegisterServiceImpl implements RegisterService {
         // 检查账号存在性 (如果账号存在，哪怕账号被封禁或已注销，也不允许注册)
         boolean isPresent = PresenceCheck.checkAccount(account);
         if (isPresent) {
-            Result result = Result.failure("账号已存在");
+            Result result = Result.failure("该账号已被注册");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
 
@@ -42,18 +42,51 @@ public class RegisterServiceImpl implements RegisterService {
 
     @Override
     public ResponseEntity<Result> checkEmail(CoreData coreData) {
-        log.info("checkEmail");
-        // 邮箱格式是否合法
-        // 如果邮箱存在，哪怕该邮箱所绑定的账号被封禁或已注销，就不允许注册
-        Result result = Result.success();
+
+        // 获取邮箱
+        String email = coreData.getEmail();
+
+        // 检查邮箱格式
+        boolean isLegal = FormatChecker.checkEmail(email);
+        if (!isLegal) {
+            Result result = Result.failure("邮箱格式错误");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 检查邮箱存在性 (如果邮箱存在，哪怕该邮箱所绑定的账号被封禁或已注销，就不允许注册)
+        boolean isPresent = PresenceCheck.checkEmail(email);
+        if (isPresent) {
+            Result result = Result.failure("该邮箱已被注册");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 邮箱合法
+        Result result = Result.success("该邮箱可以注册");
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @Override
     public ResponseEntity<Result> sendVerificationCode(CoreData coreData) {
-        log.info("sendVerificationCode");
-        // 邮箱格式是否合法
-        // 如果邮箱存在，哪怕该邮箱所绑定的账号被封禁或已注销，就不发送验证码
+
+        // 获取邮箱
+        String email = coreData.getEmail();
+
+        // 检查邮箱格式
+        boolean isLegal = FormatChecker.checkEmail(email);
+        if (!isLegal) {
+            Result result = Result.failure("邮箱格式错误");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 检查邮箱存在性 (如果邮箱存在，哪怕该邮箱所绑定的账号被封禁或已注销，就不允许注册)
+        boolean isPresent = PresenceCheck.checkEmail(email);
+        if (isPresent) {
+            Result result = Result.failure("该邮箱已被注册");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 发送验证码
+
         Result result = Result.success();
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
