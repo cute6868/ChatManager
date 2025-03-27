@@ -7,6 +7,18 @@ spring:
     username: CMDB-Administrator
     password: 123456
 
+  mail:
+    host: smtp.qq.com  # 以qq为例
+    port: 587
+    username: your_qq_email@qq.com  # QQ 邮箱
+    password: your_qq_email_smtp_password  # QQ 邮箱的 SMTP 授权码
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 mybatis:
   mapper-locations: classpath*:mapper/*.xml # 指定XML映射配置文件路径
 #  configuration:

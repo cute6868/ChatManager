@@ -72,10 +72,16 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- 引入springboot安全相关的依赖 -->
+        <!-- 引入springboot安全相关的依赖（用于密码加密） -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- 引用springboot邮箱相关的服务（用于发送邮箱验证码）-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
     </dependencies>
 

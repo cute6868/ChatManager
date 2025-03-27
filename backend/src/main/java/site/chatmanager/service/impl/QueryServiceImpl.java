@@ -12,7 +12,7 @@ import site.chatmanager.service.QueryService;
 public class QueryServiceImpl implements QueryService {
 
     @Override
-    public ResponseEntity<Result> queryUserBasicInfo(String uid) {
+    public ResponseEntity<Result> queryUserBasicInfo(Long uid) {
         log.info("queryUserBasicInfo");
         // 查询：用户昵称、用户头像
         Result result = Result.success();
@@ -20,7 +20,7 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
-    public ResponseEntity<Result> queryUserHistoryInfo(String uid) {
+    public ResponseEntity<Result> queryUserHistoryInfo(Long uid) {
         log.info("queryUserHistoryInfo");
         // 查询：用户聊天历史信息
         Result result = Result.success();
@@ -28,7 +28,7 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
-    public ResponseEntity<Result> queryUserCoreInfo(String uid) {
+    public ResponseEntity<Result> queryUserCoreInfo(Long uid) {
         log.info("queryUserCoreInfo");
         // 查询：用户账号，用户邮箱，用户手机号
         Result result = Result.success();
@@ -36,7 +36,7 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
-    public ResponseEntity<Result> queryUserConfigInfo(String uid) {
+    public ResponseEntity<Result> queryUserConfigInfo(Long uid) {
         log.info("queryUserConfigInfo");
         // 查询：用户模型配置信息（比如：豆包、deepseek、通义千问、讯飞星火等）
         Result result = Result.success();

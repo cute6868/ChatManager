@@ -16,7 +16,7 @@ import java.time.ZoneOffset;
  *         System.out.println("生成的 ID: " + newId);
  *
  *         // 校验 ID 合法性
- *         boolean isValid = SnowflakeIdUtils.isValidUid(newId);
+ *         boolean isValid = SnowflakeIdUtils.isValidId(newId);
  *         System.out.println("ID 是否合法: " + isValid);
  *     }
  * }
@@ -136,18 +136,18 @@ public class SnowflakeIdUtils {
     }
 
     /**
-     * 检查是否为有效的 UID
+     * 检查是否为有效的 ID
      *
-     * @param uid 用户 ID
-     * @return 如果 UID 有效返回 true，否则返回 false
+     * @param  id 要检查的 ID
+     * @return 如果 ID 有效返回 true，否则返回 false
      */
-    public static boolean isValidUid(long uid) {
-        if (uid <= 0) {
+    public static boolean isValidId(long id) {
+        if (id <= 0) {
             return false;
         }
 
         // 提取时间戳部分
-        long timestampPart = (uid >> TIMESTAMP_LEFT_SHIFT) + START_TIMESTAMP;
+        long timestampPart = (id >> TIMESTAMP_LEFT_SHIFT) + START_TIMESTAMP;
         // 检查时间戳是否在合理范围内（大于起始时间戳且小于当前时间戳）
         long currentTimestamp = System.currentTimeMillis();
         if (timestampPart < START_TIMESTAMP || timestampPart > currentTimestamp) {
@@ -155,21 +155,21 @@ public class SnowflakeIdUtils {
         }
 
         // 提取工作机器 ID 部分
-        long extractedWorkerId = (uid >> WORKER_ID_SHIFT) & MAX_WORKER_ID;
+        long extractedWorkerId = (id >> WORKER_ID_SHIFT) & MAX_WORKER_ID;
         // 检查工作机器 ID 是否在合理范围内
         if (extractedWorkerId < 0 || extractedWorkerId > MAX_WORKER_ID) {
             return false;
         }
 
         // 提取数据中心 ID 部分
-        long extractedDataCenterId = (uid >> DATA_CENTER_ID_SHIFT) & MAX_DATA_CENTER_ID;
+        long extractedDataCenterId = (id >> DATA_CENTER_ID_SHIFT) & MAX_DATA_CENTER_ID;
         // 检查数据中心 ID 是否在合理范围内
         if (extractedDataCenterId < 0 || extractedDataCenterId > MAX_DATA_CENTER_ID) {
             return false;
         }
 
         // 提取序列号部分
-        long extractedSequence = uid & SEQUENCE_MASK;
+        long extractedSequence = id & SEQUENCE_MASK;
         // 检查序列号是否在合理范围内
         if (extractedSequence < 0 || extractedSequence > SEQUENCE_MASK) {
             return false;

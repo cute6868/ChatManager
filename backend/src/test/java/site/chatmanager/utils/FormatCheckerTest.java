@@ -50,7 +50,7 @@ public class FormatCheckerTest {
 
     @DisplayName("邮箱格式有效")
     @ParameterizedTest
-    @ValueSource(strings = {"test@example.com", "user.name+tag+sorting@example.com", "user@sub.example.com"})
+    @ValueSource(strings = {"test@qq.com", "user.name+tag+sorting@qq.com", "user@qq.com"})
     public void testCheckEmail_ValidFormat_ShouldReturnTrue(String email) {
         boolean isLegal = FormatChecker.checkEmail(email);
         Assertions.assertTrue(isLegal);

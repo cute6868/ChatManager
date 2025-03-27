@@ -19,7 +19,7 @@ public class SnowflakeIdUtilsTest {
     public void testInit_Normal() {
         SnowflakeIdUtils.init(2, 3);
         long id = SnowflakeIdUtils.generateId();
-        assertTrue(SnowflakeIdUtils.isValidUid(id), "生成的 ID 应合法");
+        assertTrue(SnowflakeIdUtils.isValidId(id), "生成的 ID 应合法");
     }
 
     @Test
@@ -46,22 +46,22 @@ public class SnowflakeIdUtilsTest {
         long id1 = SnowflakeIdUtils.generateId();
         long id2 = SnowflakeIdUtils.generateId();
         assertNotEquals(id1, id2, "生成的 ID 应不相同");
-        assertTrue(SnowflakeIdUtils.isValidUid(id1), "生成的 ID 应合法");
-        assertTrue(SnowflakeIdUtils.isValidUid(id2), "生成的 ID 应合法");
+        assertTrue(SnowflakeIdUtils.isValidId(id1), "生成的 ID 应合法");
+        assertTrue(SnowflakeIdUtils.isValidId(id2), "生成的 ID 应合法");
     }
 
     @Test
     @DisplayName("测试校验 ID 合法性方法 - 正常情况")
-    public void testIsValidUid_Normal() {
+    public void testisValidId_Normal() {
         long id = SnowflakeIdUtils.generateId();
-        assertTrue(SnowflakeIdUtils.isValidUid(id), "生成的 ID 应合法");
+        assertTrue(SnowflakeIdUtils.isValidId(id), "生成的 ID 应合法");
     }
 
     @Test
     @DisplayName("测试校验 ID 合法性方法 - 非法 ID")
-    public void testIsValidUid_Invalid() {
-        assertFalse(SnowflakeIdUtils.isValidUid(0), "ID 0 应不合法");
-        assertFalse(SnowflakeIdUtils.isValidUid(-1), "ID -1 应不合法");
-        assertFalse(SnowflakeIdUtils.isValidUid(Long.MAX_VALUE), "ID Long.MAX_VALUE 应不合法");
+    public void testisValidId_Invalid() {
+        assertFalse(SnowflakeIdUtils.isValidId(0), "ID 0 应不合法");
+        assertFalse(SnowflakeIdUtils.isValidId(-1), "ID -1 应不合法");
+        assertFalse(SnowflakeIdUtils.isValidId(Long.MAX_VALUE), "ID Long.MAX_VALUE 应不合法");
     }
 }

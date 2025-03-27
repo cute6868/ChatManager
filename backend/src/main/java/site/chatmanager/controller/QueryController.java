@@ -18,25 +18,25 @@ public class QueryController {
 
     // 查询用户基本信息
     @GetMapping("/{uid}/basic")
-    public ResponseEntity<Result> queryUserBasicInfo(@PathVariable("uid") String uid) {
+    public ResponseEntity<Result> queryUserBasicInfo(@PathVariable("uid") Long uid) {
         return queryService.queryUserBasicInfo(uid);
     }
 
     // 查询用户聊天历史信息
     @GetMapping("/{uid}/history")
-    public ResponseEntity<Result> queryUserHistoryInfo(@PathVariable("uid") String uid) {
+    public ResponseEntity<Result> queryUserHistoryInfo(@PathVariable("uid") Long uid) {
         return queryService.queryUserHistoryInfo(uid);
     }
 
     // 查询用户核心信息
     @GetMapping("/{uid}/core")
-    public ResponseEntity<Result> queryUserCoreInfo(@PathVariable("uid") String uid) {
+    public ResponseEntity<Result> queryUserCoreInfo(@PathVariable("uid") Long uid) {
         return queryService.queryUserCoreInfo(uid);
     }
 
     // 查询用户模型配置信息
     @GetMapping("/{uid}/config")
-    public ResponseEntity<Result> queryUserConfigInfo(@PathVariable("uid") String uid) {
+    public ResponseEntity<Result> queryUserConfigInfo(@PathVariable("uid") Long uid) {
         return queryService.queryUserConfigInfo(uid);
     }
 }
