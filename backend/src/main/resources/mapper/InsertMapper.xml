@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.chatmanager.mapper.InsertMapper">
+
+    <!-- 插入用户的基本数据 -->
+    <insert id="insertBasicInfo">
+        INSERT INTO users_basic_info (uid, nickname, create_at)
+        VALUES (#{uid}, #{nickname}, #{create_at})
+    </insert>
+
+    <!-- 插入用户的核心数据 -->
+    <insert id="insertCoreInfo">
+        INSERT INTO users_core_info (uid, account, password, email, last_login_at)
+        VALUES (#{uid}, #{account}, #{password}, #{email}, #{last_login_at})
+    </insert>
+
+    <!-- 插入用户模型配置 -->
+    <insert id="insertModelsConfig">
+        INSERT INTO users_models_config (uid)
+        VALUES (#{uid})
+    </insert>
+
+    <!-- 插入用户历史记录指针 -->
+    <insert id="insertHistoryInfoSequenceNum">
+        INSERT INTO users_history_pointer (uid, newest, oldest)
+        VALUES (#{uid}, #{newest}, #{oldest})
+    </insert>
+
+    <!-- 插入编号、历史记录、记录时间、历史序号 -->
+    <insert id="insertHistoryInfo">
+        <bind name="shardIndex" value="uid % 10"/>
+        INSERT INTO users_history_info_shard_${shardIndex} (id, uid, time, question, sequence_num)
+        VALUES (#{id}, #{uid}, #{time}, #{question}, #{sequence_num})
+    </insert>
+
+</mapper>

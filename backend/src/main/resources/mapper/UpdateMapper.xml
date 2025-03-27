@@ -101,6 +101,15 @@
         where uid = #{uid}
     </update>
 
+    <!-- ===================== users_history_pointer 表 ===================== -->
+    <!-- 更新用户历史记录指针 -->
+    <update id="updateHistoryInfoSequenceNum">
+        update users_history_pointer
+        set newest = #{newest},
+            oldest = #{oldest}
+        where uid = #{uid}
+    </update>
+
     <!-- ===================== users_history_info_shard_(0~9) 表 ===================== -->
     <!-- 更新用户历史记录和其对应的时间 -->
     <update id="updateHistoryInfo">

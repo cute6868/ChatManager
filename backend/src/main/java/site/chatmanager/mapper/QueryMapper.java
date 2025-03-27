@@ -54,9 +54,14 @@ public interface QueryMapper {
     public String queryModelsConfig(Long uid);
 
 
+    // ~~~~~ users_history_pointer 表 ~~~~~
+    // 查询用户的最新序号、最旧序号
+    public HistoryData queryHistoryInfoSequenceNum(Long uid);
+
+
     // ~~~~~ users_history_info_shard_(0~9) 表 ~~~~~
-    // 查询用户历史记录和其对应的时间
-    public HistoryData queryHistoryInfo(Long uid);
+    // 查询用户的问题、时间、序号
+    public List<HistoryData> queryHistoryInfo(Long uid);
 
 
     // ===================== 时间相关查询 =====================

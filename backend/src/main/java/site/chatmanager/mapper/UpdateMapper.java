@@ -53,8 +53,13 @@ public interface UpdateMapper {
     public Integer updateModelsConfig(@Param("uid") Long uid, @Param("models") String models);
 
 
+    // ===================== users_history_pointer 表 =====================
+    // 更新用户历史记录指针
+    public Integer updateHistoryInfoSequenceNum(@Param("uid") Long uid, @Param("newest") Integer newest, @Param("oldest") Integer oldest);
+
+
     // ===================== users_history_info_shard_(0~9) 表 =====================
-    // 更新用户历史记录和其对应的时间
+    // 更新用户历史记录和时间
     public Integer updateHistoryInfo(@Param("uid") Long uid, @Param("time") LocalDateTime time, @Param("question") String question);
 
 }

@@ -57,11 +57,17 @@
         select models from users_models_config where uid = #{uid}
     </select>
 
+    <!-- ~~~~~ users_history_pointer 表 ~~~~~ -->
+    <!-- 查询用户的最新序号、最旧序号 -->
+    <select id="queryHistoryInfoSequenceNum" resultType="site.chatmanager.pojo.data.HistoryData">
+        select newest, oldest from users_history_pointer where uid = #{uid}
+    </select>
+
     <!-- ~~~~~ users_history_info_shard_(0~9) 表 ~~~~~ -->
-    <!-- 查询用户历史记录和其对应的时间 -->
+    <!-- 查询用户的问题、时间、序号 -->
     <select id="queryHistoryInfo" resultType="site.chatmanager.pojo.data.HistoryData">
         <bind name="shardIndex" value="uid % 10"/>
-        select time, question from users_history_info_shard_${shardIndex} where uid = #{uid}
+        select question, time, sequence_num from users_history_info_shard_${shardIndex} where uid = #{uid}
     </select>
 
     <!-- 时间相关查询 -->
