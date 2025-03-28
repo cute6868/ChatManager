@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import site.chatmanager.mapper.QueryMapper;
 
 @Component
-public class PresenceCheck implements ApplicationContextAware {
+public final class PresenceCheck implements ApplicationContextAware {
 
     private static QueryMapper queryMapper;
 

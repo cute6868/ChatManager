@@ -2,7 +2,7 @@ package site.chatmanager.utils;
 
 import java.util.regex.Pattern;
 
-public class FormatChecker {
+public final class FormatChecker {
     // 账号长度在 6 到 20 个字符（闭区间），只能包含数字和字母
     private static final Pattern ACCOUNT_REGEX = Pattern.compile("^[a-zA-Z0-9]{6,20}$");
 

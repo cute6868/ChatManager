@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class EmailSender {
+public final class EmailSender {
 
     @Autowired
     private JavaMailSender javaMailSender;

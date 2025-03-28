@@ -2,7 +2,7 @@ package site.chatmanager.utils;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-public class PasswordEncryptionUtil {
+public final class PasswordEncryptionUtil {
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     /**

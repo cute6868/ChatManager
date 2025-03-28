@@ -26,7 +26,7 @@ import java.time.ZoneOffset;
  * 分布式场景：必须调用 init 方法为每个实例设置唯一的 workerId 和 dataCenterId，以避免 ID 冲突。
  */
 
-public class SnowflakeIdUtils {
+public final class SnowflakeIdUtils {
     // 起始时间戳（可根据实际需求调整，例如项目上线时间）
     // 这里设置为 2025-03-25 10:30:15 的时间戳（毫秒）
     private static final long START_TIMESTAMP = LocalDateTime.of(2025, 3, 25, 10, 30)

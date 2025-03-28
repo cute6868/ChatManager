@@ -2,7 +2,7 @@ package site.chatmanager.utils;
 
 import java.security.SecureRandom;
 
-public class VerificationCodeGenerator {
+public final class VerificationCodeGenerator {
     private static final String DIGITS = "0123456789";
     private static final String LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String SPECIAL_CHARACTERS = "!@#$%^&*()_+-=[]{}|;':\",./<>?";
