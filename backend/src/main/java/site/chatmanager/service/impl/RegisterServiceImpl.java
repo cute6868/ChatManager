@@ -5,13 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import site.chatmanager.mapper.InsertMapper;
 import site.chatmanager.pojo.data.CoreData;
 import site.chatmanager.pojo.Result;
+import site.chatmanager.service.operator.RedisOperator;
 import site.chatmanager.service.RegisterService;
-import site.chatmanager.utils.EmailSender;
-import site.chatmanager.utils.FormatChecker;
-import site.chatmanager.utils.PresenceCheck;
-import site.chatmanager.utils.VerificationCodeGenerator;
+import site.chatmanager.utils.*;
+
+import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -19,6 +21,12 @@ public class RegisterServiceImpl implements RegisterService {
 
     @Autowired
     private EmailSender emailSender;
+
+    @Autowired
+    private RedisOperator redisOperator;
+
+    @Autowired
+    private InsertMapper insertMapper;
 
     @Override
     public ResponseEntity<Result> checkAccount(CoreData coreData) {
@@ -92,7 +100,6 @@ public class RegisterServiceImpl implements RegisterService {
 
         // 生成验证码
         String verificationCode = VerificationCodeGenerator.generateCode();
-        log.info("验证码：" + verificationCode);  // 通常存储在redis中
 
         //发送验证码
         boolean isSuccessful = emailSender.sendVerificationCode(email, verificationCode);
@@ -100,6 +107,12 @@ public class RegisterServiceImpl implements RegisterService {
             Result result = Result.failure("验证码发送失败，请重试");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
+
+        // 将邮箱和邮箱验证码以键值对的形式存储到redis中（需要加密）
+        String encryptEmail = PasswordEncryptionUtil.encryptPassword(email);
+        String encryptVerificationCode = PasswordEncryptionUtil.encryptPassword(verificationCode);
+        redisOperator.set(encryptEmail, encryptVerificationCode, 1, TimeUnit.MINUTES);
+
         Result result = Result.success("已发送验证码，请注意查收");
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
@@ -131,7 +144,14 @@ public class RegisterServiceImpl implements RegisterService {
         }
 
         // 检查验证码是否一致
-        boolean isEqual = emailVerificationCode.equals("从redis获取生成的验证码");
+        String encryptEmail = PasswordEncryptionUtil.encryptPassword(email);    // 对用户输入的邮箱进行加密
+        String redisVerificationCode = redisOperator.get(encryptEmail);         // 从redis中获取已加密的验证码
+        if (redisVerificationCode == null) {
+            Result result = Result.failure("注册失败，验证码已过期");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+        String encryptVerificationCode = PasswordEncryptionUtil.encryptPassword(emailVerificationCode);
+        boolean isEqual = encryptVerificationCode.equals(redisVerificationCode);
         if (!isEqual) {
             Result result = Result.failure("注册失败，验证码错误");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
@@ -141,6 +161,15 @@ public class RegisterServiceImpl implements RegisterService {
         // users_basic_info 表：uid、nickname、create_at
         // users_core_info 表：uid、account、加密后的password、email、last_login_at
         // users_models_config 表：uid
+        Long uid = SnowflakeIdUtils.generateId();   // 生成 uid
+        LocalDateTime time = LocalDateTime.now();   // 生成当前时间
+        String encryptPassword = PasswordEncryptionUtil.encryptPassword(password);  // 密码加密
+        insertMapper.insertBasicInfo(uid, account, time);
+        insertMapper.insertCoreInfo(uid, account, encryptPassword, email, time);
+        insertMapper.insertModelsConfig(uid);
+
+        // 生成登录令牌
+        // ？？？
 
         // 注册成功
         Result result = Result.success("注册成功");

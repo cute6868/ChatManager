@@ -1,8 +1,11 @@
-package site.chatmanager.mapper;
+package site.chatmanager.service.operator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import site.chatmanager.mapper.InsertMapper;
+import site.chatmanager.mapper.QueryMapper;
+import site.chatmanager.mapper.UpdateMapper;
 import site.chatmanager.pojo.data.HistoryData;
 import site.chatmanager.utils.SnowflakeIdUtils;
 

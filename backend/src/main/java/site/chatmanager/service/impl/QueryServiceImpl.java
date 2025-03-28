@@ -1,21 +1,28 @@
 package site.chatmanager.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import site.chatmanager.mapper.QueryMapper;
 import site.chatmanager.pojo.Result;
+import site.chatmanager.pojo.data.PersonalityData;
 import site.chatmanager.service.QueryService;
 
 @Slf4j
 @Component
 public class QueryServiceImpl implements QueryService {
 
+    @Autowired
+    private QueryMapper queryMapper;
+
     @Override
     public ResponseEntity<Result> queryUserBasicInfo(Long uid) {
         log.info("queryUserBasicInfo");
-        // 查询：用户昵称、用户头像
-        Result result = Result.success();
+
+        PersonalityData data = queryMapper.queryBasicInfo(uid);    // 查询：用户昵称、用户头像
+        Result result = Result.success("查询成功", data);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
