@@ -45,7 +45,7 @@ public interface QueryMapper {
 
 
     // ~~~~~ users_core_info 表 ~~~~~
-    // 查询：用户账号、用户邮箱、用户手机、（不得查询密码，但是可以修改密码）
+    // 查询：用户账号、用户邮箱、用户手机（不得查询密码，但是可以修改密码）
     public CoreData queryCoreInfo(Long uid);
 
 

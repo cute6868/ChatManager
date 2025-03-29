@@ -35,4 +35,22 @@ class EncryptionUtilsTest {
         String decrypted = EncryptionUtils.normalSecurityDecrypt(encrypted, TEST_KEY);
         assertEquals(TEST_TEXT, decrypted, "普通安全加密解密后应与原始文本相同");
     }
-}
+
+    @Test
+    @DisplayName("测试中等安全加密和解密方法（使用默认密钥）")
+    void testMediumSecurityEncryptAndDecryptWithDefaultKey() {
+        String encrypted = EncryptionUtils.mediumSecurityEncrypt(TEST_TEXT);
+        assertNotNull(encrypted, "中等安全加密（使用默认密钥）结果不应为 null");
+        String decrypted = EncryptionUtils.mediumSecurityDecrypt(encrypted);
+        assertEquals(TEST_TEXT, decrypted, "中等安全加密解密（使用默认密钥）后应与原始文本相同");
+    }
+
+    @Test
+    @DisplayName("测试普通安全加密和解密方法（使用默认密钥）")
+    void testNormalSecurityEncryptAndDecryptWithDefaultKey() {
+        String encrypted = EncryptionUtils.normalSecurityEncrypt(TEST_TEXT);
+        assertNotNull(encrypted, "普通安全加密（使用默认密钥）结果不应为 null");
+        String decrypted = EncryptionUtils.normalSecurityDecrypt(encrypted);
+        assertEquals(TEST_TEXT, decrypted, "普通安全加密解密（使用默认密钥）后应与原始文本相同");
+    }
+}    

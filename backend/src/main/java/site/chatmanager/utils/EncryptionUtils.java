@@ -119,6 +119,16 @@ public final class EncryptionUtils {
     }
 
     /**
+     * 中等安全解密方法，使用默认密钥
+     *
+     * @param encryptedText 中等安全加密后的密文
+     * @return 解密后的明文，失败返回 null
+     */
+    public static String mediumSecurityDecrypt(String encryptedText) {
+        return mediumSecurityDecrypt(encryptedText, DEFAULT_AES_KEY);
+    }
+
+    /**
      * 中等安全解密方法
      *
      * @param encryptedText 中等安全加密后的密文
@@ -195,6 +205,16 @@ public final class EncryptionUtils {
             log.error("普通安全加密失败：{}", e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * 普通安全解密方法，使用默认密钥
+     *
+     * @param encryptedText 普通安全加密后的密文
+     * @return 解密后的明文，失败返回 null
+     */
+    public static String normalSecurityDecrypt(String encryptedText) {
+        return normalSecurityDecrypt(encryptedText, DEFAULT_AES_KEY);
     }
 
     /**
