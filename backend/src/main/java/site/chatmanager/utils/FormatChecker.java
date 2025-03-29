@@ -36,6 +36,12 @@ public final class FormatChecker {
         return PASSWORD_REGEX.matcher(password).matches();
     }
 
+    // 验证码格式校验（邮箱、手机通用）
+    public static boolean checkVerificationCode(String verificationCode) {
+        if (verificationCode == null) return false;
+        return verificationCode.length() == 6;
+    }
+
     // 手机格式校验
     public static boolean checkCellphone(String cellphone) {
         if (cellphone == null) return false;

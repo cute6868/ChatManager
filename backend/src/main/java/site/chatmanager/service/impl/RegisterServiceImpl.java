@@ -91,7 +91,7 @@ public class RegisterServiceImpl implements RegisterService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
 
-        // 检查邮箱存在性 (如果邮箱存在，哪怕该邮箱所绑定的账号被封禁或已注销，就不允许注册)
+        // 检查邮箱存在性 (如果邮箱存在，哪怕该邮箱所绑定的账号被封禁或已注销，就不发送验证码)
         boolean isPresent = PresenceCheck.checkEmail(email);
         if (isPresent) {
             Result result = Result.failure("该邮箱已被注册");
@@ -105,16 +105,16 @@ public class RegisterServiceImpl implements RegisterService {
         boolean isSuccessful = emailSender.sendVerificationCode(email, emailVerificationCode);
         if (!isSuccessful) {
             Result result = Result.failure("验证码发送失败，请重试");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
         }
 
-        // 将邮箱和邮箱验证码以键值对的形式存储到redis中（需要普通加密）
+        // 将邮箱和邮箱验证码以键值对的形式存储到redis中（需要普通安全加密）
         String encryptEmail = EncryptionUtils.normalSecurityEncrypt(email);
         String encryptEmailVerificationCode = EncryptionUtils.normalSecurityEncrypt(emailVerificationCode);
 
         if (encryptEmail == null || encryptEmailVerificationCode == null) {
-            Result result = Result.failure("验证码发送失败，请重试");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            Result result = Result.failure("服务器错误，请重试");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
         } else {
             redisOperator.set(encryptEmail, encryptEmailVerificationCode, 5, TimeUnit.MINUTES);
             Result result = Result.success("已发送验证码，请注意查收");
@@ -155,6 +155,7 @@ public class RegisterServiceImpl implements RegisterService {
             Result result = Result.failure("注册失败，验证码已过期");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
+        redisOperator.del(encryptEmail);
         String encryptEmailVerificationCode = EncryptionUtils.normalSecurityEncrypt(emailVerificationCode); // 对用户输入的验证码进行加密
         boolean isEqual = encryptEmailVerificationCode.equals(redisEncryptEmailVerificationCode);   // 判断用户输入的加密后的验证码是否与redis中存储的加密后的验证码一致
         if (!isEqual) {

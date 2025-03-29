@@ -9,9 +9,13 @@ import site.chatmanager.mapper.QueryMapper;
 import site.chatmanager.pojo.data.CoreData;
 import site.chatmanager.pojo.Result;
 import site.chatmanager.service.LoginService;
+import site.chatmanager.service.operator.RedisOperator;
 import site.chatmanager.utils.EmailSender;
+import site.chatmanager.utils.EncryptionUtils;
 import site.chatmanager.utils.FormatChecker;
 import site.chatmanager.utils.VerificationCodeGenerator;
+
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -22,6 +26,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private EmailSender emailSender;
+
+    @Autowired
+    private RedisOperator redisOperator;
 
     @Override
     public ResponseEntity<Result> sendVerificationCode(CoreData coreData) {
@@ -37,7 +44,8 @@ public class LoginServiceImpl implements LoginService {
         }
 
         // 如果邮箱未注册（即：邮箱不存在数据库中），就不发送验证码
-        Long uid = queryMapper.queryUidByEmail(email);
+        String encryptEmail = EncryptionUtils.normalSecurityEncrypt(email);   // 要通过加密后的邮箱，才能查询uid
+        Long uid = queryMapper.queryUidByEmail(encryptEmail);
         if (uid == null) {
             Result result = Result.failure("验证码发送失败，该邮箱未注册");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
@@ -56,16 +64,26 @@ public class LoginServiceImpl implements LoginService {
         }
 
         // 生成验证码
-        String verificationCode = VerificationCodeGenerator.generateCode();
+        String emailVerificationCode = VerificationCodeGenerator.generateCode();
 
-        // 发送验证码
-        boolean isSuccessful = emailSender.sendVerificationCode(email, verificationCode);
+        //发送验证码
+        boolean isSuccessful = emailSender.sendVerificationCode(email, emailVerificationCode);
         if (!isSuccessful) {
             result = Result.failure("验证码发送失败，请重试");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
         }
-        result = Result.success("已发送验证码，请注意查收");
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+
+        // 将邮箱和邮箱验证码以键值对的形式存储到redis中（需要普通安全加密）
+        String encryptEmailVerificationCode = EncryptionUtils.normalSecurityEncrypt(emailVerificationCode);
+
+        if (encryptEmail == null || encryptEmailVerificationCode == null) {
+            result = Result.failure("服务器错误，请重试");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+        } else {
+            redisOperator.set(encryptEmail, encryptEmailVerificationCode, 5, TimeUnit.MINUTES);
+            result = Result.success("已发送验证码，请注意查收");
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        }
     }
 
     @Override
@@ -75,15 +93,16 @@ public class LoginServiceImpl implements LoginService {
         String email = coreData.getEmail();
         String emailVerificationCode = coreData.getEmailVerificationCode();
 
-        // 检查邮箱格式
-        boolean isLegal = FormatChecker.checkEmail(email);
+        // 检查邮箱和邮箱验证码的格式
+        boolean isLegal = FormatChecker.checkEmail(email) && FormatChecker.checkVerificationCode(emailVerificationCode);
         if (!isLegal) {
-            Result result = Result.failure("登录失败，邮箱错误");
+            Result result = Result.failure("登录失败，邮箱或验证码错误");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
 
         // 如果邮箱未注册（即：邮箱不存在数据库中），就不允许登录
-        Long uid = queryMapper.queryUidByEmail(email);
+        String encryptEmail = EncryptionUtils.normalSecurityEncrypt(email);   // 要通过加密后的邮箱，才能查询uid
+        Long uid = queryMapper.queryUidByEmail(encryptEmail);
         if (uid == null) {
             Result result = Result.failure("登录失败，邮箱错误");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
@@ -102,7 +121,14 @@ public class LoginServiceImpl implements LoginService {
         }
 
         // 检查验证码是否一致
-        boolean isEqual = emailVerificationCode.equals("从redis获取生成的验证码");
+        String redisEncryptEmailVerificationCode = redisOperator.get(encryptEmail);
+        if (redisEncryptEmailVerificationCode == null) {    // 如果为null, 说明用户输入的邮箱错误（少见），或者验证码已过期（常见）
+            result = Result.failure("登录失败，验证码已过期");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+        redisOperator.del(encryptEmail);
+        String encryptEmailVerificationCode = EncryptionUtils.normalSecurityEncrypt(emailVerificationCode); // 对用户输入的验证码进行加密
+        boolean isEqual = encryptEmailVerificationCode.equals(redisEncryptEmailVerificationCode);
         if (!isEqual) {
             result = Result.failure("登录失败，验证码错误");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
@@ -135,7 +161,7 @@ public class LoginServiceImpl implements LoginService {
 
         // 如果账号未注册（即：账号不存在数据库中），就不允许登录
         CoreData data = queryMapper.queryAuthInfoByAccount(account);
-        if (data.getUid() == null) {
+        if (data == null) {
             Result result = Result.failure("登录失败，账号或密码错误");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
@@ -152,7 +178,7 @@ public class LoginServiceImpl implements LoginService {
         }
 
         // 检查密码是否一致
-        boolean isEqual = password.equals("从数据库中查询到的密码");
+        boolean isEqual = EncryptionUtils.highSecurityVerify(password, data.getPassword());
         if (!isEqual) {
             result = Result.failure("登录失败，账号或密码错误");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
