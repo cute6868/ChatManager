@@ -18,19 +18,19 @@ public class UpdateController {
 
     // 更新用户基本信息
     @PutMapping("/{uid}/basic")
-    public ResponseEntity<Result> updateUserBasicInfo(@PathVariable("uid") String uid, @RequestBody PersonalityData personalityData) {
+    public ResponseEntity<Result> updateUserBasicInfo(@PathVariable("uid") Long uid, @RequestBody PersonalityData personalityData) {
         return updateService.updateUserBasicInfo(uid, personalityData);
     }
 
     // 更新用户核心信息
     @PutMapping("/{uid}/core")
-    public ResponseEntity<Result> updateUserCoreInfo(@PathVariable("uid") String uid, @RequestBody CoreData coreData) {
+    public ResponseEntity<Result> updateUserCoreInfo(@PathVariable("uid") Long uid, @RequestBody CoreData coreData) {
         return updateService.updateUserCoreInfo(uid, coreData);
     }
 
     // 更新用户模型配置信息
     @PutMapping("/{uid}/config")
-    public ResponseEntity<Result> updateUserConfigInfo(@PathVariable("uid") String uid, @RequestBody ModelData modelData) {
+    public ResponseEntity<Result> updateUserConfigInfo(@PathVariable("uid") Long uid, @RequestBody ModelData modelData) {
         return updateService.updateUserConfigInfo(uid, modelData);
     }
 }

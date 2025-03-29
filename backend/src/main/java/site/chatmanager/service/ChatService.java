@@ -7,9 +7,9 @@ import site.chatmanager.pojo.Result;
 public interface ChatService {
 
     // 推荐内容
-    public ResponseEntity<Result> recommend(String uid);
+    public ResponseEntity<Result> recommend(Long uid);
 
     // 发起聊天
-    public ResponseEntity<Result> chat(String uid, DialogData dialogData);
+    public ResponseEntity<Result> chat(Long uid, DialogData dialogData);
 
 }

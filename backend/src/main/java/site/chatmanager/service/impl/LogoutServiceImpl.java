@@ -12,7 +12,7 @@ import site.chatmanager.service.LogoutService;
 public class LogoutServiceImpl implements LogoutService {
 
     @Override
-    public ResponseEntity<Result> logout(String uid) {
+    public ResponseEntity<Result> logout(Long uid) {
         log.info("logout");
         Result result = Result.success();
         return ResponseEntity.status(HttpStatus.OK).body(result);

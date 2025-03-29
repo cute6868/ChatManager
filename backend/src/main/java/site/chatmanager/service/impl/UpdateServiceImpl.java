@@ -15,7 +15,7 @@ import site.chatmanager.service.UpdateService;
 public class UpdateServiceImpl implements UpdateService {
 
     @Override
-    public ResponseEntity<Result> updateUserBasicInfo(String uid, PersonalityData personalityData) {
+    public ResponseEntity<Result> updateUserBasicInfo(Long uid, PersonalityData personalityData) {
         log.info("updateUserBasicInfo");
         // 更新：用户昵称，用户头像
         Result result = Result.success();
@@ -23,7 +23,7 @@ public class UpdateServiceImpl implements UpdateService {
     }
 
     @Override
-    public ResponseEntity<Result> updateUserCoreInfo(String uid, CoreData coreData) {
+    public ResponseEntity<Result> updateUserCoreInfo(Long uid, CoreData coreData) {
         log.info("updateUserCoreInfo");
         // 更新：用户账号，用户密码，用户邮箱，用户手机号
         Result result = Result.success();
@@ -31,7 +31,7 @@ public class UpdateServiceImpl implements UpdateService {
     }
 
     @Override
-    public ResponseEntity<Result> updateUserConfigInfo(String uid, ModelData modelData) {
+    public ResponseEntity<Result> updateUserConfigInfo(Long uid, ModelData modelData) {
         log.info("updateUserConfigInfo");
         // 更新：用户模型配置信息
         Result result = Result.success();

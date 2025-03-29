@@ -18,7 +18,7 @@ public class LogoutController {
 
     // 退出登录
     @PostMapping("/{uid}")
-    public ResponseEntity<Result> logout(@PathVariable("uid") String uid) {
+    public ResponseEntity<Result> logout(@PathVariable("uid") Long uid) {
         return logoutService.logout(uid);
     }
 }

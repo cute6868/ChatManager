@@ -16,13 +16,13 @@ public class ChatController {
 
     // 推荐内容
     @GetMapping("/{uid}/recommend")
-    public ResponseEntity<Result> recommend(@PathVariable("uid") String uid) {
+    public ResponseEntity<Result> recommend(@PathVariable("uid") Long uid) {
         return chatService.recommend(uid);
     }
 
     // 发起聊天
     @PostMapping("/{uid}")
-    public ResponseEntity<Result> chat(@PathVariable("uid") String uid, @RequestBody DialogData dialogData) {
+    public ResponseEntity<Result> chat(@PathVariable("uid") Long uid, @RequestBody DialogData dialogData) {
         return chatService.chat(uid, dialogData);
     }
 }

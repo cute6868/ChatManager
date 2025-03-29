@@ -13,7 +13,7 @@ import site.chatmanager.pojo.Result;
 public class ChatServiceImpl implements ChatService {
 
     @Override
-    public ResponseEntity<Result> recommend(String uid) {
+    public ResponseEntity<Result> recommend(Long uid) {
         log.info("recommend");
         // 查询用户兴趣标签
         // 调用模型，获取推荐结果，并返回
@@ -22,7 +22,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public ResponseEntity<Result> chat(String uid, DialogData dialogData) {
+    public ResponseEntity<Result> chat(Long uid, DialogData dialogData) {
         log.info("chat");
         // 1.用户选择了哪些模型
         // 2.用户询问了什么问题

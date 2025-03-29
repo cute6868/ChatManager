@@ -12,7 +12,7 @@ import site.chatmanager.service.DeactivateService;
 public class DeactivateServiceImpl implements DeactivateService {
 
     @Override
-    public ResponseEntity<Result> deactivateAccount(String uid) {
+    public ResponseEntity<Result> deactivateAccount(Long uid) {
         log.info("deactivateAccount");
         // 注销账号
         Result result = Result.success();
