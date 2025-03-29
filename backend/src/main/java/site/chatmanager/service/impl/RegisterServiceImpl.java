@@ -99,22 +99,27 @@ public class RegisterServiceImpl implements RegisterService {
         }
 
         // 生成验证码
-        String verificationCode = VerificationCodeGenerator.generateCode();
+        String emailVerificationCode = VerificationCodeGenerator.generateCode();
 
         //发送验证码
-        boolean isSuccessful = emailSender.sendVerificationCode(email, verificationCode);
+        boolean isSuccessful = emailSender.sendVerificationCode(email, emailVerificationCode);
         if (!isSuccessful) {
             Result result = Result.failure("验证码发送失败，请重试");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
 
-        // 将邮箱和邮箱验证码以键值对的形式存储到redis中（需要加密）
-        String encryptEmail = PasswordEncryptionUtil.encryptPassword(email);
-        String encryptVerificationCode = PasswordEncryptionUtil.encryptPassword(verificationCode);
-        redisOperator.set(encryptEmail, encryptVerificationCode, 1, TimeUnit.MINUTES);
+        // 将邮箱和邮箱验证码以键值对的形式存储到redis中（需要普通加密）
+        String encryptEmail = EncryptionUtils.normalSecurityEncrypt(email);
+        String encryptEmailVerificationCode = EncryptionUtils.normalSecurityEncrypt(emailVerificationCode);
 
-        Result result = Result.success("已发送验证码，请注意查收");
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        if (encryptEmail == null || encryptEmailVerificationCode == null) {
+            Result result = Result.failure("验证码发送失败，请重试");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        } else {
+            redisOperator.set(encryptEmail, encryptEmailVerificationCode, 5, TimeUnit.MINUTES);
+            Result result = Result.success("已发送验证码，请注意查收");
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        }
     }
 
     @Override
@@ -144,14 +149,14 @@ public class RegisterServiceImpl implements RegisterService {
         }
 
         // 检查验证码是否一致
-        String encryptEmail = PasswordEncryptionUtil.encryptPassword(email);    // 对用户输入的邮箱进行加密
-        String redisVerificationCode = redisOperator.get(encryptEmail);         // 从redis中获取已加密的验证码
-        if (redisVerificationCode == null) {
+        String encryptEmail = EncryptionUtils.normalSecurityEncrypt(email);         // 对用户输入的邮箱进行加密
+        String redisEncryptEmailVerificationCode = redisOperator.get(encryptEmail); // 通过加密后的邮箱获取redis中已加密的验证码
+        if (redisEncryptEmailVerificationCode == null) {       // 如果为null, 说明用户输入的邮箱错误（少见），或者验证码已过期（常见）
             Result result = Result.failure("注册失败，验证码已过期");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
-        String encryptVerificationCode = PasswordEncryptionUtil.encryptPassword(emailVerificationCode);
-        boolean isEqual = encryptVerificationCode.equals(redisVerificationCode);
+        String encryptEmailVerificationCode = EncryptionUtils.normalSecurityEncrypt(emailVerificationCode); // 对用户输入的验证码进行加密
+        boolean isEqual = encryptEmailVerificationCode.equals(redisEncryptEmailVerificationCode);   // 判断用户输入的加密后的验证码是否与redis中存储的加密后的验证码一致
         if (!isEqual) {
             Result result = Result.failure("注册失败，验证码错误");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
@@ -163,9 +168,11 @@ public class RegisterServiceImpl implements RegisterService {
         // users_models_config 表：uid
         Long uid = SnowflakeIdUtils.generateId();   // 生成 uid
         LocalDateTime time = LocalDateTime.now();   // 生成当前时间
-        String encryptPassword = PasswordEncryptionUtil.encryptPassword(password);  // 密码加密
+        String highEncryptPassword = EncryptionUtils.highSecurityEncrypt(password);     // 密码高级安全加密
+        String normalEncryptEmail = EncryptionUtils.normalSecurityEncrypt(email);       // 邮箱普通安全加密
+
         insertMapper.insertBasicInfo(uid, account, time);
-        insertMapper.insertCoreInfo(uid, account, encryptPassword, email, time);
+        insertMapper.insertCoreInfo(uid, account, highEncryptPassword, normalEncryptEmail, time);
         insertMapper.insertModelsConfig(uid);
 
         // 生成登录令牌

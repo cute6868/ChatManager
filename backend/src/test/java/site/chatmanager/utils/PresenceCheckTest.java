@@ -29,56 +29,60 @@ public class PresenceCheckTest {
     }
 
     @Test
-    @DisplayName("测试账号存在性校验 - 账号存在")
-    public void testCheckAccount_Exists() {
+    @DisplayName("测试账号存在性校验 - 账号 'testAccount' 存在")
+    void testCheckAccount_Exists_TestAccount() {
         String account = "testAccount";
         when(queryMapper.queryUidByAccount(account)).thenReturn(1L);
 
-        assertTrue(presenceCheck.checkAccount(account), "账号应存在");
+        assertTrue(PresenceCheck.checkAccount(account), "账号应存在");
     }
 
     @Test
-    @DisplayName("测试账号存在性校验 - 账号不存在")
-    public void testCheckAccount_NotExists() {
+    @DisplayName("测试账号存在性校验 - 账号 'nonExistentAccount' 不存在")
+    void testCheckAccount_NotExists_NonExistentAccount() {
         String account = "nonExistentAccount";
         when(queryMapper.queryUidByAccount(account)).thenReturn(null);
 
-        assertFalse(presenceCheck.checkAccount(account), "账号不应存在");
+        assertFalse(PresenceCheck.checkAccount(account), "账号不应存在");
     }
 
     @Test
-    @DisplayName("测试邮箱存在性校验 - 邮箱存在")
-    public void testCheckEmail_Exists() {
+    @DisplayName("测试邮箱存在性校验 - 邮箱 'test@example.com' 存在")
+    void testCheckEmail_Exists_TestExampleCom() throws Exception {
         String email = "test@example.com";
-        when(queryMapper.queryUidByEmail(email)).thenReturn(1L);
+        String encryptedEmail = EncryptionUtils.normalSecurityEncrypt(email);
+        when(queryMapper.queryUidByEmail(encryptedEmail)).thenReturn(1L);
 
-        assertTrue(presenceCheck.checkEmail(email), "邮箱应存在");
+        assertTrue(PresenceCheck.checkEmail(email), "邮箱应存在");
     }
 
     @Test
-    @DisplayName("测试邮箱存在性校验 - 邮箱不存在")
-    public void testCheckEmail_NotExists() {
+    @DisplayName("测试邮箱存在性校验 - 邮箱 'nonexistent@example.com' 不存在")
+    void testCheckEmail_NotExists_NonexistentExampleCom() throws Exception {
         String email = "nonexistent@example.com";
-        when(queryMapper.queryUidByEmail(email)).thenReturn(null);
+        String encryptedEmail = EncryptionUtils.normalSecurityEncrypt(email);
+        when(queryMapper.queryUidByEmail(encryptedEmail)).thenReturn(null);
 
-        assertFalse(presenceCheck.checkEmail(email), "邮箱不应存在");
+        assertFalse(PresenceCheck.checkEmail(email), "邮箱不应存在");
     }
 
     @Test
-    @DisplayName("测试手机存在性校验 - 手机存在")
-    public void testCheckCellphone_Exists() {
+    @DisplayName("测试手机存在性校验 - 手机 '1234567890' 存在")
+    void testCheckCellphone_Exists_1234567890() throws Exception {
         String cellphone = "1234567890";
-        when(queryMapper.queryUidByCellphone(cellphone)).thenReturn(1L);
+        String encryptedCellphone = EncryptionUtils.normalSecurityEncrypt(cellphone);
+        when(queryMapper.queryUidByCellphone(encryptedCellphone)).thenReturn(1L);
 
-        assertTrue(presenceCheck.checkCellphone(cellphone), "手机应存在");
+        assertTrue(PresenceCheck.checkCellphone(cellphone), "手机应存在");
     }
 
     @Test
-    @DisplayName("测试手机存在性校验 - 手机不存在")
-    public void testCheckCellphone_NotExists() {
+    @DisplayName("测试手机存在性校验 - 手机 '0987654321' 不存在")
+    void testCheckCellphone_NotExists_0987654321() throws Exception {
         String cellphone = "0987654321";
-        when(queryMapper.queryUidByCellphone(cellphone)).thenReturn(null);
+        String encryptedCellphone = EncryptionUtils.normalSecurityEncrypt(cellphone);
+        when(queryMapper.queryUidByCellphone(encryptedCellphone)).thenReturn(null);
 
-        assertFalse(presenceCheck.checkCellphone(cellphone), "手机不应存在");
+        assertFalse(PresenceCheck.checkCellphone(cellphone), "手机不应存在");
     }
 }

@@ -5,51 +5,34 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class EncryptionUtilsTest {
+class EncryptionUtilsTest {
+
+    private static final String TEST_TEXT = "testText";
+    private static final String TEST_KEY = "abcdefghijklmnop";
 
     @Test
-    @DisplayName("高安全加密和验证 - 成功")
-    public void testHighSecurityEncryptAndMatches() {
-        String plainText = "mySecretPassword";
-        String encryptedText = EncryptionUtils.highSecurityEncrypt(plainText);
-        assertTrue(EncryptionUtils.highSecurityMatches(plainText, encryptedText));
+    @DisplayName("测试高等安全加密及验证方法")
+    void testHighSecurityEncryptAndVerify() {
+        String encrypted = EncryptionUtils.highSecurityEncrypt(TEST_TEXT);
+        assertNotNull(encrypted, "高等安全加密结果不应为 null");
+        assertTrue(EncryptionUtils.highSecurityVerify(TEST_TEXT, encrypted), "高等安全加密验证应通过");
     }
 
     @Test
-    @DisplayName("中等安全加密和解密 - 成功")
-    public void testMediumSecurityEncryptAndDecrypt() throws Exception {
-        String plainText = "mySensitiveData";
-        String encryptedText = EncryptionUtils.mediumSecurityEncrypt(plainText);
-        String decryptedText = EncryptionUtils.mediumSecurityDecrypt(encryptedText);
-        assertEquals(plainText, decryptedText);
+    @DisplayName("测试中等安全加密和解密方法")
+    void testMediumSecurityEncryptAndDecrypt() {
+        String encrypted = EncryptionUtils.mediumSecurityEncrypt(TEST_TEXT, TEST_KEY);
+        assertNotNull(encrypted, "中等安全加密结果不应为 null");
+        String decrypted = EncryptionUtils.mediumSecurityDecrypt(encrypted, TEST_KEY);
+        assertEquals(TEST_TEXT, decrypted, "中等安全加密解密后应与原始文本相同");
     }
 
     @Test
-    @DisplayName("普通安全加密和解密 - 成功")
-    public void testNormalSecurityEncryptAndDecrypt() throws Exception {
-        String plainText = "myData";
-        String encryptedText = EncryptionUtils.normalSecurityEncrypt(plainText);
-        String decryptedText = EncryptionUtils.normalSecurityDecrypt(encryptedText);
-        assertEquals(plainText, decryptedText);
-    }
-
-    @Test
-    @DisplayName("中等安全加密和解密 - 使用自定义密钥 - 成功")
-    public void testMediumSecurityEncryptAndDecryptWithCustomKey() throws Exception {
-        String plainText = "mySensitiveData";
-        String customKey = "myCustomKey123";
-        String encryptedText = EncryptionUtils.mediumSecurityEncrypt(plainText, customKey);
-        String decryptedText = EncryptionUtils.mediumSecurityDecrypt(encryptedText, customKey);
-        assertEquals(plainText, decryptedText);
-    }
-
-    @Test
-    @DisplayName("普通安全加密和解密 - 使用自定义密钥 - 成功")
-    public void testNormalSecurityEncryptAndDecryptWithCustomKey() throws Exception {
-        String plainText = "myData";
-        String customKey = "myCustomKey123";
-        String encryptedText = EncryptionUtils.normalSecurityEncrypt(plainText, customKey);
-        String decryptedText = EncryptionUtils.normalSecurityDecrypt(encryptedText, customKey);
-        assertEquals(plainText, decryptedText);
+    @DisplayName("测试普通安全加密和解密方法")
+    void testNormalSecurityEncryptAndDecrypt() {
+        String encrypted = EncryptionUtils.normalSecurityEncrypt(TEST_TEXT, TEST_KEY);
+        assertNotNull(encrypted, "普通安全加密结果不应为 null");
+        String decrypted = EncryptionUtils.normalSecurityDecrypt(encrypted, TEST_KEY);
+        assertEquals(TEST_TEXT, decrypted, "普通安全加密解密后应与原始文本相同");
     }
 }

@@ -23,7 +23,7 @@ public final class EmailSender {
             message.setFrom(fromEmail); // 设置发件人
             message.setTo(email);   // 设置收件人
             message.setSubject("ChatManager服务中心");  // 设置邮件主题
-            message.setText("您的验证码是：" + code + "，请在1分钟内完成验证。");  // 设置邮件内容
+            message.setText("您的验证码是：" + code + "，请在5分钟内完成验证。");  // 设置邮件内容
             javaMailSender.send(message);  // 发送邮件
             return true;
         } catch (Exception e) {

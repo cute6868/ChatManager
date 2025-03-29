@@ -23,11 +23,15 @@ public final class PresenceCheck implements ApplicationContextAware {
 
     // 邮箱存在性校验
     public static boolean checkEmail(String email) {
-        return queryMapper.queryUidByEmail(email) != null;
+        String encryptEmail = EncryptionUtils.normalSecurityEncrypt(email);
+        if (encryptEmail == null) return false;
+        return queryMapper.queryUidByEmail(encryptEmail) != null;
     }
 
     // 手机存在性校验
     public static boolean checkCellphone(String cellphone) {
-        return queryMapper.queryUidByCellphone(cellphone) != null;
+        String encryptCellphone = EncryptionUtils.normalSecurityEncrypt(cellphone);
+        if (encryptCellphone == null) return false;
+        return queryMapper.queryUidByCellphone(encryptCellphone) != null;
     }
 }

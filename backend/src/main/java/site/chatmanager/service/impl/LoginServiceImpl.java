@@ -111,9 +111,10 @@ public class LoginServiceImpl implements LoginService {
         // 进行登录 (获取uid和用户身份，生成登录令牌)
         //data.getRole();
         //uid
+        // 令牌加到用户的请求头吗？
 
         // 登录成功
-        result = Result.success("登录成功", "here_is_user_token");
+        result = Result.success("登录成功");
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
