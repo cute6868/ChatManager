@@ -7,10 +7,8 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-public class HistoryData {
+public class RecordData {
     private String question;
     private LocalDateTime time;
     private Integer sequence_num;
-    private Integer newest;
-    private Integer oldest;
 }

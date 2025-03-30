@@ -1,13 +1,13 @@
-package site.chatmanager.service.operator;
+package site.chatmanager.service.common;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
-@Service
-public class RedisOperator {
+@Component
+public class RedisService {
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
@@ -31,4 +31,5 @@ public class RedisOperator {
     public void del(String key) {
         stringRedisTemplate.delete(key);
     }
+
 }

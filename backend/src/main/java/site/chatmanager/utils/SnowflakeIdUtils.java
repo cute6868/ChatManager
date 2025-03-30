@@ -5,22 +5,22 @@ import java.time.ZoneOffset;
 
 /**
  * 使用示例:
- *
+ * <p>
  * public class Main {
- *     public static void main(String[] args) {
- *         // 初始化工作机器 ID 和数据中心 ID
- *         SnowflakeIdUtils.init(2, 3);
- *
- *         // 生成 ID
- *         long newId = SnowflakeIdUtils.generateId();
- *         System.out.println("生成的 ID: " + newId);
- *
- *         // 校验 ID 合法性
- *         boolean isValid = SnowflakeIdUtils.isValidId(newId);
- *         System.out.println("ID 是否合法: " + isValid);
- *     }
+ * public static void main(String[] args) {
+ * // 初始化工作机器 ID 和数据中心 ID
+ * SnowflakeIdUtils.init(2, 3);
+ * <p>
+ * // 生成 ID
+ * long newId = SnowflakeIdUtils.generateId();
+ * System.out.println("生成的 ID: " + newId);
+ * <p>
+ * // 校验 ID 合法性
+ * boolean isValid = SnowflakeIdUtils.isValidId(newId);
+ * System.out.println("ID 是否合法: " + isValid);
  * }
- *
+ * }
+ * <p>
  * 注意：
  * 单实例场景：无需调用 init，可直接使用默认值正常生成和校验 ID。
  * 分布式场景：必须调用 init 方法为每个实例设置唯一的 workerId 和 dataCenterId，以避免 ID 冲突。
@@ -40,9 +40,9 @@ public final class SnowflakeIdUtils {
     private static final long SEQUENCE_BITS = 12L;
 
     // 工作机器 ID 的最大值
-    private static final long MAX_WORKER_ID = -1L ^ (-1L << WORKER_ID_BITS);
+    private static final long MAX_WORKER_ID = ~(-1L << WORKER_ID_BITS);
     // 数据中心 ID 的最大值
-    private static final long MAX_DATA_CENTER_ID = -1L ^ (-1L << DATA_CENTER_ID_BITS);
+    private static final long MAX_DATA_CENTER_ID = ~(-1L << DATA_CENTER_ID_BITS);
 
     // 工作机器 ID 左移的位数 = 序列号位数
     private static final long WORKER_ID_SHIFT = SEQUENCE_BITS;
@@ -52,7 +52,7 @@ public final class SnowflakeIdUtils {
     private static final long TIMESTAMP_LEFT_SHIFT = SEQUENCE_BITS + WORKER_ID_BITS + DATA_CENTER_ID_BITS;
 
     // 用于防止序列号溢出的掩码（12 个 1，即 0b111111111111）
-    private static final long SEQUENCE_MASK = -1L ^ (-1L << SEQUENCE_BITS);
+    private static final long SEQUENCE_MASK = ~(-1L << SEQUENCE_BITS);
 
     // 工作机器 ID（0 ~ MAX_WORKER_ID）
     private static long workerId = 1;
@@ -138,7 +138,7 @@ public final class SnowflakeIdUtils {
     /**
      * 检查是否为有效的 ID
      *
-     * @param  id 要检查的 ID
+     * @param id 要检查的 ID
      * @return 如果 ID 有效返回 true，否则返回 false
      */
     public static boolean isValidId(long id) {
@@ -148,32 +148,16 @@ public final class SnowflakeIdUtils {
 
         // 提取时间戳部分
         long timestampPart = (id >> TIMESTAMP_LEFT_SHIFT) + START_TIMESTAMP;
-        // 检查时间戳是否在合理范围内（大于起始时间戳且小于当前时间戳）
         long currentTimestamp = System.currentTimeMillis();
         if (timestampPart < START_TIMESTAMP || timestampPart > currentTimestamp) {
             return false;
         }
 
-        // 提取工作机器 ID 部分
-        long extractedWorkerId = (id >> WORKER_ID_SHIFT) & MAX_WORKER_ID;
-        // 检查工作机器 ID 是否在合理范围内
-        if (extractedWorkerId < 0 || extractedWorkerId > MAX_WORKER_ID) {
-            return false;
-        }
+        // 提取工作机器 ID 部分（无需额外校验，位运算已保证范围）
+        long workerId = (id >> WORKER_ID_SHIFT) & MAX_WORKER_ID;
 
-        // 提取数据中心 ID 部分
-        long extractedDataCenterId = (id >> DATA_CENTER_ID_SHIFT) & MAX_DATA_CENTER_ID;
-        // 检查数据中心 ID 是否在合理范围内
-        if (extractedDataCenterId < 0 || extractedDataCenterId > MAX_DATA_CENTER_ID) {
-            return false;
-        }
-
-        // 提取序列号部分
-        long extractedSequence = id & SEQUENCE_MASK;
-        // 检查序列号是否在合理范围内
-        if (extractedSequence < 0 || extractedSequence > SEQUENCE_MASK) {
-            return false;
-        }
+        // 提取数据中心 ID 部分（无需额外校验，位运算已保证范围）
+        long dataCenterId = (id >> DATA_CENTER_ID_SHIFT) & MAX_DATA_CENTER_ID;
 
         return true;
     }

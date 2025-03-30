@@ -5,14 +5,6 @@
 <mapper namespace="site.chatmanager.mapper.UpdateMapper">
 
     <!-- ===================== users_basic_info 表 ===================== -->
-    <!-- 更新用户昵称、用户头像（直接对外） -->
-    <update id="updateBasicInfo">
-        update users_basic_info
-        set nickname = #{nickname},
-            avatar = #{avatar}
-        where uid = #{uid}
-    </update>
-
     <!-- 更新用户昵称 -->
     <update id="updateNickname">
         update users_basic_info
@@ -35,15 +27,6 @@
     </update>
 
     <!-- ===================== users_core_info 表 ===================== -->
-    <!-- 更新用户账号、用户邮箱、用户手机 -->
-    <update id="updateCoreInfo">
-        update users_core_info
-        set account = #{account},
-            email = #{email},
-            cellphone = #{cellphone}
-        where uid = #{uid}
-    </update>
-
     <!-- 更新用户账号 -->
     <update id="updateAccount">
         update users_core_info
@@ -101,23 +84,24 @@
         where uid = #{uid}
     </update>
 
-    <!-- ===================== users_history_pointer 表 ===================== -->
-    <!-- 更新用户历史记录指针 -->
-    <update id="updateHistoryInfoSequenceNum">
-        update users_history_pointer
+    <!-- ===================== users_record_pointer 表 ===================== -->
+    <!-- 更新用户记录序号 -->
+    <update id="updateRecordSequenceNum">
+        update users_record_pointer
         set newest = #{newest},
             oldest = #{oldest}
         where uid = #{uid}
     </update>
 
-    <!-- ===================== users_history_info_shard_(0~9) 表 ===================== -->
-    <!-- 更新用户历史记录和其对应的时间 -->
-    <update id="updateHistoryInfo">
+    <!-- ===================== users_record_shard_(0~9) 表 ===================== -->
+    <!-- 更新时间和问题 -->
+    <update id="updateRecord">
         <bind name="shardIndex" value="uid % 10"/>
-        update users_history_info_shard_${shardIndex}
+        update users_record_shard_${shardIndex}
         set time = #{time},
         question = #{question}
         where uid = #{uid}
+        and sequence_num = #{sequence_num}
     </update>
 
 </mapper>

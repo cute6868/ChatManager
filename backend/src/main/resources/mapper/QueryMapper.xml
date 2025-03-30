@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="site.chatmanager.mapper.QueryMapper">
 
-    <!-- 存在性查询（比如：注册业务） -->
+    <!-- ===================== 存在性查询（比如：注册业务） ===================== -->
     <!-- 通过账号查询 uid -->
     <select id="queryUidByAccount" resultType="java.lang.Long">
         select uid from users_core_info where account = #{account}
@@ -20,34 +20,34 @@
         select uid from users_core_info where cellphone = #{cellphone}
     </select>
 
-    <!-- 认证性查询（比如：登录业务） -->
+    <!-- ===================== 认证性查询（比如：登录业务） ===================== -->
     <!-- 对于账号认证方式 -->
     <!-- 认证信息：账号状态、用户身份、uid、用户密码 -->
-    <select id="queryAuthInfoByAccount" resultType="site.chatmanager.pojo.data.CoreData">
+    <select id="queryAuthInfoByAccount" resultType="site.chatmanager.pojo.data.AuthData">
         select status, role, uid, password from users_core_info where account = #{account}
     </select>
 
     <!-- 对于邮箱和手机认证方式 -->
     <!-- 认证信息：账号状态、用户身份 -->
-    <select id="queryAuthInfo" resultType="site.chatmanager.pojo.data.CoreData">
+    <select id="queryAuthInfo" resultType="site.chatmanager.pojo.data.AuthData">
         select status, role from users_core_info where uid = #{uid}
     </select>
 
-    <!-- 获取性查询（比如：展示业务） -->
+    <!-- ===================== 获取性查询（比如：展示业务） ===================== -->
     <!-- ~~~~~ users_basic_info 表 ~~~~~ -->
     <!-- 查询用户昵称、用户头像（直接对外） -->
-    <select id="queryBasicInfo" resultType="site.chatmanager.pojo.data.PersonalityData">
+    <select id="queryProfile" resultType="site.chatmanager.pojo.data.ProfileData">
         select nickname, avatar from users_basic_info where uid = #{uid}
     </select>
 
     <!-- 查询：用户兴趣爱好（不直接对外） -->
-    <select id="queryInterests" resultType="site.chatmanager.pojo.data.PersonalityData">
+    <select id="queryInterests" resultType="java.lang.String">
         select interests from users_basic_info where uid = #{uid}
     </select>
 
     <!-- ~~~~~ users_core_info 表 ~~~~~ -->
     <!-- 查询：用户账号、用户邮箱、用户手机、（不得查询密码，但是可以修改密码） -->
-    <select id="queryCoreInfo" resultType="site.chatmanager.pojo.data.CoreData">
+    <select id="queryContactInfo" resultType="site.chatmanager.pojo.data.ContactData">
         select account, email, cellphone from users_core_info where uid = #{uid}
     </select>
 
@@ -57,17 +57,17 @@
         select models from users_models_config where uid = #{uid}
     </select>
 
-    <!-- ~~~~~ users_history_pointer 表 ~~~~~ -->
+    <!-- ~~~~~ users_record_pointer 表 ~~~~~ -->
     <!-- 查询用户的最新序号、最旧序号 -->
-    <select id="queryHistoryInfoSequenceNum" resultType="site.chatmanager.pojo.data.HistoryData">
-        select newest, oldest from users_history_pointer where uid = #{uid}
+    <select id="queryRecordSequenceNum" resultType="site.chatmanager.pojo.data.SequenceData">
+        select newest, oldest from users_record_pointer where uid = #{uid}
     </select>
 
-    <!-- ~~~~~ users_history_info_shard_(0~9) 表 ~~~~~ -->
+    <!-- ~~~~~ users_record_shard_(0~9) 表 ~~~~~ -->
     <!-- 查询用户的问题、时间、序号 -->
-    <select id="queryHistoryInfo" resultType="site.chatmanager.pojo.data.HistoryData">
+    <select id="queryRecord" resultType="site.chatmanager.pojo.data.RecordData">
         <bind name="shardIndex" value="uid % 10"/>
-        select question, time, sequence_num from users_history_info_shard_${shardIndex} where uid = #{uid}
+        select question, time, sequence_num from users_record_shard_${shardIndex} where uid = #{uid}
     </select>
 
     <!-- 时间相关查询 -->
@@ -86,7 +86,7 @@
     <!-- 查询 users_basic_info表中的 uid, nickname, avatar, create_at -->
     <!-- 查询 users_core_info表中的 account, email, cellphone, status, role, last_login_at -->
     <!-- 要求uid相同的为同一条数据，合并这些数据为一条数据 -->
-    <select id="queryAllUsers" resultType="site.chatmanager.pojo.User">
+    <select id="queryAllUsers" resultType="site.chatmanager.pojo.data.DetailData">
         SELECT ubi.uid, ubi.nickname, ubi.avatar, ubi.create_at,
                uci.account, uci.email, uci.cellphone, uci.status, uci.role, uci.last_login_at
         FROM users_basic_info ubi

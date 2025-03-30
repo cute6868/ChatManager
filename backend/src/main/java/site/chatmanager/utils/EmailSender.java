@@ -15,20 +15,15 @@ public final class EmailSender {
     private JavaMailSender javaMailSender;
 
     @Value("${spring.mail.username}")
-    private String fromEmail;
+    private String fromEmailAddress;
 
-    public boolean sendVerificationCode(String email, String code) {
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail); // 设置发件人
-            message.setTo(email);   // 设置收件人
-            message.setSubject("ChatManager服务中心");  // 设置邮件主题
-            message.setText("您的验证码是：" + code + "，请在5分钟内完成验证。");  // 设置邮件内容
-            javaMailSender.send(message);  // 发送邮件
-            return true;
-        } catch (Exception e) {
-            log.error("发送邮箱验证码失败：" + e.getMessage());
-            return false;
-        }
+    // 发送邮件
+    public void sendMail(String toEmailAddress, String mailSubject, String mailText) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmailAddress);  // 设置发件人
+        message.setTo(toEmailAddress);      // 设置收件人
+        message.setSubject(mailSubject);    // 设置邮件主题
+        message.setText(mailText);          // 设置邮件内容
+        javaMailSender.send(message);       // 发送邮件
     }
 }

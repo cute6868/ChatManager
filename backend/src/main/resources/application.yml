@@ -29,3 +29,9 @@ mybatis:
   mapper-locations: classpath*:mapper/*.xml # 指定XML映射配置文件路径
 #  configuration:
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 输出MySQL操作日志
+
+
+# 配置事务管理日志级别
+logging:
+  level:
+    org.springframework.jdbc.support.JdbcTransactionManager: info

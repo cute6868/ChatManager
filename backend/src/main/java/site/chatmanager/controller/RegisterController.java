@@ -3,7 +3,9 @@ package site.chatmanager.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import site.chatmanager.pojo.data.CoreData;
+import site.chatmanager.pojo.data.AccountData;
+import site.chatmanager.pojo.data.EmailData;
+import site.chatmanager.pojo.data.RegisterData;
 import site.chatmanager.pojo.Result;
 import site.chatmanager.service.RegisterService;
 
@@ -15,26 +17,32 @@ public class RegisterController {
     private RegisterService registerService;
 
     // 检查账号可用性
-    @PostMapping("/available/account")
-    public ResponseEntity<Result> checkAccount(@RequestBody CoreData coreData) {
-        return registerService.checkAccount(coreData);
+    @PostMapping("/availability/account")
+    public ResponseEntity<Result> checkAccountAvailability(@RequestBody AccountData data) {
+        return registerService.checkAccountAvailability(data);
+    }
+
+    // 检查密码可用性
+    @PostMapping("/availability/password")
+    public ResponseEntity<Result> checkPasswordAvailability(@RequestBody AccountData data) {
+        return registerService.checkPasswordAvailability(data);
     }
 
     // 检查邮箱可用性
-    @PostMapping("/available/email")
-    public ResponseEntity<Result> checkEmail(@RequestBody CoreData coreData) {
-        return registerService.checkEmail(coreData);
+    @PostMapping("/availability/email")
+    public ResponseEntity<Result> checkEmailAvailability(@RequestBody EmailData data) {
+        return registerService.checkEmailAvailability(data);
     }
 
     // 发送验证码
-    @PostMapping("/verification-code")
-    public ResponseEntity<Result> sendVerificationCode(@RequestBody CoreData coreData) {
-        return registerService.sendVerificationCode(coreData);
+    @PostMapping("/verify-code")
+    public ResponseEntity<Result> sendVerifyCode(@RequestBody EmailData data) {
+        return registerService.sendVerifyCode(data);
     }
 
     // 进行注册
     @PostMapping
-    public ResponseEntity<Result> register(@RequestBody CoreData coreData) {
-        return registerService.register(coreData);
+    public ResponseEntity<Result> register(@RequestBody RegisterData data) {
+        return registerService.register(data);
     }
 }

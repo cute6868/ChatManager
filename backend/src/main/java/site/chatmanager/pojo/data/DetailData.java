@@ -1,4 +1,4 @@
-package site.chatmanager.pojo;
+package site.chatmanager.pojo.data;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,15 +7,17 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-public class User {
+public class DetailData {
     private Long uid;
-    private Integer role;
-    private Integer status;
-    private String avatar;
     private String nickname;
+    private String avatar;
+    private LocalDateTime createAt;
+
     private String account;
     private String email;
     private String cellphone;
-    private LocalDateTime createAt;
+
+    private Integer status;
+    private Integer role;
     private LocalDateTime lastLoginAt;
 }

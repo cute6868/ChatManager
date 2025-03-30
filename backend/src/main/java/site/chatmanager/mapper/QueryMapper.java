@@ -2,10 +2,7 @@ package site.chatmanager.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import site.chatmanager.pojo.data.CoreData;
-import site.chatmanager.pojo.data.HistoryData;
-import site.chatmanager.pojo.data.PersonalityData;
-import site.chatmanager.pojo.User;
+import site.chatmanager.pojo.data.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,26 +24,26 @@ public interface QueryMapper {
     // ===================== 认证性查询（比如：登录业务） =====================
     // 对于账号认证方式
     // 认证信息：账号状态、用户身份、uid、用户密码
-    public CoreData queryAuthInfoByAccount(String account);
+    public AuthData queryAuthInfoByAccount(String account);
 
     // 对于邮箱和手机认证方式
     // 认证信息：账号状态、用户身份
-    public CoreData queryAuthInfo(Long uid);
+    public AuthData queryAuthInfo(Long uid);
 
 
     // ===================== 获取性查询（比如：展示业务） =====================
 
     // ~~~~~ users_basic_info 表 ~~~~~
     // 查询用户昵称、用户头像（直接对外）
-    public PersonalityData queryBasicInfo(Long uid);
+    public ProfileData queryProfile(Long uid);
 
     // 查询：用户兴趣爱好（不直接对外）
-    public PersonalityData queryInterests(Long uid);
+    public String queryInterests(Long uid);
 
 
     // ~~~~~ users_core_info 表 ~~~~~
     // 查询：用户账号、用户邮箱、用户手机（不得查询密码，但是可以修改密码）
-    public CoreData queryCoreInfo(Long uid);
+    public ContactData queryContactInfo(Long uid);
 
 
     // ~~~~~ users_models_config 表 ~~~~~
@@ -54,14 +51,14 @@ public interface QueryMapper {
     public String queryModelsConfig(Long uid);
 
 
-    // ~~~~~ users_history_pointer 表 ~~~~~
+    // ~~~~~ users_record_pointer 表 ~~~~~
     // 查询用户的最新序号、最旧序号
-    public HistoryData queryHistoryInfoSequenceNum(Long uid);
+    public SequenceData queryRecordSequenceNum(Long uid);
 
 
-    // ~~~~~ users_history_info_shard_(0~9) 表 ~~~~~
+    // ~~~~~ users_record_shard_(0~9) 表 ~~~~~
     // 查询用户的问题、时间、序号
-    public List<HistoryData> queryHistoryInfo(Long uid);
+    public List<RecordData> queryRecord(Long uid);
 
 
     // ===================== 时间相关查询 =====================
@@ -77,5 +74,5 @@ public interface QueryMapper {
     // 查询 users_basic_info表中的 uid, nickname, avatar, create_at
     // 查询 users_core_info表中的 account, email, cellphone, status, role, last_login_at
     // 要求uid相同的为同一条数据，合并这些数据为一条数据
-    public List<User> queryAllUsers(@Param("offset") int offset, @Param("limit") int limit);
+    public List<DetailData> queryAllUsers(@Param("offset") int offset, @Param("limit") int limit);
 }

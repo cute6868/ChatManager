@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public class Result {
 
-    private Integer code; // 业务状态码：0表示成功，1、2、3...表示不同原因的失败
+    private Integer code; // 业务状态码：0表示成功，1、2、3...表示不同原因的失败，-1服务器异常，-2自定义异常
     private String msg;  // 提示信息
     private Object data;  // 要返回的数据
 

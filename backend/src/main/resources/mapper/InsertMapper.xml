@@ -22,16 +22,16 @@
         VALUES (#{uid})
     </insert>
 
-    <!-- 插入用户历史记录指针 -->
-    <insert id="insertHistoryInfoSequenceNum">
-        INSERT INTO users_history_pointer (uid, newest, oldest)
+    <!-- 插入用户历史记录序号 -->
+    <insert id="insertRecordSequenceNum">
+        INSERT INTO users_record_pointer (uid, newest, oldest)
         VALUES (#{uid}, #{newest}, #{oldest})
     </insert>
 
-    <!-- 插入编号、历史记录、记录时间、历史序号 -->
-    <insert id="insertHistoryInfo">
+    <!-- 插入编号、uid、记录时间、历史记录、历史序号 -->
+    <insert id="insertRecord">
         <bind name="shardIndex" value="uid % 10"/>
-        INSERT INTO users_history_info_shard_${shardIndex} (id, uid, time, question, sequence_num)
+        INSERT INTO users_record_shard_${shardIndex} (id, uid, time, question, sequence_num)
         VALUES (#{id}, #{uid}, #{time}, #{question}, #{sequence_num})
     </insert>
 

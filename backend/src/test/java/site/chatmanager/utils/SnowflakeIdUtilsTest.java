@@ -1,67 +1,74 @@
 package site.chatmanager.utils;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+
+import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("SnowflakeIdUtils 单元测试")
 public class SnowflakeIdUtilsTest {
 
-    @BeforeEach
-    public void setUp() {
-        // 初始化默认的工作机器 ID 和数据中心 ID
-        SnowflakeIdUtils.init(1, 1);
-    }
-
     @Test
-    @DisplayName("测试初始化方法 - 正常情况")
-    public void testInit_Normal() {
-        SnowflakeIdUtils.init(2, 3);
+    @DisplayName("正常生成 ID 且验证有效")
+    void generateAndValidateId() {
         long id = SnowflakeIdUtils.generateId();
-        assertTrue(SnowflakeIdUtils.isValidId(id), "生成的 ID 应合法");
+        boolean isValid = SnowflakeIdUtils.isValidId(id);
+        assertTrue(isValid, "生成的 ID 应有效");
+        assertTrue(id > 0, "生成的 ID 应为正数");
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "32, 1, Worker ID 必须在 0 到 31 之间",
+            "-1, 1, Worker ID 必须在 0 到 31 之间",
+            "1, 32, Data Center ID 必须在 0 到 31 之间",
+            "1, -1, Data Center ID 必须在 0 到 31 之间"
+    })
+    @DisplayName("初始化参数校验测试")
+    void initParameterValidationTest(long workerId, long dataCenterId, String expectedErrorMsg) {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> SnowflakeIdUtils.init(workerId, dataCenterId)
+        );
+        assertTrue(exception.getMessage().contains(expectedErrorMsg),
+                "异常信息应包含预期错误提示");
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "123456789012345678, false, 无效 ID（随机数）",
+            "9223372036854775807, false, 无效 ID（Long.MAX_VALUE）",
+            "-1, false, 无效 ID（负数）"
+    })
+    @DisplayName("无效 ID 验证测试")
+    void invalidIdValidationTest(long id, boolean expectedResult, String testDesc) {
+        boolean isValid = SnowflakeIdUtils.isValidId(id);
+        assertEquals(expectedResult, isValid, testDesc);
     }
 
     @Test
-    @DisplayName("测试初始化方法 - 工作机器 ID 超出范围")
-    public void testInit_InvalidWorkerId() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            SnowflakeIdUtils.init(33, 3);
-        });
-        assertEquals("Worker ID 必须在 0 到 31 之间", exception.getMessage(), "应抛出非法参数异常");
-    }
-
-    @Test
-    @DisplayName("测试初始化方法 - 数据中心 ID 超出范围")
-    public void testInit_InvalidDataCenterId() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            SnowflakeIdUtils.init(2, 33);
-        });
-        assertEquals("Data Center ID 必须在 0 到 31 之间", exception.getMessage(), "应抛出非法参数异常");
-    }
-
-    @Test
-    @DisplayName("测试生成 ID 方法 - 正常情况")
-    public void testGenerateId_Normal() {
-        long id1 = SnowflakeIdUtils.generateId();
-        long id2 = SnowflakeIdUtils.generateId();
-        assertNotEquals(id1, id2, "生成的 ID 应不相同");
-        assertTrue(SnowflakeIdUtils.isValidId(id1), "生成的 ID 应合法");
-        assertTrue(SnowflakeIdUtils.isValidId(id2), "生成的 ID 应合法");
-    }
-
-    @Test
-    @DisplayName("测试校验 ID 合法性方法 - 正常情况")
-    public void testisValidId_Normal() {
+    @DisplayName("有效 ID 验证测试")
+    void validIdValidationTest() {
         long id = SnowflakeIdUtils.generateId();
-        assertTrue(SnowflakeIdUtils.isValidId(id), "生成的 ID 应合法");
+        assertTrue(SnowflakeIdUtils.isValidId(id), "生成的 ID 应有效");
     }
 
     @Test
-    @DisplayName("测试校验 ID 合法性方法 - 非法 ID")
-    public void testisValidId_Invalid() {
-        assertFalse(SnowflakeIdUtils.isValidId(0), "ID 0 应不合法");
-        assertFalse(SnowflakeIdUtils.isValidId(-1), "ID -1 应不合法");
-        assertFalse(SnowflakeIdUtils.isValidId(Long.MAX_VALUE), "ID Long.MAX_VALUE 应不合法");
+    @DisplayName("时钟回拨检测测试")
+    void clockBackwardDetectionTest() throws Exception {
+        Field lastTimestampField = SnowflakeIdUtils.class.getDeclaredField("lastTimestamp");
+        lastTimestampField.setAccessible(true);
+
+        long futureTimestamp = System.currentTimeMillis() + 1000;
+        lastTimestampField.set(null, futureTimestamp);
+
+        assertThrows(RuntimeException.class, SnowflakeIdUtils::generateId);
+
+        // 重置状态
+        lastTimestampField.set(null, -1L);
     }
 }
