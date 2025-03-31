@@ -30,6 +30,9 @@ public interface QueryMapper {
     // 认证信息：账号状态、用户身份
     public AuthData queryAuthInfo(Long uid);
 
+    // 登录之后，需要通过邮箱认证身份才能修改核心信息
+    public String queryEmail(Long uid);
+
 
     // ===================== 获取性查询（比如：展示业务） =====================
 

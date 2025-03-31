@@ -33,6 +33,11 @@
         select status, role from users_core_info where uid = #{uid}
     </select>
 
+    <!-- 登录之后，需要通过邮箱认证身份才能修改核心信息 -->
+    <select id="queryEmail" resultType="java.lang.String">
+        select email from users_core_info where uid = #{uid}
+    </select>
+
     <!-- ===================== 获取性查询（比如：展示业务） ===================== -->
     <!-- ~~~~~ users_basic_info 表 ~~~~~ -->
     <!-- 查询用户昵称、用户头像（直接对外） -->
