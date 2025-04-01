@@ -19,8 +19,8 @@ public final class FormatChecker {
     // 手机格式正则
     private static final Pattern CELLPHONE_REGEX = Pattern.compile("^1[3-9]\\d{9}$");
 
-    // 验证码格式，由 6 位数字或字母组成
-    private static final Pattern VERIFICATION_CODE_REGEX = Pattern.compile("^[a-zA-Z0-9]{6}$");
+    // 验证码格式，由 6 位数字组成
+    private static final Pattern VERIFICATION_CODE_REGEX = Pattern.compile("^[0-9]{6}$");
 
     // 昵称长度在 2 到 10 个字符（闭区间），可以包含中文、字母、数字和常用符号
     private static final Pattern NICKNAME_REGEX = Pattern.compile("^[\\u4e00-\\u9fa5a-zA-Z0-9_~!@#$%^&*()\\-+=<>?]{2,10}$");

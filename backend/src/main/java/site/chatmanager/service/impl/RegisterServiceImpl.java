@@ -11,6 +11,7 @@ import site.chatmanager.mapper.InsertMapper;
 import site.chatmanager.pojo.data.AccountData;
 import site.chatmanager.pojo.Result;
 import site.chatmanager.pojo.data.EmailData;
+import site.chatmanager.pojo.data.LoginData;
 import site.chatmanager.pojo.data.RegisterData;
 import site.chatmanager.service.common.RedisService;
 import site.chatmanager.service.common.VerifyCodeService;
@@ -135,7 +136,8 @@ public class RegisterServiceImpl implements RegisterService {
         // 检查格式
         boolean isLegal = FormatChecker.checkAccount(account)
                 && FormatChecker.checkPassword(password)
-                && FormatChecker.checkEmail(email);
+                && FormatChecker.checkEmail(email)
+                && FormatChecker.checkVerifyCode(verifyCode);
         if (!isLegal) {
             Result result = Result.failure("注册失败，格式不符合要求");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
@@ -179,11 +181,12 @@ public class RegisterServiceImpl implements RegisterService {
         int result3 = insertMapper.insertModelsConfig(uid);
         if (result1 <= 0 || result2 <= 0 || result3 <= 0) throw new CustomException("注册失败，服务器出错");
 
-        // 生成登录令牌
-        // ？？？
+        // 替用户自动登录
+        String token = JwtUtils.generateToken(uid, 0);
+        LoginData loginData = new LoginData(uid, 0, time, token);
 
         // 注册成功
-        Result result = Result.success("注册成功");
+        Result result = Result.success("注册成功", loginData);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

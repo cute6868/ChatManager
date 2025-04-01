@@ -9,7 +9,6 @@ import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("SnowflakeIdUtils 单元测试")
 public class SnowflakeIdUtilsTest {
 
     @Test

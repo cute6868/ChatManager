@@ -5,16 +5,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import site.chatmanager.exception.CustomException;
 import site.chatmanager.mapper.QueryMapper;
+import site.chatmanager.mapper.UpdateMapper;
 import site.chatmanager.pojo.Result;
 import site.chatmanager.pojo.data.AccountData;
 import site.chatmanager.pojo.data.AuthData;
 import site.chatmanager.pojo.data.EmailData;
+import site.chatmanager.pojo.data.LoginData;
 import site.chatmanager.service.LoginService;
 import site.chatmanager.service.common.RedisService;
 import site.chatmanager.service.common.VerifyCodeService;
 import site.chatmanager.utils.EncryptionUtils;
 import site.chatmanager.utils.FormatChecker;
+import site.chatmanager.utils.JwtUtils;
+
+import java.time.LocalDateTime;
 
 @Slf4j
 @Service
@@ -28,6 +34,8 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private UpdateMapper updateMapper;
 
     @Override
     public ResponseEntity<Result> sendVerifyCode(EmailData emailData) {
@@ -117,14 +125,19 @@ public class LoginServiceImpl implements LoginService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
 
-        // 进行登录 (获取uid和用户身份，生成登录令牌)
-        //data.getRole();
-        //uid
-        // 令牌加到用户的请求头吗？
-        // 更新登录时间
+        // 进行登录
+        // 1.生成JWT令牌
+        String token = JwtUtils.generateToken(uid, authData.getRole());
+        // 2.生成登录时间
+        LocalDateTime time = LocalDateTime.now();
+        // 3.更新登录时间
+        int num = updateMapper.updateLastLoginTime(uid, time);
+        if (num <= 0) throw new CustomException("登录失败，服务器出错");
+        // 4.填写响应数据
+        LoginData loginData = new LoginData(uid, authData.getRole(), time, token);
 
         // 登录成功
-        result = Result.success("登录成功");
+        result = Result.success("登录成功", loginData);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
@@ -168,13 +181,19 @@ public class LoginServiceImpl implements LoginService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
 
-        // 进行登录 (获取uid和用户身份，生成登录令牌)
-        //data.getUid();
-        //data.getRole();
-        // 更新登录时间
+        // 进行登录
+        // 1.生成JWT令牌
+        String token = JwtUtils.generateToken(authData.getUid(), authData.getRole());
+        // 2.生成登录时间
+        LocalDateTime time = LocalDateTime.now();
+        // 3.更新登录时间
+        int num = updateMapper.updateLastLoginTime(authData.getUid(), time);
+        if (num <= 0) throw new CustomException("登录失败，服务器出错");
+        // 4.填写响应数据
+        LoginData loginData = new LoginData(authData.getUid(), authData.getRole(), time, token);
 
         // 登录成功
-        result = Result.success("登录成功", "here_is_user_token");
+        result = Result.success("登录成功", loginData);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

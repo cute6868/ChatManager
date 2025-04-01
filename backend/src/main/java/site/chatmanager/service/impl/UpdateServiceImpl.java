@@ -1,46 +1,206 @@
 package site.chatmanager.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import site.chatmanager.enums.ServiceName;
+import site.chatmanager.exception.CustomException;
+import site.chatmanager.mapper.UpdateMapper;
 import site.chatmanager.pojo.Result;
+import site.chatmanager.pojo.data.ProfileData;
+import site.chatmanager.pojo.data.UpdateData;
 import site.chatmanager.service.UpdateService;
+import site.chatmanager.service.common.RedisService;
+import site.chatmanager.utils.EncryptionUtils;
+import site.chatmanager.utils.FormatChecker;
 
 @Slf4j
 @Service
 public class UpdateServiceImpl implements UpdateService {
+
+    @Autowired
+    private UpdateMapper updateMapper;
+
+    @Autowired
+    private RedisService redisService;
+
     @Override
-    public ResponseEntity<Result> sendVerifyCode(Long uid) {
-        return null;
+    public ResponseEntity<Result> updateUserNickname(Long uid, ProfileData data) {
+
+        // 获取昵称
+        String nickname = data.getNickname();
+
+        // 检测格式合法性
+        boolean isLegal = FormatChecker.checkNickname(nickname);
+        if (!isLegal) {
+            Result result = Result.failure("修改失败，格式不符合要求");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 更新昵称
+        int num = updateMapper.updateNickname(uid, nickname);
+        if (num <= 0) throw new CustomException("修改失败，服务器错误");
+
+        // 返回响应
+        Result result = Result.success("修改成功");
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @Override
-    public ResponseEntity<Result> updateUserNickname(Long uid, String nickname) {
-        return null;
-    }
+    public ResponseEntity<Result> updateUserAvatar(Long uid, ProfileData data) {
 
-    @Override
-    public ResponseEntity<Result> updateUserAvatar(Long uid, String avatar) {
-        return null;
+        // 获取头像
+        String avatar = data.getAvatar();
+
+        // 验证格式合法性
+        boolean isLegal = FormatChecker.checkAvatarUrl(avatar);
+        if (!isLegal) {
+            Result result = Result.failure("修改失败，格式不符合要求");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 更新头像
+        int num = updateMapper.updateAvatar(uid, avatar);
+        if (num <= 0) throw new CustomException("修改失败，服务器错误");
+
+        // 返回响应
+        Result result = Result.success("修改成功");
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @Override
     public ResponseEntity<Result> updateUserModelConfig(Long uid, String modelConfig) {
-        return null;
+        // 检测格式合法性
+        //boolean isLegal = FormatChecker.checkModelConfig(modelConfig);
+
+        // 更新配置
+        int num = updateMapper.updateModelsConfig(uid, modelConfig);
+        if (num <= 0) throw new CustomException("修改失败，服务器错误");
+
+        // 返回响应
+        Result result = Result.success("修改成功");
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @Override
-    public ResponseEntity<Result> updateUserAccount(Long uid, String account) {
-        return null;
+    public ResponseEntity<Result> updateUserAccount(Long uid, UpdateData data) {
+
+        // 获取账号和验证码
+        String account = data.getAccount();
+        String verifyCode = data.getVerifyCode();
+
+        // 检测格式合法性
+        boolean isLegal = FormatChecker.checkAccount(account)
+                && FormatChecker.checkVerifyCode(verifyCode);
+        if (!isLegal) {
+            Result result = Result.failure("修改失败，格式不符合要求");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 从redis中获取验证码
+        String redisKey = uid.toString() + ServiceName.UPDATE_ACCOUNT.getName();
+        String encryptedVerifyCodeInRedis = redisService.get(redisKey);
+        if (encryptedVerifyCodeInRedis == null) {
+            Result result = Result.failure("修改失败，验证码无效");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 检测验证码是否一致
+        String encryptedVerifyCode = EncryptionUtils.normalSecurityEncrypt(verifyCode);
+        boolean isEqual = encryptedVerifyCode.equals(encryptedVerifyCodeInRedis);
+        if (!isEqual) {
+            Result result = Result.failure("修改失败，验证码错误");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 更新账号
+        int num = updateMapper.updateAccount(uid, account);
+        if (num <= 0) throw new CustomException("修改失败，服务器错误");
+
+        // 返回响应
+        Result result = Result.success("修改成功");
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @Override
-    public ResponseEntity<Result> updateUserPassword(Long uid, String password) {
-        return null;
+    public ResponseEntity<Result> updateUserPassword(Long uid, UpdateData data) {
+
+        // 获取密码和验证码
+        String password = data.getPassword();
+        String verifyCode = data.getVerifyCode();
+
+        // 检测格式合法性
+        boolean isLegal = FormatChecker.checkPassword(password)
+                && FormatChecker.checkVerifyCode(verifyCode);
+        if (!isLegal) {
+            Result result = Result.failure("修改失败，格式不符合要求");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 从redis中获取验证码
+        String redisKey = uid.toString() + ServiceName.UPDATE_PASSWORD.getName();
+        String encryptedVerifyCodeInRedis = redisService.get(redisKey);
+        if (encryptedVerifyCodeInRedis == null) {
+            Result result = Result.failure("修改失败，验证码无效");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 检测验证码是否一致
+        String encryptedVerifyCode = EncryptionUtils.normalSecurityEncrypt(verifyCode);
+        boolean isEqual = encryptedVerifyCode.equals(encryptedVerifyCodeInRedis);
+        if (!isEqual) {
+            Result result = Result.failure("修改失败，验证码错误");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 更新密码
+        int num = updateMapper.updatePassword(uid, EncryptionUtils.highSecurityEncrypt(password));
+        if (num <= 0) throw new CustomException("修改失败，服务器错误");
+
+        // 返回响应
+        Result result = Result.success("修改成功");
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @Override
-    public ResponseEntity<Result> updateUserEmail(Long uid, String email) {
-        return null;
+    public ResponseEntity<Result> updateUserEmail(Long uid, UpdateData data) {
+
+        // 获取邮箱和验证码
+        String email = data.getEmail();
+        String verifyCode = data.getVerifyCode();
+
+        // 检测格式合法性
+        boolean isLegal = FormatChecker.checkEmail(email)
+                && FormatChecker.checkVerifyCode(verifyCode);
+        if (!isLegal) {
+            Result result = Result.failure("修改失败，格式不符合要求");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 从redis中获取验证码
+        String redisKey = uid.toString() + ServiceName.UPDATE_EMAIL.getName();
+        String encryptedVerifyCodeInRedis = redisService.get(redisKey);
+        if (encryptedVerifyCodeInRedis == null) {
+            Result result = Result.failure("修改失败，验证码无效");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 检测验证码是否一致
+        String encryptedVerifyCode = EncryptionUtils.normalSecurityEncrypt(verifyCode);
+        boolean isEqual = encryptedVerifyCode.equals(encryptedVerifyCodeInRedis);
+        if (!isEqual) {
+            Result result = Result.failure("修改失败，验证码错误");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 更新邮箱
+        int num = updateMapper.updateEmail(uid, EncryptionUtils.normalSecurityEncrypt(email));
+        if (num <= 0) throw new CustomException("修改失败，服务器错误");
+
+        // 返回响应
+        Result result = Result.success("修改成功");
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import site.chatmanager.pojo.Result;
 
 @Slf4j
@@ -26,6 +28,14 @@ public class GlobalExceptionHandler {
         String exceptionMessage = e.getMessage();
         Result result = Result.failure(-2, exceptionMessage);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+    }
+
+    // 捕获资源不存在异常
+    @ExceptionHandler
+    public ResponseEntity<Result> handleNoResourceFoundException(NoResourceFoundException e) {
+        log.info("资源不存在(404)：", e);
+        Result result = Result.failure(1, "资源不存在");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
     }
 
 }

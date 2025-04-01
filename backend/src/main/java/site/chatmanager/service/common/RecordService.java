@@ -36,13 +36,10 @@ public class RecordService {
 
         // 获取记录序号
         SequenceData sn = queryMapper.queryRecordSequenceNum(uid);
+        if (sn == null) return null;
+
         Integer newest = sn.getNewest();
         Integer oldest = sn.getOldest();
-
-        // 判断指针是否为空
-        if (newest == null || oldest == null) {
-            return null;
-        }
 
         // 获取所有历史记录
         List<RecordData> allRecords = queryMapper.queryRecord(uid);

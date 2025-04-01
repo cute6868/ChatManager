@@ -5,9 +5,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class AuthData {
-    private Long uid;
-    private Integer status;
-    private Integer role;
+public class UpdateData {
+    private String account;
     private String password;
+    private String email;
+    private String verifyCode;
 }
