@@ -34,8 +34,9 @@ public class VerifyCodeService {
         String verifyCode = VerifyCodeGenerator.generateCode();
 
         // 发送验证码
-        String mailSubject = "ChatManager服务中心";
-        String mailText = "您的验证码是：" + verifyCode + "，请在5分钟内完成验证。";
+        String mailSubject = "ChatManager 服务中心";
+        String mailText = "尊敬的用户，欢迎使用 ChatManager 服务。<br /><br />" +
+                "您的验证码：<strong>" + verifyCode + "</strong>，请在 5 分钟内完成验证。";
         emailSender.sendMail(email, mailSubject, mailText);
 
         // 将邮箱和验证码进行普通安全加密，然后保存到 redis 里面
@@ -63,8 +64,10 @@ public class VerifyCodeService {
         String verifyCode = VerifyCodeGenerator.generateCode();
 
         // 发送验证码
-        String mailSubject = "ChatManager服务中心";
-        String mailText = "尊敬的ChatManager用户您好，我们收到您账户的[" + serviceName.getName() + "]请求，若这是您本人操作，请输入验证码：" + verifyCode + "，并在5分钟内完成验证，若您未发起此请求，您的账号可能已被盗用，请立即联系客服。";
+        String mailSubject = "ChatManager 服务中心";
+        String mailText = "尊敬的用户，我们收到来自您账户的“<strong>" + serviceName.getName() + "</strong>”请求。<br /><br />" +
+                "若这是您本人操作，请输入验证码：<strong>" + verifyCode + "</strong>，并在 5 分钟内完成验证。<br /><br />" +
+                "若您未发起此请求，您的账号可能已被盗用，请立即联系客服。";
         emailSender.sendMail(email, mailSubject, mailText);
 
         // 将邮箱和验证码进行普通安全加密，然后保存到 redis 里面

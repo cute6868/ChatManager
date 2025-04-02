@@ -15,6 +15,7 @@ import site.chatmanager.service.UpdateService;
 import site.chatmanager.service.common.RedisService;
 import site.chatmanager.utils.EncryptionUtils;
 import site.chatmanager.utils.FormatChecker;
+import site.chatmanager.utils.PresenceCheck;
 
 @Slf4j
 @Service
@@ -99,6 +100,13 @@ public class UpdateServiceImpl implements UpdateService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
 
+        // 检测账号是否存在
+        boolean isPresent = PresenceCheck.checkAccount(account);
+        if (isPresent) {
+            Result result = Result.failure("修改失败，该账号已被使用");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
         // 从redis中获取验证码
         String redisKey = uid.toString() + ServiceName.UPDATE_ACCOUNT.getName();
         String encryptedVerifyCodeInRedis = redisService.get(redisKey);
@@ -176,6 +184,13 @@ public class UpdateServiceImpl implements UpdateService {
                 && FormatChecker.checkVerifyCode(verifyCode);
         if (!isLegal) {
             Result result = Result.failure("修改失败，格式不符合要求");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 检测邮箱是否存在
+        boolean isPresent = PresenceCheck.checkEmail(email);
+        if (isPresent) {
+            Result result = Result.failure("修改失败，该邮箱已被使用");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
 

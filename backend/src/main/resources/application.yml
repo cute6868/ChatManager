@@ -10,7 +10,7 @@ spring:
   mail:
     host: smtp.qq.com  # 以qq为例
     port: 587
-    username: 1029044696@qq.com  # QQ 邮箱名称
+    username: authteam@qq.com  # QQ 邮箱名称
     password: hxhlrzfxfimmbbee  # QQ 邮箱的 SMTP 授权码
     properties:
       mail:
