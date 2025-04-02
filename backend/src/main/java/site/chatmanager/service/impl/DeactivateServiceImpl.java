@@ -62,7 +62,7 @@ public class DeactivateServiceImpl implements DeactivateService {
         // 从而实现用户退出登录
 
         // 返回响应
-        Result result = Result.success("您已注销");
+        Result result = Result.success("账号已注销");
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }
