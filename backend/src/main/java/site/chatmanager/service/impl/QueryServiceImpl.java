@@ -31,6 +31,10 @@ public class QueryServiceImpl implements QueryService {
 
         // 查询用户昵称、用户头像
         ProfileData data = queryMapper.queryProfile(uid);
+        if (data == null) {
+            Result result = Result.failure("数据为空");
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        }
 
         // 返回数据
         Result result = Result.success("查询成功", data);
@@ -43,6 +47,10 @@ public class QueryServiceImpl implements QueryService {
 
         // 查询用户记录
         List<RecordData> data = recordService.getRecord(uid);
+        if (data == null) {
+            Result result = Result.failure("数据为空");
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        }
 
         // 返回数据
         Result result = Result.success("查询成功", data);
@@ -55,6 +63,10 @@ public class QueryServiceImpl implements QueryService {
 
         // 查询用户联系信息：账号、邮箱、手机号
         ContactData data = queryMapper.queryContactInfo(uid);
+        if (data == null) {
+            Result result = Result.failure("数据为空");
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        }
 
         // 解密邮箱，解密手机号
         data.setEmail(EncryptionUtils.normalSecurityDecrypt(data.getEmail()));
@@ -70,6 +82,10 @@ public class QueryServiceImpl implements QueryService {
 
         // 查询用户模型配置
         String data = queryMapper.queryModelsConfig(uid);
+        if (data == null) {
+            Result result = Result.failure("数据为空");
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        }
 
         // 返回数据
         Result result = Result.success("查询成功", data);

@@ -52,9 +52,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         // 4.验证 token 有效性，若无效则返回无效令牌错误
-        if (token.startsWith("Bearer ")) {
-            token = token.substring(7); // 如果有Bearer前缀，则去除
-        }
+        if (token.startsWith("Bearer ")) token = token.substring(7); // 如果有Bearer前缀，则去除
         Object[] infoFromToken = JwtUtils.getInfoFromToken(token);
         if (infoFromToken == null) {
             // 解析失败，说明 token 无效，用户并没有成功登录

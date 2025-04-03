@@ -48,6 +48,7 @@ public class DeactivateServiceImpl implements DeactivateService {
         }
 
         // 解析 JWT 获取 uid 和 jti
+        if (token.startsWith("Bearer ")) token = token.substring(7); // 如果有Bearer前缀，则去除
         Object[] infoFromToken = JwtUtils.getInfoFromToken(token);
         if (infoFromToken == null) {
             Result result = Result.failure("无效令牌");
