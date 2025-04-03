@@ -6,7 +6,7 @@ import site.chatmanager.pojo.Result;
 public interface LogoutService {
 
     // 退出登录
-    public ResponseEntity<Result> logout(Long uid);
+    public ResponseEntity<Result> logout(String token);
 
 }
 

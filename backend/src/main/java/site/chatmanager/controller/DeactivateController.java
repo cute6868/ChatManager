@@ -16,7 +16,7 @@ public class DeactivateController {
 
     // 注销账号
     @DeleteMapping("/{uid}")
-    public ResponseEntity<Result> deactivateAccount(@PathVariable("uid") Long uid, @RequestBody UpdateData data) {
-        return deactivateService.deactivateAccount(uid, data);
+    public ResponseEntity<Result> deactivateAccount(@RequestHeader("Authorization") String token, @RequestBody UpdateData data) {
+        return deactivateService.deactivateAccount(token, data);
     }
 }

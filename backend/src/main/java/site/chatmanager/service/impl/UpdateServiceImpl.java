@@ -114,6 +114,7 @@ public class UpdateServiceImpl implements UpdateService {
             Result result = Result.failure("修改失败，验证码无效");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
+        redisService.del(redisKey);
 
         // 检测验证码是否一致
         String encryptedVerifyCode = EncryptionUtils.normalSecurityEncrypt(verifyCode);
@@ -154,6 +155,7 @@ public class UpdateServiceImpl implements UpdateService {
             Result result = Result.failure("修改失败，验证码无效");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
+        redisService.del(redisKey);
 
         // 检测验证码是否一致
         String encryptedVerifyCode = EncryptionUtils.normalSecurityEncrypt(verifyCode);
@@ -201,6 +203,7 @@ public class UpdateServiceImpl implements UpdateService {
             Result result = Result.failure("修改失败，验证码无效");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
+        redisService.del(redisKey);
 
         // 检测验证码是否一致
         String encryptedVerifyCode = EncryptionUtils.normalSecurityEncrypt(verifyCode);

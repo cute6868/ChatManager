@@ -3,10 +3,12 @@ package site.chatmanager.interceptor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import site.chatmanager.pojo.Result;
+import site.chatmanager.service.common.RedisService;
 import site.chatmanager.utils.JwtUtils;
 
 import java.io.PrintWriter;
@@ -15,6 +17,9 @@ import java.util.regex.Pattern;
 
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
+
+    @Autowired
+    private RedisService redisService;
 
     private static final Pattern UID_PATTERN = Pattern.compile("/(\\d+)(/|$)");
 
@@ -65,8 +70,16 @@ public class AuthInterceptor implements HandlerInterceptor {
             }
         }
 
+        // 5.检查 token 的 jti 是否在黑名单中
+        Long uid = (Long) infoFromToken[0];
+        String jti = (String) infoFromToken[2];
+        String blacklistKey = "b:uid:" + uid;
+        if (redisService.isMemberOfZSetAndValid(blacklistKey, jti)) {
+            sendErrorResult(response, "令牌已失效，请重新登录");
+            return false;
+        }
+
         // 5.检查请求路径是否需要验证 uid
-        Long jwtUid = (Long) infoFromToken[0];
         if (path.contains("/api/query/")
                 || path.contains("/api/chat/")
                 || path.contains("/api/logout/")
@@ -79,7 +92,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                 try {
                     Long pathUid = Long.parseLong(matcher.group(1));
                     // 比较路径中的 uid 和 token 中的 uid
-                    if (!jwtUid.equals(pathUid)) {
+                    if (!uid.equals(pathUid)) {
                         sendErrorResult(response, "请求不合法");
                         return false;
                     }

@@ -7,6 +7,6 @@ import site.chatmanager.pojo.data.UpdateData;
 public interface DeactivateService {
 
     // 注销账号
-    public ResponseEntity<Result> deactivateAccount(Long uid, UpdateData data);
+    public ResponseEntity<Result> deactivateAccount(String token, UpdateData data);
 
 }
