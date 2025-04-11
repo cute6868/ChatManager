@@ -1,6 +1,11 @@
 package site.chatmanager.utils;
 
+import site.chatmanager.enums.Model;
+
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public final class FormatChecker {
 
@@ -27,6 +32,11 @@ public final class FormatChecker {
 
     // 头像链接格式校验，简单校验以 http 或 https 开头
     private static final Pattern AVATAR_URL_REGEX = Pattern.compile("^https?://.*$");
+
+    // 预先缓存合法模型名称的 Set
+    private static final Set<String> VALID_MODELS = Set.of(Model.values()).stream()
+            .map(Model::getName)
+            .collect(Collectors.toSet());
 
 
     // 账号格式校验
@@ -69,6 +79,18 @@ public final class FormatChecker {
     public static boolean checkAvatarUrl(String avatarUrl) {
         if (avatarUrl == null) return false;
         return AVATAR_URL_REGEX.matcher(avatarUrl).matches();
+    }
+
+    // checkModelList合法性校验
+    public static boolean checkModelList(List<String> modelList) {
+        if (modelList == null || modelList.isEmpty()) return false;
+
+        for (String modelName : modelList) {
+            if (!VALID_MODELS.contains(modelName)) {
+                return false; // 如果发现不合法的模型名称，立即返回 false
+            }
+        }
+        return true; // 如果所有模型名称都合法，返回 true
     }
 
 }

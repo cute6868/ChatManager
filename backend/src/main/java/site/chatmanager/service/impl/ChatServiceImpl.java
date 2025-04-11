@@ -9,8 +9,11 @@ import site.chatmanager.mapper.QueryMapper;
 import site.chatmanager.pojo.data.DialogData;
 import site.chatmanager.service.ChatService;
 import site.chatmanager.pojo.Result;
+import site.chatmanager.utils.FormatChecker;
 
 import java.util.List;
+
+import static site.chatmanager.api.API.askQuestion;
 
 @Slf4j
 @Service
@@ -35,16 +38,18 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public ResponseEntity<Result> chat(Long uid, DialogData data) {
 
-        // 1.用户选择了哪些模型
-        List<String> models = data.getModels();
-
-        // 2.用户询问了什么问题
         String question = data.getQuestion();
+        List<String> modelList = data.getModelList();   // 获取用户选择的模型
 
-        // 3.同时发送问题，模型开始回答
+        // 检查用户选择的模型是否合法
+        boolean isLegal = FormatChecker.checkModelList(modelList);
+        if (!isLegal) {
+            Result result = Result.failure("模型选择不符合要求");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
 
-
-        // 4.多个模型实时回答的内容，要实时都返回给用户
+        // 调用api模块的功能，获取回答结果
+        String answer = askQuestion(question, modelList);
 
         // 返回数据内容
         Result result = Result.success();

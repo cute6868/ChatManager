@@ -9,7 +9,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class DialogData {
-    private LocalDateTime time;
     private String question;
-    private List<String> models;
+    private List<String> modelList;
 }
