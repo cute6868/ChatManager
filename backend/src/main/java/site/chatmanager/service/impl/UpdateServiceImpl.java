@@ -15,7 +15,10 @@ import site.chatmanager.service.UpdateService;
 import site.chatmanager.service.common.RedisService;
 import site.chatmanager.utils.EncryptionUtils;
 import site.chatmanager.utils.FormatChecker;
+import site.chatmanager.utils.ModelsConfigChecker;
 import site.chatmanager.utils.PresenceCheck;
+
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -74,7 +77,17 @@ public class UpdateServiceImpl implements UpdateService {
     @Override
     public ResponseEntity<Result> updateUserModelConfig(Long uid, String modelConfig) {
         // 检测格式合法性
-        //boolean isLegal = FormatChecker.checkModelConfig(modelConfig);
+        if (modelConfig == null || modelConfig.isEmpty()) {
+            Result result = Result.failure("修改失败，格式不符合要求");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        // 解析配置：如果Json数据是正确的，则返回配置对象；如果Json数据是错误的，则返回null
+        Map<String,Map<String, String>> config = ModelsConfigChecker.validateAndParseConfig(modelConfig);
+        if (config == null) {
+            Result result = Result.failure("修改失败，格式不符合要求");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
 
         // 更新配置
         int num = updateMapper.updateModelsConfig(uid, modelConfig);

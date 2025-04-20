@@ -3,6 +3,7 @@ package site.chatmanager.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import site.chatmanager.pojo.Result;
 import site.chatmanager.pojo.data.DialogData;
 import site.chatmanager.service.ChatService;
@@ -22,7 +23,7 @@ public class ChatController {
 
     // 发起聊天
     @PostMapping("/{uid}")
-    public ResponseEntity<Result> chat(@PathVariable("uid") Long uid, @RequestBody DialogData data) {
+    public ResponseEntity<StreamingResponseBody> chat(@PathVariable("uid") Long uid, @RequestBody DialogData data) {
         return chatService.chat(uid, data);
     }
 }

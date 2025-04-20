@@ -4,24 +4,24 @@ import lombok.Getter;
 
 @Getter
 public enum Model {
-    DEEPSEEK("deepseek-r1"),
-    DOUBAO("doubao");
+    DEEPSEEK(0, "DeepSeek"),
+    DOUBAO(1, "DouBao");
 
-    // 获取枚举常量的名称
+    private final int modelId;
     private final String name;
 
-    // 构造函数，用于初始化每个枚举常量的名称
-    Model(String name) {
+    Model(int modelId, String name) {
+        this.modelId = modelId;
         this.name = name;
     }
 
-    // 根据名称获取枚举常量
-    public static Model getByName(String name) {
+    // 新增一个静态方法，通过modelId获取Model枚举
+    public static Model fromId(int modelId) {
         for (Model model : Model.values()) {
-            if (model.getName().equals(name)) {
+            if (model.getModelId() == modelId) {
                 return model;
             }
         }
-        return null;
+        throw new IllegalArgumentException("无效的模型ID: " + modelId);
     }
 }
