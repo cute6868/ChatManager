@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import site.chatmanager.pojo.Result;
+import site.chatmanager.pojo.universal.Result;
 import site.chatmanager.service.LogoutService;
 
 @RestController

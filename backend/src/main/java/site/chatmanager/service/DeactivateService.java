@@ -1,8 +1,8 @@
 package site.chatmanager.service;
 
 import org.springframework.http.ResponseEntity;
-import site.chatmanager.pojo.Result;
-import site.chatmanager.pojo.data.UpdateData;
+import site.chatmanager.pojo.universal.Result;
+import site.chatmanager.pojo.container.UpdateData;
 
 public interface DeactivateService {
 

@@ -12,7 +12,7 @@ import java.util.UUID;
 public class JwtUtils {
 
     // 密钥，用于加密和解密 JWT 令牌
-    private static final String SECRET_KEY = "9#46Dn!76Rz@vF1f%40Bb%";
+    private static final String SECRET_KEY = "5#24Dn!36Rz@mF9f%70B2%";
 
     // 令牌有效期，这里设置为 1 天
     public static final long EXPIRATION_TIME = 24 * 60 * 60 * 1000;

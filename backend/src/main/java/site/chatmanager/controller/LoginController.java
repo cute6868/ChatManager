@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import site.chatmanager.pojo.Result;
-import site.chatmanager.pojo.data.AccountData;
-import site.chatmanager.pojo.data.EmailData;
+import site.chatmanager.pojo.universal.Result;
+import site.chatmanager.pojo.container.AccountData;
+import site.chatmanager.pojo.container.EmailData;
 import site.chatmanager.service.LoginService;
 
 @RestController

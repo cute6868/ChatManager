@@ -1,10 +1,10 @@
 package site.chatmanager.service;
 
 import org.springframework.http.ResponseEntity;
-import site.chatmanager.pojo.data.AccountData;
-import site.chatmanager.pojo.data.EmailData;
-import site.chatmanager.pojo.data.RegisterData;
-import site.chatmanager.pojo.Result;
+import site.chatmanager.pojo.container.AccountData;
+import site.chatmanager.pojo.container.EmailData;
+import site.chatmanager.pojo.container.RegisterData;
+import site.chatmanager.pojo.universal.Result;
 
 public interface RegisterService {
 

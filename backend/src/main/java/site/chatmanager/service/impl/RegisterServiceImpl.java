@@ -8,15 +8,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.chatmanager.exception.CustomException;
 import site.chatmanager.mapper.InsertMapper;
-import site.chatmanager.pojo.data.AccountData;
-import site.chatmanager.pojo.Result;
-import site.chatmanager.pojo.data.EmailData;
-import site.chatmanager.pojo.data.LoginData;
-import site.chatmanager.pojo.data.RegisterData;
-import site.chatmanager.service.common.RedisService;
-import site.chatmanager.service.common.VerifyCodeService;
-import site.chatmanager.service.RegisterService;
 import site.chatmanager.utils.*;
+import site.chatmanager.pojo.container.AccountData;
+import site.chatmanager.pojo.universal.Result;
+import site.chatmanager.pojo.container.EmailData;
+import site.chatmanager.pojo.container.LoginData;
+import site.chatmanager.pojo.container.RegisterData;
+import site.chatmanager.service.universal.RedisService;
+import site.chatmanager.service.universal.VerifyCodeService;
+import site.chatmanager.service.RegisterService;
 
 import java.time.LocalDateTime;
 

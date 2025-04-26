@@ -6,12 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import site.chatmanager.mapper.QueryMapper;
-import site.chatmanager.pojo.Result;
-import site.chatmanager.pojo.data.ContactData;
-import site.chatmanager.pojo.data.ProfileData;
-import site.chatmanager.pojo.data.RecordData;
+import site.chatmanager.pojo.universal.Result;
+import site.chatmanager.pojo.container.ContactData;
+import site.chatmanager.pojo.container.ProfileData;
+import site.chatmanager.pojo.container.RecordData;
 import site.chatmanager.service.QueryService;
-import site.chatmanager.service.common.RecordService;
+import site.chatmanager.service.universal.RecordService;
 import site.chatmanager.utils.EncryptionUtils;
 
 import java.util.List;

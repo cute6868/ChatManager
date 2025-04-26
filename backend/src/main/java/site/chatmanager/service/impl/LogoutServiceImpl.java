@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import site.chatmanager.exception.CustomException;
-import site.chatmanager.pojo.Result;
+import site.chatmanager.pojo.universal.Result;
 import site.chatmanager.service.LogoutService;
-import site.chatmanager.service.common.RedisService;
+import site.chatmanager.service.universal.RedisService;
 import site.chatmanager.utils.JwtUtils;
 
 @Slf4j

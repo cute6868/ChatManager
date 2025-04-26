@@ -5,8 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import site.chatmanager.enums.ServiceName;
 import site.chatmanager.mapper.QueryMapper;
-import site.chatmanager.pojo.Result;
-import site.chatmanager.service.common.VerifyCodeService;
+import site.chatmanager.pojo.universal.Result;
+import site.chatmanager.service.universal.VerifyCodeService;
 import site.chatmanager.utils.EncryptionUtils;
 
 @RestController

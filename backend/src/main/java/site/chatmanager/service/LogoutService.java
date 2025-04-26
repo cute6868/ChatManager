@@ -1,7 +1,7 @@
 package site.chatmanager.service;
 
 import org.springframework.http.ResponseEntity;
-import site.chatmanager.pojo.Result;
+import site.chatmanager.pojo.universal.Result;
 
 public interface LogoutService {
 

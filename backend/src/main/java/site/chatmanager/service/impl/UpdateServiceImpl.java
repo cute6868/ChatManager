@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service;
 import site.chatmanager.enums.ServiceName;
 import site.chatmanager.exception.CustomException;
 import site.chatmanager.mapper.UpdateMapper;
-import site.chatmanager.pojo.Result;
-import site.chatmanager.pojo.data.ProfileData;
-import site.chatmanager.pojo.data.UpdateData;
+import site.chatmanager.pojo.universal.Result;
+import site.chatmanager.pojo.container.ProfileData;
+import site.chatmanager.pojo.container.UpdateData;
 import site.chatmanager.service.UpdateService;
-import site.chatmanager.service.common.RedisService;
+import site.chatmanager.service.universal.RedisService;
 import site.chatmanager.utils.EncryptionUtils;
 import site.chatmanager.utils.FormatChecker;
-import site.chatmanager.utils.ModelsConfigChecker;
+import site.chatmanager.model.utils.ModelConfigChecker;
 import site.chatmanager.utils.PresenceCheck;
 
 import java.util.Map;
@@ -83,7 +83,7 @@ public class UpdateServiceImpl implements UpdateService {
         }
 
         // 解析配置：如果Json数据是正确的，则返回配置对象；如果Json数据是错误的，则返回null
-        Map<String,Map<String, String>> config = ModelsConfigChecker.validateAndParseConfig(modelConfig);
+        Map<String,Map<String, String>> config = ModelConfigChecker.validateAndParseConfig(modelConfig);
         if (config == null) {
             Result result = Result.failure("修改失败，格式不符合要求");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);

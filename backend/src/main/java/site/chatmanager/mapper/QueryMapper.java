@@ -2,7 +2,7 @@ package site.chatmanager.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import site.chatmanager.pojo.data.*;
+import site.chatmanager.pojo.container.*;
 
 import java.time.LocalDateTime;
 import java.util.List;

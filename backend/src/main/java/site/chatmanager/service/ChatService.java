@@ -1,16 +1,12 @@
 package site.chatmanager.service;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-import site.chatmanager.pojo.Result;
-import site.chatmanager.pojo.data.DialogData;
+import site.chatmanager.pojo.universal.Result;
+import site.chatmanager.pojo.chat.UserChatRequest;
 
 public interface ChatService {
 
-    // 推荐内容
-    public ResponseEntity<Result> recommend(Long uid);
-
-    // 发起聊天
-    public ResponseEntity<StreamingResponseBody> chat(Long uid, DialogData data);
+    // 处理用户聊天请求
+    ResponseEntity<Result> processRequest(Long uid, UserChatRequest request);
 
 }

@@ -3,9 +3,8 @@ package site.chatmanager.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-import site.chatmanager.pojo.Result;
-import site.chatmanager.pojo.data.DialogData;
+import site.chatmanager.pojo.universal.Result;
+import site.chatmanager.pojo.chat.UserChatRequest;
 import site.chatmanager.service.ChatService;
 
 @RestController
@@ -15,15 +14,9 @@ public class ChatController {
     @Autowired
     private ChatService chatService;
 
-    // 推荐内容
-    @GetMapping("/{uid}/recommend")
-    public ResponseEntity<Result> recommend(@PathVariable("uid") Long uid) {
-        return chatService.recommend(uid);
-    }
-
     // 发起聊天
     @PostMapping("/{uid}")
-    public ResponseEntity<StreamingResponseBody> chat(@PathVariable("uid") Long uid, @RequestBody DialogData data) {
-        return chatService.chat(uid, data);
+    public ResponseEntity<Result> chat(@PathVariable("uid") Long uid, @RequestBody UserChatRequest request) {
+        return chatService.processRequest(uid, request);
     }
 }

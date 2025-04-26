@@ -8,9 +8,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 public class App {
-
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
     }
-
 }

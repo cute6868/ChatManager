@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import site.chatmanager.pojo.Result;
-import site.chatmanager.service.common.RedisService;
+import site.chatmanager.pojo.universal.Result;
+import site.chatmanager.service.universal.RedisService;
 import site.chatmanager.utils.JwtUtils;
 
 import java.io.PrintWriter;
@@ -55,8 +55,14 @@ public class AuthInterceptor implements HandlerInterceptor {
         if (token.startsWith("Bearer ")) token = token.substring(7); // 如果有Bearer前缀，则去除
         Object[] infoFromToken = JwtUtils.getInfoFromToken(token);
         if (infoFromToken == null) {
-            // 解析失败，说明 token 无效，用户并没有成功登录
-            // 返回 401 错误
+            // 解析失败，说明 token 无效，返回无效令牌错误
+
+            // 但是如果发送的是登录或注册请求（说明可能令牌过期了导致无效，允许重新登录）
+            if (path.contains("/api/login") || path.contains("/api/register")) {
+                return true; // 直接放行
+            }
+
+            // 否则，返回 401 错误
             sendErrorResult(response, "无效令牌");
             return false;
         } else {
