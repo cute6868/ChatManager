@@ -85,24 +85,24 @@ public class RecordService {
     // 添加历史记录
     @Transactional
     public boolean addHistory(Long uid, String question) {
-
-        // 获取历史记录指针
-        SequenceData sn = queryMapper.queryRecordSequenceNum(uid);
-        Integer newest = sn.getNewest();
-        Integer oldest = sn.getOldest();
-
         // 准备数据
         long id = SnowflakeIdUtils.generateId();    // 通过雪花算法生成唯一id
         LocalDateTime time = LocalDateTime.now();  // 获取当前时间
 
+        // 获取历史记录指针
+        SequenceData sn = queryMapper.queryRecordSequenceNum(uid);
+
         // 如果指针为空，则说明是第一次添加记录
-        if (newest == null || oldest == null) {
+        if (sn == null) {
             int result1 = insertMapper.insertRecord(id, uid, time, question, 1);  // 插入第一条记录
             int result2 = insertMapper.insertRecordSequenceNum(uid, 1, 1);  // 插入历史记录指针
             return result1 > 0 && result2 > 0;
         }
 
         // 如果指针不为空，则说明已经有记录了
+        Integer newest = sn.getNewest();
+        Integer oldest = sn.getOldest();
+
         // 先更新指针
         newest = newest + 1;
 

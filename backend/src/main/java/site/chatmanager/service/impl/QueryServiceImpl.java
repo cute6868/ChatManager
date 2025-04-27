@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import site.chatmanager.mapper.QueryMapper;
+import site.chatmanager.pojo.container.ModelsConfig;
 import site.chatmanager.pojo.universal.Result;
 import site.chatmanager.pojo.container.ContactData;
 import site.chatmanager.pojo.container.ProfileData;
@@ -87,8 +88,12 @@ public class QueryServiceImpl implements QueryService {
             return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
+        // 为了使用 JsonRawValue，要对数据进行封装
+        ModelsConfig modelsConfig = new ModelsConfig();
+        modelsConfig.setConfig(data);
+
         // 返回数据
-        Result result = Result.success("查询成功", data);
+        Result result = Result.success("查询成功", modelsConfig);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

@@ -121,7 +121,7 @@ public class UpdateServiceImpl implements UpdateService {
         }
 
         // 从redis中获取验证码
-        String redisKey = uid.toString() + ServiceName.UPDATE_ACCOUNT.getName();
+        String redisKey = uid.toString() + ServiceName.UPDATE_ACCOUNT.getAlias();
         String encryptedVerifyCodeInRedis = redisService.get(redisKey);
         if (encryptedVerifyCodeInRedis == null) {
             Result result = Result.failure("修改失败，验证码无效");
@@ -162,7 +162,7 @@ public class UpdateServiceImpl implements UpdateService {
         }
 
         // 从redis中获取验证码
-        String redisKey = uid.toString() + ServiceName.UPDATE_PASSWORD.getName();
+        String redisKey = uid.toString() + ServiceName.UPDATE_PASSWORD.getAlias();
         String encryptedVerifyCodeInRedis = redisService.get(redisKey);
         if (encryptedVerifyCodeInRedis == null) {
             Result result = Result.failure("修改失败，验证码无效");
@@ -193,6 +193,7 @@ public class UpdateServiceImpl implements UpdateService {
         // 获取邮箱和验证码
         String email = data.getEmail();
         String verifyCode = data.getVerifyCode();
+        String secondVerifyCode = data.getSecondVerifyCode();
 
         // 检测格式合法性
         boolean isLegal = FormatChecker.checkEmail(email)
@@ -210,7 +211,7 @@ public class UpdateServiceImpl implements UpdateService {
         }
 
         // 从redis中获取验证码
-        String redisKey = uid.toString() + ServiceName.UPDATE_EMAIL.getName();
+        String redisKey = uid.toString() + ServiceName.UPDATE_EMAIL.getAlias();
         String encryptedVerifyCodeInRedis = redisService.get(redisKey);
         if (encryptedVerifyCodeInRedis == null) {
             Result result = Result.failure("修改失败，验证码无效");
@@ -225,6 +226,10 @@ public class UpdateServiceImpl implements UpdateService {
             Result result = Result.failure("修改失败，验证码错误");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
+
+        // 检查更改后邮箱的验证码（secondVerifyCode），以确保新邮箱是用户自己的
+
+
 
         // 更新邮箱
         int num = updateMapper.updateEmail(uid, EncryptionUtils.normalSecurityEncrypt(email));

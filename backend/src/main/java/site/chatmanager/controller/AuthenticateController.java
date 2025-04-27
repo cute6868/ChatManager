@@ -26,7 +26,7 @@ public class AuthenticateController {
         String email = EncryptionUtils.normalSecurityDecrypt(queryMapper.queryEmail(uid));
 
         // 设置redis中的key
-        String redisKey = uid.toString() + ServiceName.UPDATE_ACCOUNT.getName();
+        String redisKey = uid.toString() + ServiceName.UPDATE_ACCOUNT.getAlias();
 
         // 发送验证码
         return verifyCodeService.sendVerifyCode(email, ServiceName.UPDATE_ACCOUNT, redisKey);
@@ -39,7 +39,7 @@ public class AuthenticateController {
         String email = EncryptionUtils.normalSecurityDecrypt(queryMapper.queryEmail(uid));
 
         // 设置redis中的key
-        String redisKey = uid.toString() + ServiceName.UPDATE_PASSWORD.getName();
+        String redisKey = uid.toString() + ServiceName.UPDATE_PASSWORD.getAlias();
 
         // 发送验证码
         return verifyCodeService.sendVerifyCode(email, ServiceName.UPDATE_PASSWORD, redisKey);
@@ -52,7 +52,7 @@ public class AuthenticateController {
         String email = EncryptionUtils.normalSecurityDecrypt(queryMapper.queryEmail(uid));
 
         // 设置redis中的key
-        String redisKey = uid.toString() + ServiceName.UPDATE_EMAIL.getName();
+        String redisKey = uid.toString() + ServiceName.UPDATE_EMAIL.getAlias();
 
         // 发送验证码
         return verifyCodeService.sendVerifyCode(email, ServiceName.UPDATE_EMAIL, redisKey);
@@ -65,7 +65,7 @@ public class AuthenticateController {
         String email = EncryptionUtils.normalSecurityDecrypt(queryMapper.queryEmail(uid));
 
         // 设置redis中的key
-        String redisKey = uid.toString() + ServiceName.DEACTIVATE_ACCOUNT.getName();
+        String redisKey = uid.toString() + ServiceName.DEACTIVATE_ACCOUNT.getAlias();
 
         // 发送验证码
         return verifyCodeService.sendVerifyCode(email, ServiceName.DEACTIVATE_ACCOUNT, redisKey);

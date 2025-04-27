@@ -1,5 +1,6 @@
 package site.chatmanager.pojo.universal;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.Getter;
 
 @Getter

@@ -58,7 +58,7 @@ public class DeactivateServiceImpl implements DeactivateService {
         String jti = (String) infoFromToken[2];
 
         // 从 redis 中获取验证码
-        String redisKey = uid.toString() + ServiceName.DEACTIVATE_ACCOUNT.getName();
+        String redisKey = uid.toString() + ServiceName.DEACTIVATE_ACCOUNT.getAlias();
         String encryptedVerifyCodeInRedis = redisService.get(redisKey);
         if (encryptedVerifyCodeInRedis == null) {
             Result result = Result.failure("注销失败，验证码错误");

@@ -47,31 +47,26 @@ public class AuthInterceptor implements HandlerInterceptor {
                 return true; // 直接放行
             }
             // 3.2 如果是其他请求，则返回未登录错误
-            sendErrorResult(response, "请先登录");
+            sendErrorResult(response, "无效令牌，请登录");
             return false;
         }
 
-        // 4.验证 token 有效性，若无效则返回无效令牌错误
+        // 4.验证 token 有效性
         if (token.startsWith("Bearer ")) token = token.substring(7); // 如果有Bearer前缀，则去除
         Object[] infoFromToken = JwtUtils.getInfoFromToken(token);
         if (infoFromToken == null) {
-            // 解析失败，说明 token 无效，返回无效令牌错误
+            // 解析失败，有两种可能性：
+            // (1) token过期了，从而失效
+            // (2) token是乱写的，从而无效
 
-            // 但是如果发送的是登录或注册请求（说明可能令牌过期了导致无效，允许重新登录）
+            // 对于第一种情况，用户发送的是登录或注册请求，允许重新登录
             if (path.contains("/api/login") || path.contains("/api/register")) {
                 return true; // 直接放行
             }
 
-            // 否则，返回 401 错误
-            sendErrorResult(response, "无效令牌");
+            // 对于第二种情况，用户发送的是其他请求，返回无效令牌错误
+            sendErrorResult(response, "无效令牌，请登录");
             return false;
-        } else {
-            // 解析成功，说明 token 有效，用户已经成功登录
-            // 如果是登录请求，则返回已登录错误
-            if (path.contains("/api/login") || path.contains("/api/register")) {
-                sendErrorResult(response, "请退出登录后操作");
-                return false;
-            }
         }
 
         // 5.检查 token 的 jti 是否在黑名单中
@@ -79,7 +74,21 @@ public class AuthInterceptor implements HandlerInterceptor {
         String jti = (String) infoFromToken[2];
         String blacklistKey = "b:uid:" + uid;
         if (redisService.isMemberOfZSetAndValid(blacklistKey, jti)) {
-            sendErrorResult(response, "令牌已失效，请重新登录");
+            // 当前 token 有效，但是已经被加入到黑名单中，说明该 token 被强行作废，不可登录
+            // (1) 如果用户携带这个作废的 token 只是为了完成登录或注册请求，可以放行
+            if (path.contains("/api/login") || path.contains("/api/register")) {
+                return true;
+            }
+
+            // (2) 如果是其他请求，则返回无效令牌错误
+            sendErrorResult(response, "无效令牌，请登录");
+            return false;
+        }
+
+        // 5.运行到这里，说明 token 有效，且没有加入到黑名单中
+        // 如果用户携带这个 token 为了完成登录或注册请求，不能放行
+        if (path.contains("/api/login") || path.contains("/api/register")) {
+            sendErrorResult(response, "当前为已登录状态，请退出登录后重试");
             return false;
         }
 
