@@ -10,8 +10,8 @@ import site.chatmanager.model.impl.DouBaoCallStrategy;
 import site.chatmanager.model.ModelCallStrategy;
 import site.chatmanager.model.enums.Model;
 import site.chatmanager.pojo.universal.Result;
-import site.chatmanager.pojo.chat.UserChatRequest;
-import site.chatmanager.pojo.chat.UserChatResponse;
+import site.chatmanager.model.pojo.UserChatRequest;
+import site.chatmanager.model.pojo.UserChatResponse;
 import site.chatmanager.service.ChatService;
 import site.chatmanager.service.universal.RecordService;
 import site.chatmanager.service.universal.RedisService;
@@ -132,13 +132,16 @@ public class ChatServiceImpl implements ChatService {
                     ModelCallStrategy strategy = strategyMap.get(model);
                     if (strategy != null) {
                         String rawResponse = strategy.callModel(question, validModelConfig);
-                        response.setResponse(rawResponse);      // 直接使用模型响应的原始JSON字符串
+                        response.setResponse(rawResponse);  // 直接使用模型响应的原始JSON字符串
+                        response.setCode(0);                // 设置响应代码为0，表示成功
                     } else {
                         response.setResponse("不支持的模型: " + model.getName());
+                        response.setCode(1);    // 设置响应代码为1，表示失败
                     }
                 } catch (Exception e) {
                     // 若出现异常，设置错误提示信息
-                    response.setResponse("调用 " + model.getName() + " 模型时出现错误，请重试");
+                    response.setResponse("调用 " + model.getName() + " 模型时出现问题，请检查模型配置后重试");
+                    response.setCode(1);        // 设置响应代码为1，表示失败
                     // 记录错误日志
                     log.error(e.getMessage());
                 }
@@ -164,7 +167,7 @@ public class ChatServiceImpl implements ChatService {
             }
         }
 
-        Result result = Result.success("处理成功", responses);
+        Result result = Result.success("调用完成", responses);
         return ResponseEntity.ok(result);
     }
 }    

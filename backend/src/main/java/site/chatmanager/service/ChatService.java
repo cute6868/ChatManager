@@ -2,7 +2,7 @@ package site.chatmanager.service;
 
 import org.springframework.http.ResponseEntity;
 import site.chatmanager.pojo.universal.Result;
-import site.chatmanager.pojo.chat.UserChatRequest;
+import site.chatmanager.model.pojo.UserChatRequest;
 
 public interface ChatService {
 

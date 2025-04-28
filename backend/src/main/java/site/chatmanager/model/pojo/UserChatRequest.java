@@ -1,4 +1,4 @@
-package site.chatmanager.pojo.chat;
+package site.chatmanager.model.pojo;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

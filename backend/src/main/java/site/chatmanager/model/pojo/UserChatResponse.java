@@ -1,4 +1,4 @@
-package site.chatmanager.pojo.chat;
+package site.chatmanager.model.pojo;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.Data;
@@ -11,4 +11,6 @@ public class UserChatResponse {
 
     @JsonRawValue
     private String response;    // 大模型针对问题给出的响应
+
+    private Integer code;      // 响应状态码
 }

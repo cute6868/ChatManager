@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import site.chatmanager.pojo.universal.Result;
-import site.chatmanager.pojo.chat.UserChatRequest;
+import site.chatmanager.model.pojo.UserChatRequest;
 import site.chatmanager.service.ChatService;
 
 @RestController
