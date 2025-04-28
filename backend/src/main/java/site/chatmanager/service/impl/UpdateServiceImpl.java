@@ -93,6 +93,9 @@ public class UpdateServiceImpl implements UpdateService {
         int num = updateMapper.updateModelsConfig(uid, modelConfig);
         if (num <= 0) throw new CustomException("修改失败，服务器错误");
 
+        // 清除用户在redis中的模型配置
+        redisService.delModelsConfig(uid);
+
         // 返回响应
         Result result = Result.success("修改成功");
         return ResponseEntity.status(HttpStatus.OK).body(result);

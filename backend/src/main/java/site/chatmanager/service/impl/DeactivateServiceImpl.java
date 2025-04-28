@@ -87,6 +87,9 @@ public class DeactivateServiceImpl implements DeactivateService {
         // 将 jti 添加到 ZSet（黑名单）并设置过期时间
         redisService.addToZSetWithExpiration(blacklistKey, jti, expirationTimestamp);
 
+        // 清除用户在redis中的模型配置
+        redisService.delModelsConfig(uid);
+
         // 返回响应
         Result result = Result.success("账号已注销");
         return ResponseEntity.status(HttpStatus.OK).body(result);
