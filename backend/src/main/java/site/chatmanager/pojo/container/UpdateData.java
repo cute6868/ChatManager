@@ -10,5 +10,4 @@ public class UpdateData {
     private String password;
     private String email;
     private String verifyCode;
-    private String secondVerifyCode;    // 主要用来验证用户更改后的邮箱是否是他自己的
 }

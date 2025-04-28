@@ -25,7 +25,10 @@ public interface UpdateService {
     // 更新用户密码
     public ResponseEntity<Result> updateUserPassword(Long uid, UpdateData data);
 
-    // 更新用户邮箱
+    // 更新用户邮箱 - 身份确认
+    public ResponseEntity<Result> authBeforeUpdateUserEmail(Long uid, UpdateData data);
+
+    // 更新用户邮箱 - 更新邮箱
     public ResponseEntity<Result> updateUserEmail(Long uid, UpdateData data);
 
 }

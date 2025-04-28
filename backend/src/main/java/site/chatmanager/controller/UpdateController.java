@@ -45,8 +45,15 @@ public class UpdateController {
         return updateService.updateUserPassword(uid, data);
     }
 
-    // 更新用户邮箱
-    @PutMapping("/{uid}/email")
+    // 更新用户邮箱 - 身份确认
+    @PutMapping("/{uid}/email/auth")
+    public ResponseEntity<Result> authBeforeUpdateUserEmail(@PathVariable Long uid, @RequestBody UpdateData data) {
+        System.out.println("run to here");
+        return updateService.authBeforeUpdateUserEmail(uid, data);
+    }
+
+    // 更新用户邮箱 - 更新邮箱
+    @PutMapping("/{uid}/email/updt")
     public ResponseEntity<Result> updateUserEmail(@PathVariable Long uid, @RequestBody UpdateData data) {
         return updateService.updateUserEmail(uid, data);
     }
