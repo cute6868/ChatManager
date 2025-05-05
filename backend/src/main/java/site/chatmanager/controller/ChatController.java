@@ -1,9 +1,8 @@
 package site.chatmanager.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import site.chatmanager.pojo.universal.Result;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import site.chatmanager.model.pojo.UserChatRequest;
 import site.chatmanager.service.ChatService;
 
@@ -16,7 +15,7 @@ public class ChatController {
 
     // 发起聊天
     @PostMapping("/{uid}")
-    public ResponseEntity<Result> chat(@PathVariable("uid") Long uid, @RequestBody UserChatRequest request) {
+    public SseEmitter chat(@PathVariable("uid") Long uid, @RequestBody UserChatRequest request) {
         return chatService.processRequest(uid, request);
     }
 }
