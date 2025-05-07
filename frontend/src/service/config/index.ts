@@ -2,7 +2,7 @@ let BASE_URL: string = '';
 
 if (import.meta.env.DEV) {
   // 开发环境
-  BASE_URL = 'http://localhost:80';
+  BASE_URL = 'http://localhost:8080';
 } else if (import.meta.env.PROD) {
   // 生产环境
   BASE_URL = 'http://localhost:8080';
