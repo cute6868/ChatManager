@@ -1,25 +1,38 @@
 import request from '../request';
 
-// 账号登录请求
-export function accountLoginRequest(account: string, password: string) {
+// ==================== 注册业务 ====================
+
+// 获取验证码
+export function getVerifyCodeRequest(email: string) {
+  return request({
+    url: '/api/login/verify-code',
+    method: 'post',
+    data: {
+      email: email
+    }
+  });
+}
+
+// 邮箱登录
+export function LoginByEmailRequest(email: string, verifyCode: string) {
+  return request({
+    url: '/api/login/email',
+    method: 'post',
+    data: {
+      email: email,
+      verifyCode: verifyCode
+    }
+  });
+}
+
+// 账号登录
+export function LoginByAccountRequest(account: string, password: string) {
   return request({
     url: '/api/login/account',
     method: 'post',
     data: {
       account: account,
       password: password
-    }
-  });
-}
-
-// 邮箱登录请求
-export function emailLoginRequest(emailNumber: string, verificationCode: string) {
-  return request({
-    url: '/api/login/email',
-    method: 'post',
-    data: {
-      emailNumber: emailNumber,
-      verificationCode: verificationCode
     }
   });
 }

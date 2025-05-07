@@ -12,6 +12,6 @@ if (import.meta.env.DEV) {
 }
 
 // 请求超时的毫秒数 (ms)
-const TIME_OUT: number = 5000;
+const TIME_OUT: number = 10 * 1000;
 
 export { BASE_URL, TIME_OUT };
