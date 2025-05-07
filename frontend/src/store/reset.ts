@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { resetPasswordRequest } from '@/service/api/reset';
+import { resetPasswordRequest } from '@/service/api/update';
 
 const useResetStore = defineStore('reset', () => {
   // 重置密码行为（已完成）

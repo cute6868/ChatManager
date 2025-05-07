@@ -1,6 +1,6 @@
 import request from '../request';
 
-// ==================== 注册业务 ====================
+// ==================== 登录业务 ====================
 
 // 获取验证码
 export function getVerifyCodeRequest(email: string) {
