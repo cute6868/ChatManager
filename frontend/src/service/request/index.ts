@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { BASE_URL, TIME_OUT } from '../config';
+import { localCache } from '@/utils/cache';
 
 // 创建一个axios对象，用来维护一份配置信息
 const axiosInstance = axios.create({
@@ -10,8 +11,11 @@ const axiosInstance = axios.create({
 // 请求拦截器
 axiosInstance.interceptors.request.use(
   (config) => {
-    // 在发送请求之前做些什么
-
+    // 在发送请求之前，先尝试从浏览器数据中获取 token 并设置到请求头中
+    const token = localCache.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
 
