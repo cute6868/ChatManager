@@ -1,9 +1,10 @@
 import { reactive } from 'vue';
 import type { FormRules } from 'element-plus';
 import { ACCOUNT_REGEX, PASSWORD_REGEX, EMAIL_VERIFY_CODE_REGEX } from '@/global/constant/rule';
+import { checkAccountRequest } from '@/service/api/register';
 
 export default function useForm() {
-  // 表单数据
+  // ========================= 表单数据 ==========================
   const formData = reactive({
     account: '',
     password: '',
@@ -12,18 +13,44 @@ export default function useForm() {
     verifyCode: ''
   });
 
-  // 确认密码的校验逻辑
-  function validatorFunc(rule: unknown, value: unknown, callback: (error?: Error) => void) {
-    if (value === formData.password) callback();
-    else callback(new Error('两次输入的密码不一致'));
+  // ========================= 校验函数 ==========================
+
+  // 账号校验器：校验账号可用性
+  function accountValidator(rule: unknown, value: string, callback: (error?: Error) => void) {
+    if (!value) return callback(new Error('请输入账号'));
+    checkAccountRequest(value)
+      .then((res) => {
+        console.log(res);
+        return callback();
+      })
+      .catch(() => {
+        return callback(new Error('网络异常'));
+      });
   }
 
-  // 表单校验规则
+  // 密码校验器：校验密码可用性
+
+  // 邮箱校验器：校验邮箱可用性
+
+  // 验证码校验器：校验验证码可用性
+
+  // // 确认密码校验器
+  // function confirmPasswordValidator(
+  //   rule: unknown,
+  //   value: unknown,
+  //   callback: (error?: Error) => void
+  // ) {
+  //   if (value === formData.password) callback();
+  //   else callback(new Error('两次输入的密码不一致'));
+  // }
+
+  // ========================= 表单校验 ==========================
   const formRules = reactive<FormRules>({
     account: [
       { required: true, message: '请设置您的账号', trigger: 'blur' },
       { min: 6, max: 20, message: '账号长度为6到20位', trigger: ['blur', 'change'] },
-      { pattern: ACCOUNT_REGEX, message: '账号只能含有数字、字母', trigger: ['blur', 'change'] }
+      { pattern: ACCOUNT_REGEX, message: '账号只能含有数字、字母', trigger: ['blur', 'change'] },
+      { validator: accountValidator, trigger: 'blur' }
     ],
     password: [
       { required: true, message: '请输入您的密码', trigger: 'blur' },
@@ -34,8 +61,8 @@ export default function useForm() {
       }
     ],
     confirm: [
-      { required: true, message: '请再次输入密码', trigger: 'blur' },
-      { validator: validatorFunc, trigger: 'blur' }
+      { required: true, message: '请再次输入密码', trigger: 'blur' }
+      // { validator: confirmPasswordValidator, trigger: 'blur' }
     ],
     email: [
       { required: true, message: '请输入邮箱', trigger: 'blur' },

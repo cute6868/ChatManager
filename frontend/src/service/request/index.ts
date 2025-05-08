@@ -4,7 +4,7 @@ import { localCache } from '@/utils/cache';
 
 // 创建一个axios对象，用来维护一份配置信息
 const axiosInstance = axios.create({
-  baseURL: BASE_URL,
+  // baseURL: BASE_URL,
   timeout: TIME_OUT
 });
 
