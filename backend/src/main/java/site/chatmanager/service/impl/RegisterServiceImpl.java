@@ -39,8 +39,6 @@ public class RegisterServiceImpl implements RegisterService {
         // 获取账号
         String account = data.getAccount();
 
-        log.info("正在检查账号：{} 的可用性", account);
-
         // 检查账号格式
         boolean isLegal = FormatChecker.checkAccount(account);
         if (!isLegal) {
