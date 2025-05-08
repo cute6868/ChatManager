@@ -20,7 +20,7 @@ export default function useEmailLogin(form: FormDataTypeB) {
       // valid 是一个布尔值，表示表单验证是否通过
       if (valid) {
         // 验证通过，执行邮箱登录行为
-        const result = await loginStore.emailLoginAction(form.email, form.verificationCode);
+        const result = await loginStore.emailLoginAction(form.email, form.verifyCode);
 
         if (result) {
           ElMessage({ message: result, type: 'error' }); // 登录失败，弹出错误原因

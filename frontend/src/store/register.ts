@@ -8,11 +8,11 @@ const useRegisterStore = defineStore('register', () => {
     account: string,
     password: string,
     email: string,
-    verificationCode: string
+    verifyCode: string
   ) {
     try {
       // 发送网络请求
-      const response = await registerRequest(account, password, email, verificationCode);
+      const response = await registerRequest(account, password, email, verifyCode);
       if (response.status) {
         // 登录成功
         // 1.保存登录令牌

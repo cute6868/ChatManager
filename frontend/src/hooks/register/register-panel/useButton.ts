@@ -18,7 +18,7 @@ export default function useButton(formData: FormDataTypeD) {
           formData.account,
           formData.password,
           formData.email,
-          formData.verificationCode
+          formData.verifyCode
         );
         if (result) ElMessage({ message: result, type: 'error' }); // 注册失败，弹出原因
       } else {

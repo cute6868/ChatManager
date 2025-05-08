@@ -4,7 +4,7 @@ import debounce from '@/utils/debounce';
 import useEmailStore from '@/store/email';
 const emailStore = useEmailStore();
 
-export default function useVerificationCode(form: FormDataTypeB | FormDataTypeD) {
+export default function useVerifyCode(form: FormDataTypeB | FormDataTypeD) {
   const second = ref(60); // 倒计时的秒数
   const flag = ref(false); // 显示倒计时的开关
 
@@ -18,7 +18,7 @@ export default function useVerificationCode(form: FormDataTypeB | FormDataTypeD)
     }
 
     // 如果格式符合规范，则执行获取验证码行为
-    const result = await emailStore.getEmailVerificationCodeAction(form.email);
+    const result = await emailStore.getEmailVerifyCodeAction(form.email);
     if (result.state) {
       ElMessage({ message: result.content, type: 'success' }); // 获取验证码成功
 

@@ -57,9 +57,9 @@ const useLoginStore = defineStore('login', () => {
   }
 
   // 邮箱登录行为（已完成）
-  async function emailLoginAction(email: string, verificationCode: string) {
+  async function emailLoginAction(email: string, verifyCode: string) {
     try {
-      const response = await emailLoginRequest(email, verificationCode);
+      const response = await emailLoginRequest(email, verifyCode);
       if (response.status === 200) {
         // 登录成功
         work(response);

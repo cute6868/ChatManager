@@ -9,7 +9,7 @@ type FormDataTypeA = Reactive<{
 // 邮箱登录表单数据类型
 type FormDataTypeB = Reactive<{
   email: string;
-  verificationCode: string;
+  verifyCode: string;
 }>;
 
 // 重置密码表单数据类型
@@ -24,7 +24,7 @@ type FormDataTypeD = Reactive<{
   password: string;
   confirm: string;
   email: string;
-  verificationCode: string;
+  verifyCode: string;
 }>;
 
 export type { FormDataTypeA, FormDataTypeB, FormDataTypeC, FormDataTypeD };

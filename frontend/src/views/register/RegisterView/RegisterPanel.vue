@@ -21,8 +21,8 @@
             <el-input v-model="formData.email" />
           </el-form-item>
 
-          <el-form-item label="验证码" prop="verificationCode">
-            <el-input v-model="formData.verificationCode">
+          <el-form-item label="验证码" prop="verifyCode">
+            <el-input v-model="formData.verifyCode">
               <template #suffix>
                 <div class="get-code" @click="wrapGetCode">
                   <span v-show="!flag">获取验证码</span>
@@ -45,8 +45,8 @@ import useForm from '@/hooks/register/register-panel/useForm';
 const { formData, formRules } = useForm();
 
 // 验证码相关的数据和方法
-import useVerificationCode from '@/hooks/login/email-panel/useVerificationCode';
-const { flag, second, wrapGetCode } = useVerificationCode(formData);
+import useVerifyCode from '@/hooks/login/email-panel/useVerifyCode';
+const { flag, second, wrapGetCode } = useVerifyCode(formData);
 
 // 注册按钮相关的数据和方法
 import useButton from '@/hooks/register/register-panel/useButton';
