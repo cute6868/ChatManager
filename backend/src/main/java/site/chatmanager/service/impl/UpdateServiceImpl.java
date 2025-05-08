@@ -44,7 +44,7 @@ public class UpdateServiceImpl implements UpdateService {
         boolean isLegal = FormatChecker.checkNickname(nickname);
         if (!isLegal) {
             Result result = Result.failure("修改失败，格式不符合要求");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 更新昵称
@@ -66,7 +66,7 @@ public class UpdateServiceImpl implements UpdateService {
         boolean isLegal = FormatChecker.checkAvatarUrl(avatar);
         if (!isLegal) {
             Result result = Result.failure("修改失败，格式不符合要求");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 更新头像
@@ -83,14 +83,14 @@ public class UpdateServiceImpl implements UpdateService {
         // 检测格式合法性
         if (modelConfig == null || modelConfig.isEmpty()) {
             Result result = Result.failure("修改失败，格式不符合要求");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 解析配置：如果Json数据是正确的，则返回配置对象；如果Json数据是错误的，则返回null
         Map<String, Map<String, String>> config = ModelConfigChecker.validateAndParseConfig(modelConfig);
         if (config == null) {
             Result result = Result.failure("修改失败，格式不符合要求");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 更新配置
@@ -117,14 +117,14 @@ public class UpdateServiceImpl implements UpdateService {
                 && FormatChecker.checkVerifyCode(verifyCode);
         if (!isLegal) {
             Result result = Result.failure("修改失败，格式不符合要求");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 检测账号是否存在
         boolean isPresent = PresenceCheck.checkAccount(account);
         if (isPresent) {
             Result result = Result.failure("修改失败，该账号已被使用");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 从redis中获取验证码
@@ -132,7 +132,7 @@ public class UpdateServiceImpl implements UpdateService {
         String encryptedVerifyCodeInRedis = redisService.get(redisKey);
         if (encryptedVerifyCodeInRedis == null) {
             Result result = Result.failure("修改失败，验证码无效");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
         redisService.del(redisKey);
 
@@ -141,7 +141,7 @@ public class UpdateServiceImpl implements UpdateService {
         boolean isEqual = encryptedVerifyCode.equals(encryptedVerifyCodeInRedis);
         if (!isEqual) {
             Result result = Result.failure("修改失败，验证码错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 更新账号
@@ -165,7 +165,7 @@ public class UpdateServiceImpl implements UpdateService {
                 && FormatChecker.checkVerifyCode(verifyCode);
         if (!isLegal) {
             Result result = Result.failure("修改失败，格式不符合要求");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 从redis中获取验证码
@@ -173,7 +173,7 @@ public class UpdateServiceImpl implements UpdateService {
         String encryptedVerifyCodeInRedis = redisService.get(redisKey);
         if (encryptedVerifyCodeInRedis == null) {
             Result result = Result.failure("修改失败，验证码无效");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
         redisService.del(redisKey);
 
@@ -182,7 +182,7 @@ public class UpdateServiceImpl implements UpdateService {
         boolean isEqual = encryptedVerifyCode.equals(encryptedVerifyCodeInRedis);
         if (!isEqual) {
             Result result = Result.failure("修改失败，验证码错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 更新密码
@@ -208,7 +208,7 @@ public class UpdateServiceImpl implements UpdateService {
         boolean isLegal = FormatChecker.checkVerifyCode(verifyCode);
         if (!isLegal) {
             Result result = Result.failure(1, "身份验证失败，验证码错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 检查验证码是否正确
@@ -217,7 +217,7 @@ public class UpdateServiceImpl implements UpdateService {
         String encryptedVerifyCodeInRedis = redisService.get(redisKey);
         if (encryptedVerifyCodeInRedis == null) {
             Result result = Result.failure(1, "身份验证失败，验证码错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
         redisService.del(redisKey);
 
@@ -226,7 +226,7 @@ public class UpdateServiceImpl implements UpdateService {
         boolean isEqual = encryptedVerifyCode.equals(encryptedVerifyCodeInRedis);
         if (!isEqual) {
             Result result = Result.failure(1, "身份验证失败，验证码错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // ================= 身份验证（End） =================
@@ -238,14 +238,14 @@ public class UpdateServiceImpl implements UpdateService {
         isLegal = FormatChecker.checkEmail(newEmail);
         if (!isLegal) {
             Result result = Result.failure(2, "新邮箱格式不符合要求");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 检查新邮箱是否存在
         boolean isPresent = PresenceCheck.checkEmail(newEmail);
         if (isPresent) {
             Result result = Result.failure(2, "该邮箱已被占用");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 给新邮箱发送验证码，以确保用户能够使用新邮箱
@@ -267,7 +267,7 @@ public class UpdateServiceImpl implements UpdateService {
         boolean isLegal = FormatChecker.checkVerifyCode(verifyCode);
         if (!isLegal) {
             Result result = Result.failure("修改邮箱失败，验证码错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 检查验证码是否一致
@@ -277,7 +277,7 @@ public class UpdateServiceImpl implements UpdateService {
         // 2.如果为 null, 则说明获取失败；原因通常是验证码已过期（极少数情况是用户故意在中途输入了其他邮箱）
         if (encryptedVerifyCodeInRedis == null) {
             Result result = Result.failure("修改邮箱失败，验证码已过期");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
         // 3.获取成功，清理redis里面的记录
         redisService.del(encryptedEmail);
@@ -285,7 +285,7 @@ public class UpdateServiceImpl implements UpdateService {
         boolean isEqual = encryptedVerifyCodeInRedis.equals(EncryptionUtils.normalSecurityEncrypt(verifyCode));
         if (!isEqual) {
             Result result = Result.failure("修改邮箱失败，验证码错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 更新邮箱

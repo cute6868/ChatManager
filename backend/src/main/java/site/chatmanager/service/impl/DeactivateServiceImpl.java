@@ -38,13 +38,13 @@ public class DeactivateServiceImpl implements DeactivateService {
         boolean isLegal = FormatChecker.checkVerifyCode(verifyCode);
         if (!isLegal) {
             Result result = Result.failure("注销失败，验证码错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 检测令牌是否为空
         if (token == null || token.isEmpty()) {
             Result result = Result.failure("无效令牌");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 解析 JWT 获取 uid 和 jti
@@ -52,7 +52,7 @@ public class DeactivateServiceImpl implements DeactivateService {
         Object[] infoFromToken = JwtUtils.getInfoFromToken(token);
         if (infoFromToken == null) {
             Result result = Result.failure("无效令牌");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
         Long uid = (Long) infoFromToken[0];
         String jti = (String) infoFromToken[2];
@@ -62,7 +62,7 @@ public class DeactivateServiceImpl implements DeactivateService {
         String encryptedVerifyCodeInRedis = redisService.get(redisKey);
         if (encryptedVerifyCodeInRedis == null) {
             Result result = Result.failure("注销失败，验证码错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
         redisService.del(redisKey);
 
@@ -71,7 +71,7 @@ public class DeactivateServiceImpl implements DeactivateService {
         boolean isEqual = encryptedVerifyCode.equals(encryptedVerifyCodeInRedis);
         if (!isEqual) {
             Result result = Result.failure("注销失败，验证码错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 注销账号

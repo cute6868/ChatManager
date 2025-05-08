@@ -39,18 +39,20 @@ public class RegisterServiceImpl implements RegisterService {
         // 获取账号
         String account = data.getAccount();
 
+        log.info("正在检查账号：{} 的可用性", account);
+
         // 检查账号格式
         boolean isLegal = FormatChecker.checkAccount(account);
         if (!isLegal) {
             Result result = Result.failure("账号格式不符合要求");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 检查账号存在性 (如果账号存在，哪怕账号被封禁或已注销，也不允许注册)
         boolean isPresent = PresenceCheck.checkAccount(account);
         if (isPresent) {
             Result result = Result.failure("该账号已被注册");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 账号合法
@@ -68,7 +70,7 @@ public class RegisterServiceImpl implements RegisterService {
         boolean isLegal = FormatChecker.checkPassword(password);
         if (!isLegal) {
             Result result = Result.failure("密码格式不符合要求");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
         Result result = Result.success("密码符合要求");
         return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -84,14 +86,14 @@ public class RegisterServiceImpl implements RegisterService {
         boolean isLegal = FormatChecker.checkEmail(email);
         if (!isLegal) {
             Result result = Result.failure("邮箱格式不符合要求");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 检查邮箱存在性 (如果邮箱存在，哪怕该邮箱所绑定的账号被封禁或已注销，就不允许注册)
         boolean isPresent = PresenceCheck.checkEmail(email);
         if (isPresent) {
             Result result = Result.failure("该邮箱已被注册");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 邮箱合法
@@ -109,14 +111,14 @@ public class RegisterServiceImpl implements RegisterService {
         boolean isLegal = FormatChecker.checkEmail(email);
         if (!isLegal) {
             Result result = Result.failure("邮箱格式不符合要求");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 检查邮箱存在性 (如果邮箱存在，哪怕该邮箱所绑定的账号被封禁或已注销，就不发送验证码)
         boolean isPresent = PresenceCheck.checkEmail(email);
         if (isPresent) {
             Result result = Result.failure("该邮箱已被注册");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 发送验证码
@@ -140,7 +142,7 @@ public class RegisterServiceImpl implements RegisterService {
                 && FormatChecker.checkVerifyCode(verifyCode);
         if (!isLegal) {
             Result result = Result.failure("注册失败，格式不符合要求");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 存在性检查
@@ -149,7 +151,7 @@ public class RegisterServiceImpl implements RegisterService {
         boolean isPresent = PresenceCheck.checkAccount(account) || PresenceCheck.checkEmail(email);
         if (isPresent) {
             Result result = Result.failure("注册失败，账号或邮箱已被注册");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 检查验证码是否一致
@@ -159,7 +161,7 @@ public class RegisterServiceImpl implements RegisterService {
         // 2.如果为 null, 则说明获取失败；原因通常是验证码已过期（极少数情况是用户故意在中途输入了其他邮箱）
         if (encryptedVerifyCodeInRedis == null) {
             Result result = Result.failure("注册失败，验证码已过期");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
         // 3.获取成功，清理redis里面的记录
         redisService.del(encryptedEmail);
@@ -167,7 +169,7 @@ public class RegisterServiceImpl implements RegisterService {
         boolean isEqual = encryptedVerifyCodeInRedis.equals(EncryptionUtils.normalSecurityEncrypt(verifyCode));
         if (!isEqual) {
             Result result = Result.failure("注册失败，验证码错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 准备数据

@@ -48,7 +48,7 @@ public class LoginServiceImpl implements LoginService {
         boolean isLegal = FormatChecker.checkEmail(email);
         if (!isLegal) {
             Result result = Result.failure("验证码发送失败，邮箱格式不符合要求");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 如果邮箱未注册（即：邮箱不存在数据库中），就不发送验证码
@@ -56,7 +56,7 @@ public class LoginServiceImpl implements LoginService {
         Long uid = queryMapper.queryUidByEmail(encryptedEmail);
         if (uid == null) {
             Result result = Result.failure("验证码发送失败，该邮箱未注册");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 如果邮箱注册了（即：邮箱在数据库中），但是邮箱所绑定的账号被封禁或已注销，就不发送验证码
@@ -65,10 +65,10 @@ public class LoginServiceImpl implements LoginService {
         switch (data.getStatus()) {
             case 1:
                 result = Result.failure("验证码发送失败，该邮箱所绑定的账号被封禁");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+                return ResponseEntity.status(HttpStatus.OK).body(result);
             case 2, 3:
                 result = Result.failure("验证码发送失败，该邮箱所绑定的账号已注销");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+                return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 发送验证码
@@ -86,7 +86,7 @@ public class LoginServiceImpl implements LoginService {
         boolean isLegal = FormatChecker.checkEmail(email) && FormatChecker.checkVerifyCode(verifyCode);
         if (!isLegal) {
             Result result = Result.failure("登录失败，邮箱或验证码错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 如果邮箱未注册（即：邮箱不存在数据库中），就不允许登录
@@ -94,7 +94,7 @@ public class LoginServiceImpl implements LoginService {
         Long uid = queryMapper.queryUidByEmail(encryptedEmail);
         if (uid == null) {
             Result result = Result.failure("登录失败，邮箱错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 如果邮箱注册了（即：邮箱在数据库中），但是邮箱所绑定的账号被封禁或已注销，就不允许登录
@@ -103,10 +103,10 @@ public class LoginServiceImpl implements LoginService {
         switch (authData.getStatus()) {
             case 1:
                 result = Result.failure("登录失败，该账号已被封禁");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+                return ResponseEntity.status(HttpStatus.OK).body(result);
             case 2, 3:
                 result = Result.failure("登录失败，该账号已注销");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+                return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 检查验证码是否一致
@@ -115,7 +115,7 @@ public class LoginServiceImpl implements LoginService {
         // 2.如果为 null, 则说明获取失败；原因通常是验证码已过期（极少数情况是用户故意在中途输入了其他邮箱）
         if (encryptedVerifyCodeInRedis == null) {
             result = Result.failure("登录失败，验证码已过期");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
         // 3.获取成功，清理redis里面的记录
         redisService.del(encryptedEmail);
@@ -123,7 +123,7 @@ public class LoginServiceImpl implements LoginService {
         boolean isEqual = encryptedVerifyCodeInRedis.equals(EncryptionUtils.normalSecurityEncrypt(verifyCode));
         if (!isEqual) {
             result = Result.failure("登录失败，验证码错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 进行登录
@@ -154,14 +154,14 @@ public class LoginServiceImpl implements LoginService {
                 && FormatChecker.checkPassword(password);
         if (!isLegal) {
             Result result = Result.failure("登录失败，账号或密码错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 如果账号未注册（即：账号不存在数据库中），就不允许登录
         AuthData authData = queryMapper.queryAuthInfoByAccount(account);
         if (authData == null) {
             Result result = Result.failure("登录失败，账号或密码错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 如果账号注册了（即：账号在数据库中），但是账号被封禁或已注销，就不允许登录
@@ -169,17 +169,17 @@ public class LoginServiceImpl implements LoginService {
         switch (authData.getStatus()) {
             case 1:
                 result = Result.failure("登录失败，该账号已被封禁");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+                return ResponseEntity.status(HttpStatus.OK).body(result);
             case 2, 3:
                 result = Result.failure("登录失败，该账号已注销");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+                return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 检查密码是否一致
         boolean isEqual = EncryptionUtils.highSecurityVerify(password, authData.getPassword());
         if (!isEqual) {
             result = Result.failure("登录失败，账号或密码错误");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
         // 进行登录

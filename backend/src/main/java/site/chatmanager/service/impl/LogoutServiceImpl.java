@@ -24,7 +24,7 @@ public class LogoutServiceImpl implements LogoutService {
             // 检查令牌是否为空
             if (token == null || token.isEmpty()) {
                 Result result = Result.failure("无效令牌");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+                return ResponseEntity.status(HttpStatus.OK).body(result);
             }
 
             // 解析 JWT 令牌获取 jti 和 uid
@@ -32,7 +32,7 @@ public class LogoutServiceImpl implements LogoutService {
             Object[] info = JwtUtils.getInfoFromToken(token);
             if (info == null) {
                 Result result = Result.failure("无效令牌");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+                return ResponseEntity.status(HttpStatus.OK).body(result);
             }
             Long uid = (Long) info[0];
             String jti = (String) info[2];
