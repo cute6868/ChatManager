@@ -1,11 +1,15 @@
 import { ref } from 'vue';
 import type { FormDataTypeD } from '@/types';
 import debounce from '@/utils/debounce';
-import useRegisterStore from '@/store/register';
-const registerStore = useRegisterStore();
+import { registerRequest } from '@/service/api/register';
+import { useRouter } from 'vue-router';
+import ROUTE from '@/global/constant/route';
+import { localCache } from '@/utils/cache';
+import { LOGIN_TOKEN, ROLE, UID } from '@/global/constant/login';
 
 export default function useButton(formData: FormDataTypeD) {
   const formRef = ref(); // 获取表单的实例
+  const router = useRouter(); // 在外部作用域获取 router 实例
 
   function registerHandler() {
     if (!formRef.value) return; // 检查表单对象是否存在
@@ -13,16 +17,35 @@ export default function useButton(formData: FormDataTypeD) {
     // 进行表单验证
     formRef.value.validate(async (valid: boolean) => {
       if (valid) {
-        // 验证通过，执行注册行为
-        const result = await registerStore.registerAction(
-          formData.account,
-          formData.password,
-          formData.email,
-          formData.verifyCode
-        );
-        if (result) ElMessage({ message: result, type: 'error' }); // 注册失败，弹出原因
+        // 表单验证通过，发送注册请求
+        registerRequest(formData.account, formData.password, formData.email, formData.verifyCode)
+          .then((res) => {
+            const code = res.data.code;
+
+            if (code === 0) {
+              // 注册成功
+              ElMessage({ message: res.data.msg, type: 'success' });
+
+              // 保存uid、token、role
+              localCache.setItem(UID, res.data.data.uid);
+              localCache.setItem(LOGIN_TOKEN, res.data.data.token);
+              localCache.setItem(ROLE, res.data.data.role);
+
+              // 3秒后跳转到聊天页面
+              setTimeout(() => {
+                router.push(ROUTE.PATH.CHAT); // 通过router实例跳转到聊天页面
+              }, 3000);
+            } else {
+              // 注册失败
+              ElMessage({ message: res.data.msg, type: 'error' });
+            }
+          })
+          .catch(() => {
+            ElMessage({ message: '网络异常', type: 'error' });
+          });
       } else {
-        ElMessage({ message: '格式错误，请重试', type: 'error' }); // 验证失败，弹出提示
+        // 表单验证不通过，弹出提示
+        ElMessage({ message: '格式错误，请重试', type: 'error' });
       }
     });
   }

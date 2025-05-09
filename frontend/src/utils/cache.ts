@@ -23,7 +23,7 @@ class Cache {
   // 取数据
   getItem(key: string) {
     const res = this.cache.getItem(key);
-    if (res === null) return null;
+    if (res === null || res === 'undefined') return null;
     return JSON.parse(res);
   }
 

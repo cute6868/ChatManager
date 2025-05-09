@@ -1,7 +1,7 @@
 import { reactive } from 'vue';
 import type { FormRules } from 'element-plus';
 import { ACCOUNT_REGEX, PASSWORD_REGEX, EMAIL_VERIFY_CODE_REGEX } from '@/global/constant/rule';
-import { checkAccountRequest } from '@/service/api/register';
+import { checkAccountRequest, checkEmailRequest } from '@/service/api/register';
 
 export default function useForm() {
   // ========================= 表单数据 ==========================
@@ -15,34 +15,51 @@ export default function useForm() {
 
   // ========================= 校验函数 ==========================
 
-  // 账号校验器：校验账号可用性
+  // 账号校验器
   function accountValidator(rule: unknown, value: string, callback: (error?: Error) => void) {
     if (!value) return callback(new Error('请输入账号'));
     checkAccountRequest(value)
       .then((res) => {
-        console.log(res);
-        return callback();
+        const code = res.data.code; // 业务状态码
+
+        if (code === 0) {
+          return callback(); // 账号可用
+        } else {
+          return callback(res.data.msg); // 账号不可用,提示原因
+        }
       })
       .catch(() => {
-        return callback(new Error('网络异常'));
+        return callback(); // 一般是网络异常,不用提示
       });
   }
 
-  // 密码校验器：校验密码可用性
+  // 确认密码校验器
+  function confirmPasswordValidator(
+    rule: unknown,
+    value: string,
+    callback: (error?: Error) => void
+  ) {
+    if (value === formData.password) callback();
+    else callback(new Error('两次输入的密码不一致'));
+  }
 
-  // 邮箱校验器：校验邮箱可用性
+  // 邮箱校验器
+  function emailValidator(rule: unknown, value: string, callback: (error?: Error) => void) {
+    if (!value) return callback(new Error('请输入邮箱'));
+    checkEmailRequest(value)
+      .then((res) => {
+        const code = res.data.code;
 
-  // 验证码校验器：校验验证码可用性
-
-  // // 确认密码校验器
-  // function confirmPasswordValidator(
-  //   rule: unknown,
-  //   value: unknown,
-  //   callback: (error?: Error) => void
-  // ) {
-  //   if (value === formData.password) callback();
-  //   else callback(new Error('两次输入的密码不一致'));
-  // }
+        if (code === 0) {
+          return callback();
+        } else {
+          return callback(new Error(res.data.msg));
+        }
+      })
+      .catch(() => {
+        return callback();
+      });
+  }
 
   // ========================= 表单校验 ==========================
   const formRules = reactive<FormRules>({
@@ -61,12 +78,13 @@ export default function useForm() {
       }
     ],
     confirm: [
-      { required: true, message: '请再次输入密码', trigger: 'blur' }
-      // { validator: confirmPasswordValidator, trigger: 'blur' }
+      { required: true, message: '请再次输入密码', trigger: 'blur' },
+      { validator: confirmPasswordValidator, trigger: 'blur' }
     ],
     email: [
       { required: true, message: '请输入邮箱', trigger: 'blur' },
-      { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
+      { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' },
+      { validator: emailValidator, trigger: 'blur' }
     ],
     verifyCode: [
       { required: true, message: '请输入验证码', trigger: 'blur' },

@@ -20,7 +20,7 @@ const useLoginStore = defineStore('login', () => {
 
     // 4.将获取到的用户数据，进行渲染，然后跳转到应用页面，让用户开始使用
     // const router = useRouter();
-    // router.push('/chat');
+    // router.push(ROUTE.PATH.CHAT);
   }
 
   // 账号登录行为（已完成）

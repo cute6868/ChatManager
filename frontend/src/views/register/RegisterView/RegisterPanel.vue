@@ -45,7 +45,7 @@ import useForm from '@/hooks/register/register-panel/useForm';
 const { formData, formRules } = useForm();
 
 // 验证码相关的数据和方法
-import useVerifyCode from '@/hooks/login/email-panel/useVerifyCode';
+import useVerifyCode from '@/hooks/register/register-panel/useVerifyCode';
 const { flag, second, wrapGetCode } = useVerifyCode(formData);
 
 // 注册按钮相关的数据和方法
