@@ -5,13 +5,13 @@ import type { FormRules } from 'element-plus';
 import { ACCOUNT_REGEX, PASSWORD_REGEX } from '@/global/constant/rule';
 
 export default function useForm() {
-  // 表单数据
+  // ========================= 表单数据 ==========================
   const formData = reactive({
     account: localCache.getItem(ACCOUNT) ?? '',
     password: localCache.getItem(PASSWORD) ?? ''
   });
 
-  // 表单校验规则
+  // ========================= 表单校验 ==========================
   const formRules: FormRules = {
     account: [
       { required: true, message: '请输入账号', trigger: 'blur' },

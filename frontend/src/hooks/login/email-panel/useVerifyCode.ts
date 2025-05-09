@@ -1,45 +1,57 @@
 import type { FormDataTypeB, FormDataTypeD } from '@/types';
-import { ref } from 'vue';
+import { onBeforeUnmount, ref } from 'vue';
 import debounce from '@/utils/debounce';
-import useEmailStore from '@/store/email';
-const emailStore = useEmailStore();
+import { EMAIL_REGEX } from '@/global/constant/rule';
+import { getVerifyCodeRequest } from '@/service/api/login';
 
 export default function useVerifyCode(form: FormDataTypeB | FormDataTypeD) {
   const second = ref(60); // 倒计时的秒数
   const flag = ref(false); // 显示倒计时的开关
+  let timer: ReturnType<typeof setInterval> | undefined; // 存储定时器ID
 
   // 编写获取验证码的逻辑
-  async function getCode() {
+  function getCode() {
     // 判断邮箱格式是否符合规范
-    const regex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
-    if (!regex.test(form.email)) {
+    if (!EMAIL_REGEX.test(form.email)) {
       ElMessage({ message: '邮箱格式不正确', type: 'error' });
       return;
     }
 
-    // 如果格式符合规范，则执行获取验证码行为
-    const result = await emailStore.getEmailVerifyCodeAction(form.email);
-    if (result.state) {
-      ElMessage({ message: result.content, type: 'success' }); // 获取验证码成功
+    // 如果格式符合规范，则发送"获取验证码"请求
+    getVerifyCodeRequest(form.email)
+      .then((res) => {
+        const code = res.data.code; // 业务状态码
 
-      // 显示倒计时60秒，并且期间不得再申请验证码
-      second.value = 60; // 初始化
-      flag.value = true; // 显示
-      document.querySelector('.get-code')?.classList.add('disabled-element'); // 禁止操作
+        if (code === 0) {
+          ElMessage({ message: res.data.msg, type: 'success' });
 
-      // 进行倒计时
-      const timer = setInterval(() => {
-        second.value--;
-        if (second.value <= 0) {
-          flag.value = false; // 隐藏
-          document.querySelector('.get-code')?.classList.remove('disabled-element'); // 允许操作
-          clearInterval(timer); // 清除定时器
+          // 显示倒计时60秒，并且期间不得再申请验证码
+          second.value = 60; // 初始化
+          flag.value = true; // 显示
+          document.querySelector('.get-code')?.classList.add('disabled-element'); // 禁止操作
+
+          // 进行倒计时
+          timer = setInterval(() => {
+            second.value--;
+            if (second.value <= 0) {
+              flag.value = false; // 隐藏
+              document.querySelector('.get-code')?.classList.remove('disabled-element'); // 允许操作
+              clearInterval(timer); // 清除定时器
+            }
+          }, 1000);
+        } else {
+          ElMessage({ message: res.data.msg, type: 'error' });
         }
-      }, 1000);
-    } else {
-      ElMessage({ message: result.content, type: 'error' }); // 获取验证码失败
-    }
+      })
+      .catch(() => {
+        ElMessage({ message: '网络异常', type: 'error' }); // 一般情况下是网络异常
+      });
   }
+
+  // 组件卸载前清除定时器
+  onBeforeUnmount(() => {
+    if (timer) clearInterval(timer); // 如果倒计时过程中，用户跳转其他页面，就清除定时器
+  });
 
   // 包装获取验证码的函数，实现防抖
   const wrapGetCode = debounce(getCode, 500);

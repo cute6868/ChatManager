@@ -14,7 +14,7 @@ export function getVerifyCodeRequest(email: string) {
 }
 
 // 邮箱登录
-export function LoginByEmailRequest(email: string, verifyCode: string) {
+export function loginByEmailRequest(email: string, verifyCode: string) {
   return request({
     url: '/api/login/email',
     method: 'post',
@@ -26,7 +26,7 @@ export function LoginByEmailRequest(email: string, verifyCode: string) {
 }
 
 // 账号登录
-export function LoginByAccountRequest(account: string, password: string) {
+export function loginByAccountRequest(account: string, password: string) {
   return request({
     url: '/api/login/account',
     method: 'post',
