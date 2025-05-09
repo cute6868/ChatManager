@@ -1,5 +1,5 @@
 import type { FormDataTypeB, FormDataTypeD } from '@/types';
-import { ref } from 'vue';
+import { onBeforeUnmount, ref } from 'vue';
 import debounce from '@/utils/debounce';
 import { EMAIL_REGEX } from '@/global/constant/rule';
 import { getVerifyCodeRequest } from '@/service/api/register';
@@ -7,6 +7,7 @@ import { getVerifyCodeRequest } from '@/service/api/register';
 export default function useVerifyCode(form: FormDataTypeB | FormDataTypeD) {
   const second = ref(60); // 倒计时的秒数
   const flag = ref(false); // 显示倒计时的开关
+  let timer: ReturnType<typeof setInterval> | undefined; // 存储定时器ID
 
   // 编写获取验证码的逻辑
   function getCode() {
@@ -31,7 +32,7 @@ export default function useVerifyCode(form: FormDataTypeB | FormDataTypeD) {
           document.querySelector('.get-code')?.classList.add('disabled-element'); // 禁止操作
 
           // 进行倒计时
-          const timer = setInterval(() => {
+          timer = setInterval(() => {
             second.value--;
             if (second.value <= 0) {
               flag.value = false; // 隐藏
@@ -48,6 +49,11 @@ export default function useVerifyCode(form: FormDataTypeB | FormDataTypeD) {
         ElMessage({ message: '网络异常', type: 'error' });
       });
   }
+
+  // 组件卸载前清除定时器
+  onBeforeUnmount(() => {
+    if (timer) clearInterval(timer); // 如果倒计时过程中，用户跳转其他页面，就清除定时器
+  });
 
   // 包装获取验证码的函数，实现防抖
   const wrapGetCode = debounce(getCode, 500);
