@@ -93,7 +93,7 @@ public class LoginServiceImpl implements LoginService {
         String encryptedEmail = EncryptionUtils.normalSecurityEncrypt(email);   // 加密后的邮箱才能查询uid
         Long uid = queryMapper.queryUidByEmail(encryptedEmail);
         if (uid == null) {
-            Result result = Result.failure("登录失败，邮箱错误");
+            Result result = Result.failure("登录失败，邮箱或验证码错误");
             return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
@@ -114,7 +114,7 @@ public class LoginServiceImpl implements LoginService {
         String encryptedVerifyCodeInRedis = redisService.get(encryptedEmail);   // 通过加密邮箱获取加密验证码
         // 2.如果为 null, 则说明获取失败；原因通常是验证码已过期（极少数情况是用户故意在中途输入了其他邮箱）
         if (encryptedVerifyCodeInRedis == null) {
-            result = Result.failure("登录失败，验证码已过期");
+            result = Result.failure("登录失败，邮箱或验证码错误");
             return ResponseEntity.status(HttpStatus.OK).body(result);
         }
         // 3.获取成功，清理redis里面的记录
@@ -122,7 +122,7 @@ public class LoginServiceImpl implements LoginService {
         // 4.比较验证码
         boolean isEqual = encryptedVerifyCodeInRedis.equals(EncryptionUtils.normalSecurityEncrypt(verifyCode));
         if (!isEqual) {
-            result = Result.failure("登录失败，验证码错误");
+            result = Result.failure("登录失败，邮箱或验证码错误");
             return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
