@@ -1,6 +1,11 @@
 import { reactive } from 'vue';
 import type { FormRules } from 'element-plus';
-import { ACCOUNT_REGEX, PASSWORD_REGEX, EMAIL_VERIFY_CODE_REGEX } from '@/global/constant/rule';
+import {
+  ACCOUNT_REGEX,
+  PASSWORD_REGEX,
+  EMAIL_VERIFY_CODE_REGEX,
+  EMAIL_REGEX
+} from '@/global/constant/rule';
 import { checkAccountRequest, checkEmailRequest } from '@/service/api/register';
 
 export default function useForm() {
@@ -45,7 +50,13 @@ export default function useForm() {
 
   // 邮箱校验器
   function emailValidator(rule: unknown, value: string, callback: (error?: Error) => void) {
+    // 判断是否输入空
     if (!value) return callback(new Error('请输入邮箱'));
+
+    // 判断邮箱格式是否正确
+    if (!value.match(EMAIL_REGEX)) return callback(new Error('请输入正确的邮箱地址'));
+
+    // 判断邮箱是否已经被注册
     checkEmailRequest(value)
       .then((res) => {
         const code = res.data.code;
