@@ -47,18 +47,6 @@ export function updateAccountRequest(uid: number, account: string, verifyCode: s
   });
 }
 
-// 更新密码
-export function updatePasswordRequest(uid: number, password: string, verifyCode: string) {
-  return request({
-    url: `/api/update/${{ uid }}/password`,
-    method: 'put',
-    data: {
-      password: password,
-      verifyCode: verifyCode
-    }
-  });
-}
-
 // 更新邮箱1：输入验证码确认是旧邮箱的主人，同时输入新邮箱以确保给新邮箱发送验证码
 export function updateEmailRequest1(uid: number, email: string, verifyCode: string) {
   return request({

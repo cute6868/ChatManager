@@ -10,14 +10,6 @@ export function authRequestForUpdtAccount(uid: number) {
   });
 }
 
-// 更新密码验证
-export function authRequestForUpdtPassword(uid: number) {
-  return request({
-    url: `/api/authenticate/${{ uid }}/update/password`,
-    method: 'post'
-  });
-}
-
 // 更新邮箱验证
 export function authRequestForUpdtEmail(uid: number) {
   return request({
