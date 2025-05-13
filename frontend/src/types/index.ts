@@ -14,8 +14,10 @@ type FormDataTypeB = Reactive<{
 
 // 重置密码表单数据类型
 type FormDataTypeC = Reactive<{
-  password: string;
-  confirm: string;
+  newPassword: string;
+  confirmPassword: string;
+  email: string;
+  verifyCode: string;
 }>;
 
 // 注册账号表单数据类型
