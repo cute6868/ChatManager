@@ -39,12 +39,6 @@ public class UpdateController {
         return updateService.updateUserAccount(uid, data);
     }
 
-    // 更新用户密码
-    @PutMapping("/{uid}/password")
-    public ResponseEntity<Result> updateUserPassword(@PathVariable Long uid, @RequestBody UpdateData data) {
-        return updateService.updateUserPassword(uid, data);
-    }
-
     // 更新用户邮箱 - 身份确认
     @PutMapping("/{uid}/email/auth")
     public ResponseEntity<Result> authBeforeUpdateUserEmail(@PathVariable Long uid, @RequestBody UpdateData data) {

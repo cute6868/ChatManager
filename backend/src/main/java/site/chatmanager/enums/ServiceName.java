@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ServiceName {
     UPDATE_ACCOUNT("修改账号", "updtAcc"),
-    UPDATE_PASSWORD("密码重置", "updtPwd"),
+    UPDATE_PASSWORD("重置密码", "updtPwd"),
     UPDATE_EMAIL("更改邮箱", "updtEml"),
     DEACTIVATE_ACCOUNT("注销账号", "clrAcc");
 

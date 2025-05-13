@@ -154,47 +154,6 @@ public class UpdateServiceImpl implements UpdateService {
     }
 
     @Override
-    public ResponseEntity<Result> updateUserPassword(Long uid, UpdateData data) {
-
-        // 获取密码和验证码
-        String password = data.getPassword();
-        String verifyCode = data.getVerifyCode();
-
-        // 检测格式合法性
-        boolean isLegal = FormatChecker.checkPassword(password)
-                && FormatChecker.checkVerifyCode(verifyCode);
-        if (!isLegal) {
-            Result result = Result.failure("修改失败，格式不符合要求");
-            return ResponseEntity.status(HttpStatus.OK).body(result);
-        }
-
-        // 从redis中获取验证码
-        String redisKey = uid.toString() + ServiceName.UPDATE_PASSWORD.getAlias();
-        String encryptedVerifyCodeInRedis = redisService.get(redisKey);
-        if (encryptedVerifyCodeInRedis == null) {
-            Result result = Result.failure("修改失败，验证码无效");
-            return ResponseEntity.status(HttpStatus.OK).body(result);
-        }
-        redisService.del(redisKey);
-
-        // 检测验证码是否一致
-        String encryptedVerifyCode = EncryptionUtils.normalSecurityEncrypt(verifyCode);
-        boolean isEqual = encryptedVerifyCode.equals(encryptedVerifyCodeInRedis);
-        if (!isEqual) {
-            Result result = Result.failure("修改失败，验证码错误");
-            return ResponseEntity.status(HttpStatus.OK).body(result);
-        }
-
-        // 更新密码
-        int num = updateMapper.updatePassword(uid, EncryptionUtils.highSecurityEncrypt(password));
-        if (num <= 0) throw new CustomException("修改失败，服务器错误");
-
-        // 返回响应
-        Result result = Result.success("修改成功");
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
-
-    @Override
     public ResponseEntity<Result> authBeforeUpdateUserEmail(Long uid, UpdateData data) {
 
         log.info("123456789");

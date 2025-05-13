@@ -43,7 +43,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         // 3.如果 token 不存在
         if (token == null || token.isEmpty()) {
             // 3.1 如果发送的是登录或注册请求
-            if (path.contains("/api/login") || path.contains("/api/register")) {
+            if (path.contains("/api/login") || path.contains("/api/register") || path.contains("/api/reset")) {
                 return true; // 直接放行
             }
             // 3.2 如果是其他请求，则返回未登录错误
@@ -60,7 +60,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             // (2) token是乱写的，从而无效
 
             // 对于第一种情况，用户发送的是登录或注册请求，允许重新登录
-            if (path.contains("/api/login") || path.contains("/api/register")) {
+            if (path.contains("/api/login") || path.contains("/api/register") || path.contains("/api/reset")) {
                 return true; // 直接放行
             }
 
@@ -76,7 +76,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         if (redisService.isMemberOfZSetAndValid(blacklistKey, jti)) {
             // 当前 token 有效，但是已经被加入到黑名单中，说明该 token 被强行作废，不可登录
             // (1) 如果用户携带这个作废的 token 只是为了完成登录或注册请求，可以放行
-            if (path.contains("/api/login") || path.contains("/api/register")) {
+            if (path.contains("/api/login") || path.contains("/api/register") || path.contains("/api/reset")) {
                 return true;
             }
 
@@ -87,7 +87,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         // 5.运行到这里，说明 token 有效，且没有加入到黑名单中
         // 如果用户携带这个 token 为了完成登录或注册请求，不能放行
-        if (path.contains("/api/login") || path.contains("/api/register")) {
+        if (path.contains("/api/login") || path.contains("/api/register") || path.contains("/api/reset")) {
             sendErrorResult(response, "当前为已登录状态，请退出登录后重试");
             return false;
         }

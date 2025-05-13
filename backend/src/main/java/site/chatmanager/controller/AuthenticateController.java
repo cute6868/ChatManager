@@ -32,19 +32,6 @@ public class AuthenticateController {
         return verifyCodeService.sendVerifyCode(email, ServiceName.UPDATE_ACCOUNT, redisKey);
     }
 
-    // 更新用户密码的身份认证
-    @PostMapping("/{uid}/update/password")
-    public ResponseEntity<Result> authenticateForUpdatePassword(@PathVariable Long uid) {
-        // 获取用户邮箱
-        String email = EncryptionUtils.normalSecurityDecrypt(queryMapper.queryEmail(uid));
-
-        // 设置redis中的key
-        String redisKey = uid.toString() + ServiceName.UPDATE_PASSWORD.getAlias();
-
-        // 发送验证码
-        return verifyCodeService.sendVerifyCode(email, ServiceName.UPDATE_PASSWORD, redisKey);
-    }
-
     // 更新用户邮箱的身份认证
     @PostMapping("/{uid}/update/email")
     public ResponseEntity<Result> authenticateForUpdateEmail(@PathVariable Long uid) {
