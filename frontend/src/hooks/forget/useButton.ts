@@ -23,10 +23,10 @@ export default function useButton(formData: FormDataTypeC) {
               // 重置请求处理成功
               ElMessage({ message: res.data.msg, type: 'success' });
 
-              // 3秒后，自动跳转到登录页
+              // 2秒后，自动跳转到登录页
               setTimeout(() => {
                 router.push(ROUTE.PATH.LOGIN);
-              }, 3000);
+              }, 2000);
             } else {
               // 重置请求处理失败
               ElMessage({ message: res.data.msg, type: 'error' });

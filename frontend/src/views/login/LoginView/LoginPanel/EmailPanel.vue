@@ -9,7 +9,7 @@
     >
       <el-form-item prop="email">
         <template #label>
-          <div class="email-title">邮箱</div>
+          <div class="email-title">QQ邮箱</div>
         </template>
         <el-input v-model="formData.email" />
       </el-form-item>
@@ -51,7 +51,6 @@ defineExpose({
 .email-panel {
   .email-title {
     width: 100%;
-    margin-right: 6px;
   }
 
   // 验证码样式

@@ -17,7 +17,7 @@
             <el-input v-model="formData.confirm" show-password />
           </el-form-item>
 
-          <el-form-item label="电子邮箱" prop="email">
+          <el-form-item label="QQ邮箱" prop="email">
             <el-input v-model="formData.email" />
           </el-form-item>
 
@@ -59,7 +59,7 @@ const { formRef, wrapRegisterHandler } = useButton(formData);
   width: max(34%, 340px);
   height: max(66%, 490px);
   background-color: white;
-  border-radius: 4px;
+  border-radius: 2%;
   margin-bottom: 14px;
 
   display: flex;
@@ -81,14 +81,13 @@ const { formRef, wrapRegisterHandler } = useButton(formData);
       font-size: 26px;
       font-weight: 600;
       letter-spacing: 4px;
-      margin-bottom: 30px;
+      margin-bottom: 8%;
     }
 
     // 表单
     .form {
-      // background-color: gray;
-      width: 96%;
-      border: 1px solid rgba(0, 0, 0, 0.1);
+      width: 94%;
+      border: 2px solid #e6e6e6;
       border-radius: 2px;
       padding: 10px;
       margin-bottom: 14px;
@@ -101,7 +100,8 @@ const { formRef, wrapRegisterHandler } = useButton(formData);
 
     // 注册按钮
     .btn {
-      width: 90%;
+      border: 2px solid #e6e6e6;
+      width: 100%;
     }
   }
 

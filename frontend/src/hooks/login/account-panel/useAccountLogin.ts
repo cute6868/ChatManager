@@ -44,7 +44,7 @@ export default function useAccountLogin(formData: FormDataTypeA) {
               // 4.跳转到聊天页面
               setTimeout(() => {
                 router.push(ROUTE.PATH.CHAT);
-              }, 3000);
+              }, 2000);
             } else {
               // 登录失败
               ElMessage({ message: res.data.msg, type: 'error' });

@@ -15,7 +15,7 @@ export default function useButton(formData: FormDataTypeD) {
     if (!formRef.value) return; // 检查表单对象是否存在
 
     // 进行表单验证
-    formRef.value.validate(async (valid: boolean) => {
+    formRef.value.validate((valid: boolean) => {
       if (valid) {
         // 表单验证通过，发送注册请求
         registerRequest(formData.account, formData.password, formData.email, formData.verifyCode)
@@ -31,10 +31,10 @@ export default function useButton(formData: FormDataTypeD) {
               localCache.setItem(LOGIN_TOKEN, res.data.data.token);
               localCache.setItem(ROLE, res.data.data.role);
 
-              // 3秒后跳转到聊天页面
+              // 2秒后跳转到聊天页面
               setTimeout(() => {
                 router.push(ROUTE.PATH.CHAT); // 通过router实例跳转到聊天页面
-              }, 3000);
+              }, 2000);
             } else {
               // 注册失败
               ElMessage({ message: res.data.msg, type: 'error' });
