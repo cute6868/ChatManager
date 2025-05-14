@@ -1,7 +1,8 @@
 import ROUTE from '@/global/constant/route';
+import { THROTTLE_TIME } from '@/global/constant/rule';
 import { resetPasswordRequest } from '@/service/api/reset';
 import type { FormDataTypeC } from '@/types';
-import debounce from '@/utils/debounce';
+import throttle from '@/utils/throttle';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -42,8 +43,8 @@ export default function useButton(formData: FormDataTypeC) {
     });
   }
 
-  // 引入防抖函数，包装 reset，防止用户频繁点击按钮，执行多次重置逻辑
-  const wrapReset = debounce(reset, 500);
+  // 引入节流函数，包装 reset，防止用户频繁点击按钮，执行多次重置逻辑
+  const wrapReset = throttle(reset, THROTTLE_TIME);
 
   return {
     formRef,

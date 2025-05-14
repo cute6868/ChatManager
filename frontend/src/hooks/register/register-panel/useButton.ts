@@ -1,11 +1,12 @@
 import { ref } from 'vue';
 import type { FormDataTypeD } from '@/types';
-import debounce from '@/utils/debounce';
+import throttle from '@/utils/throttle';
 import { registerRequest } from '@/service/api/register';
 import { useRouter } from 'vue-router';
 import ROUTE from '@/global/constant/route';
 import { localCache } from '@/utils/cache';
 import { LOGIN_TOKEN, ROLE, UID } from '@/global/constant/login';
+import { THROTTLE_TIME } from '@/global/constant/rule';
 
 export default function useButton(formData: FormDataTypeD) {
   const formRef = ref(); // 获取表单的实例
@@ -50,8 +51,8 @@ export default function useButton(formData: FormDataTypeD) {
     });
   }
 
-  // 包装点击注册操作，防抖
-  const wrapRegisterHandler = debounce(registerHandler, 500);
+  // 包装点击注册操作，节流
+  const wrapRegisterHandler = throttle(registerHandler, THROTTLE_TIME);
 
   return {
     formRef,

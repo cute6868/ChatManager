@@ -1,7 +1,8 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import type { Ref } from 'vue';
 import type { TabPaneName } from 'element-plus';
-import debounce from '@/utils/debounce';
+import throttle from '@/utils/throttle';
+import { THROTTLE_TIME } from '@/global/constant/rule';
 
 export default function useLoginButton(activeName: Ref<TabPaneName>, checkboxState: Ref<boolean>) {
   const accountPanel = ref(); // 获取AccountPanel组件的实例
@@ -16,8 +17,8 @@ export default function useLoginButton(activeName: Ref<TabPaneName>, checkboxSta
     }
   }
 
-  // 引入防抖函数，包装 loginHandler，防止用户频繁点击按钮，执行多次登录逻辑
-  const wrapLoginHandler = debounce(loginHandler, 500);
+  // 引入节流函数，包装 loginHandler，防止用户频繁点击按钮，执行多次登录逻辑
+  const wrapLoginHandler = throttle(loginHandler, THROTTLE_TIME);
 
   // =================== 新增功能：通过回车键实现点击登录按钮（start） ===================
   // 通过回车键实现点击登录按钮

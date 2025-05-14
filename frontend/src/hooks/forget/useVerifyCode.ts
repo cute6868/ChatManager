@@ -1,6 +1,6 @@
 import { onBeforeUnmount, ref } from 'vue';
-import debounce from '@/utils/debounce';
-import { EMAIL_REGEX } from '@/global/constant/rule';
+import throttle from '@/utils/throttle';
+import { EMAIL_REGEX, THROTTLE_TIME } from '@/global/constant/rule';
 import { authRequestForResetPwd } from '@/service/api/reset';
 import type { FormDataTypeC } from '@/types';
 
@@ -54,8 +54,8 @@ export default function useVerifyCode(formData: FormDataTypeC) {
     if (timer) clearInterval(timer); // 如果倒计时过程中，用户跳转其他页面，就清除定时器
   });
 
-  // 包装获取验证码的函数，实现防抖
-  const wrapGetCode = debounce(getCode, 500);
+  // 包装获取验证码的函数，实现节流
+  const wrapGetCode = throttle(getCode, THROTTLE_TIME);
 
   return {
     second,

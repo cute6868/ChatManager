@@ -10,4 +10,7 @@ const EMAIL_REGEX = /^(?=.{1,200}$)[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@qq\
 // 邮箱验证码规则
 const EMAIL_VERIFY_CODE_REGEX = /^[0-9]+$/;
 
-export { ACCOUNT_REGEX, PASSWORD_REGEX, EMAIL_REGEX, EMAIL_VERIFY_CODE_REGEX };
+// 节流时间（防止按钮点击过快，执行多次逻辑）
+const THROTTLE_TIME = 3 * 1000;
+
+export { ACCOUNT_REGEX, PASSWORD_REGEX, EMAIL_REGEX, EMAIL_VERIFY_CODE_REGEX, THROTTLE_TIME };
