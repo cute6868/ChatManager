@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import type { Ref } from 'vue';
 import type { TabPaneName } from 'element-plus';
 import debounce from '@/utils/debounce';
@@ -19,6 +19,23 @@ export default function useLoginButton(activeName: Ref<TabPaneName>, checkboxSta
   // 引入防抖函数，包装 loginHandler，防止用户频繁点击按钮，执行多次登录逻辑
   const wrapLoginHandler = debounce(loginHandler, 500);
 
+  // =================== 新增功能：通过回车键实现点击登录按钮（start） ===================
+  // 通过回车键实现点击登录按钮
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter') wrapLoginHandler();
+  }
+
+  // 组件挂载后执行
+  onMounted(() => {
+    document.addEventListener('keydown', handleKeydown); // 监听全局键盘事件
+  });
+
+  // 组件销毁时执行
+  onBeforeUnmount(() => {
+    document.removeEventListener('keydown', handleKeydown); // 移除全局键盘事件监听
+  });
+
+  // =================== 新增功能：通过回车键实现点击登录按钮（end） ===================
   return {
     accountPanel,
     emailPanel,
