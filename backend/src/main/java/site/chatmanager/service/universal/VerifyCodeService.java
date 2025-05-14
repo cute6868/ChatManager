@@ -63,11 +63,14 @@ public class VerifyCodeService {
         // 生成验证码
         String verifyCode = VerifyCodeGenerator.generateCode();
 
+        // 判断是否是重置密码服务，如果是重置密码服务，则切换术语
+        String term = "若您未发起此请求，您的账号可能已被盗用，请立即联系客服。";
+        if (serviceName == ServiceName.UPDATE_PASSWORD) term = "若您未发起此请求，请忽略此信息。";
+
         // 发送验证码
         String mailSubject = "ChatManager 服务中心";
         String mailText = "尊敬的用户，我们收到来自您账户的“" + serviceName.getName() + "”请求。" +
-                "若这是您本人操作，请输入验证码：" + verifyCode + "，并在 5 分钟内完成验证。" +
-                "若您未发起此请求，您的账号可能已被盗用，请立即联系客服。";
+                "若这是您本人操作，请输入验证码：" + verifyCode + "，并在 5 分钟内完成验证。" + term;
         emailSender.sendMail(email, mailSubject, mailText);
 
         // 将邮箱和验证码进行普通安全加密，然后保存到 redis 里面
