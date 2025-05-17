@@ -122,7 +122,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     private void sendErrorResult(HttpServletResponse response, String msg) throws Exception {
         // 封装结果对象
-        Result result = Result.failure(msg);
+        Result result = Result.failure(9,msg);
 
         // 将结果对象转换为 JSON 字符串
         ObjectMapper objectMapper = new ObjectMapper();
