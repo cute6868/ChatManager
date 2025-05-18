@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { BASE_URL, TIME_OUT } from '../config';
 import { localCache } from '@/utils/cache';
+import { LOGIN_TOKEN } from '@/global/constant/login';
 
 // 创建一个axios对象，用来维护一份配置信息
 const axiosInstance = axios.create({
@@ -12,7 +13,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     // 在发送请求之前，先尝试从浏览器数据中获取 token 并设置到请求头中
-    const token = localCache.getItem('token');
+    const token = localCache.getItem(LOGIN_TOKEN);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
