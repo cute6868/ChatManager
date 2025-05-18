@@ -183,7 +183,7 @@ public class RegisterServiceImpl implements RegisterService {
 
         // 替用户自动登录
         String token = JwtUtils.generateToken(uid, 0);
-        LoginData loginData = new LoginData(uid, 0, time, token);
+        LoginData loginData = new LoginData(uid.toString(), 0, time, token);
 
         // 注册成功
         Result result = Result.success("注册成功", loginData);

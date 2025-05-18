@@ -135,7 +135,7 @@ public class LoginServiceImpl implements LoginService {
         int num = updateMapper.updateLastLoginTime(uid, time);
         if (num <= 0) throw new CustomException("登录失败，服务器出错");
         // 4.填写响应数据
-        LoginData loginData = new LoginData(uid, authData.getRole(), time, token);
+        LoginData loginData = new LoginData(uid.toString(), authData.getRole(), time, token);
 
         // 登录成功
         result = Result.success("登录成功", loginData);
@@ -191,7 +191,7 @@ public class LoginServiceImpl implements LoginService {
         int num = updateMapper.updateLastLoginTime(authData.getUid(), time);
         if (num <= 0) throw new CustomException("登录失败，服务器出错");
         // 4.填写响应数据
-        LoginData loginData = new LoginData(authData.getUid(), authData.getRole(), time, token);
+        LoginData loginData = new LoginData(authData.getUid().toString(), authData.getRole(), time, token);
 
         // 登录成功
         result = Result.success("登录成功", loginData);
