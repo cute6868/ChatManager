@@ -69,8 +69,11 @@ const router = createRouter({
 
 // 导航守卫：负责合理访问页面
 router.beforeEach((to) => {
-  const isLogin =
-    localCache.getItem(UID) && localCache.getItem(LOGIN_TOKEN) && localCache.getItem(ROLE); // 通过登录数据的存在与否来判断登录状态
+  let isLogin = false;
+  const uid: null | string = localCache.getItem(UID);
+  const token: null | string = localCache.getItem(LOGIN_TOKEN);
+  const role: null | number = localCache.getItem(ROLE);
+  if (uid && token && (role === 0 || role === 1)) isLogin = true; // null和空字符串都已经考虑
   if (isLogin && [PATH.LOGIN, PATH.REGISTER].includes(to.path)) return PATH.INDEX; // 登录后不允许访问登录和注册页面
   if (!isLogin && [PATH.CHAT, PATH.MANAGE].includes(to.path)) return PATH.LOGIN; // 没登录不允许访问聊天和管理页面
 });
