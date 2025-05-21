@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import ROUTE from '@/global/constant/route';
 import { localCache } from '@/utils/cache';
-import { LOGIN_TOKEN } from '@/global/constant/login';
+import { LOGIN_TOKEN, ROLE, UID } from '@/global/constant/login';
 
 const { PATH, NAME, CN_NAME } = ROUTE;
 
@@ -69,9 +69,10 @@ const router = createRouter({
 
 // 导航守卫：负责合理访问页面
 router.beforeEach((to) => {
-  const token = localCache.getItem(LOGIN_TOKEN) || ''; // 通过登录令牌判断当前的登录状态
-  if (token && [PATH.LOGIN, PATH.REGISTER].includes(to.path)) return PATH.INDEX; // 登录后不允许访问登录和注册页面
-  if (!token && [PATH.CHAT, PATH.MANAGE].includes(to.path)) return PATH.LOGIN; // 没登录不允许访问聊天和管理页面
+  const isLogin =
+    localCache.getItem(UID) && localCache.getItem(LOGIN_TOKEN) && localCache.getItem(ROLE); // 通过登录数据的存在与否来判断登录状态
+  if (isLogin && [PATH.LOGIN, PATH.REGISTER].includes(to.path)) return PATH.INDEX; // 登录后不允许访问登录和注册页面
+  if (!isLogin && [PATH.CHAT, PATH.MANAGE].includes(to.path)) return PATH.LOGIN; // 没登录不允许访问聊天和管理页面
 });
 
 // 导航守卫：负责页面标题的管理
