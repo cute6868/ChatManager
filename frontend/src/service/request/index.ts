@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { BASE_URL, TIME_OUT } from '../config';
 import { localCache } from '@/utils/cache';
-import { LOGIN_TOKEN } from '@/global/constant/login';
+import { LOGIN_TOKEN, ROLE, UID } from '@/global/constant/login';
+import removeLoginData from '@/utils/remove';
 
 // 创建一个axios对象，用来维护一份配置信息
 const axiosInstance = axios.create({
@@ -32,6 +33,10 @@ axiosInstance.interceptors.response.use(
   (response) => {
     // 2xx 范围内的状态码都会触发该函数
     // 对响应数据做点什么
+    // 如果响应数据有 code === 9，说明用户登录信息失效或有异常问题，需要清除本地浏览器登录数据
+    if (response.data.code && response.data.code === 9) {
+      removeLoginData();
+    }
 
     return response;
   },
