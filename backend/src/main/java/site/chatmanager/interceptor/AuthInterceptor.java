@@ -33,7 +33,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         // 1.获取请求路径
         String path = request.getRequestURI();
         if (path == null) {
-            sendErrorResult(response, "请求错误");
+            sendErrorResult(response, "无效的请求");
             return false;
         }
 
@@ -47,7 +47,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                 return true; // 直接放行
             }
             // 3.2 如果是其他请求，则返回未登录错误
-            sendErrorResult(response, "无效令牌，请登录");
+            sendErrorResult(response, "无效的登录信息，请前往登录");
             return false;
         }
 
@@ -65,7 +65,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             }
 
             // 对于第二种情况，用户发送的是其他请求，返回无效令牌错误
-            sendErrorResult(response, "无效令牌，请登录");
+            sendErrorResult(response, "抱歉，您的登录信息已过期，请重新登录");
             return false;
         }
 
@@ -81,7 +81,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             }
 
             // (2) 如果是其他请求，则返回无效令牌错误
-            sendErrorResult(response, "无效令牌，请登录");
+            sendErrorResult(response, "抱歉，您的登录信息已过期，请重新登录");
             return false;
         }
 
@@ -106,11 +106,11 @@ public class AuthInterceptor implements HandlerInterceptor {
                     Long pathUid = Long.parseLong(matcher.group(1));
                     // 比较路径中的 uid 和 token 中的 uid
                     if (!uid.equals(pathUid)) {
-                        sendErrorResult(response, "请求不合法");
+                        sendErrorResult(response, "登录信息异常，请重新登录");
                         return false;
                     }
                 } catch (NumberFormatException e) {
-                    sendErrorResult(response, "请求不合法");
+                    sendErrorResult(response, "登录信息异常，请重新登录");
                     return false;
                 }
             }
