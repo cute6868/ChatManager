@@ -5,7 +5,7 @@ import request from '../request';
 // 更新账号验证
 export function authRequestForUpdtAccount(uid: string) {
   return request({
-    url: `/api/authenticate/${{ uid }}/update/account`,
+    url: `/api/authenticate/${uid}/update/account`,
     method: 'post'
   });
 }
@@ -13,7 +13,7 @@ export function authRequestForUpdtAccount(uid: string) {
 // 更新邮箱验证
 export function authRequestForUpdtEmail(uid: string) {
   return request({
-    url: `/api/authenticate/${{ uid }}/update/email`,
+    url: `/api/authenticate/${uid}/update/email`,
     method: 'post'
   });
 }
@@ -21,7 +21,7 @@ export function authRequestForUpdtEmail(uid: string) {
 // 注销账号验证
 export function authRequestForDeactivateAccount(uid: string) {
   return request({
-    url: `/api/authenticate/${{ uid }}/deactivate`,
+    url: `/api/authenticate/${uid}/deactivate`,
     method: 'post'
   });
 }

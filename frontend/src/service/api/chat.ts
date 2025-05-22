@@ -5,7 +5,7 @@ import request from '../request';
 // 发起聊天
 export function chatRequest(uid: string, question: string, modelIds: number[]) {
   return request({
-    url: `/api/chat/${{ uid }}`,
+    url: `/api/chat/${uid}`,
     method: 'post',
     data: {
       question: question,
