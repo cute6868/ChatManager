@@ -3,10 +3,10 @@
     <div class="left-content">
       <!-- 历史记录 -->
       <div class="record">
-        <!-- 图标 -->
-        <el-icon size="24"><Clock /></el-icon>
+        <!-- 历史记录图标 -->
+        <el-icon id="record-icon" size="24" @click="toggleCard"><Clock /></el-icon>
 
-        <!-- 显示历史记录卡片 -->
+        <!-- 历史记录卡片 -->
         <el-card id="record-card">
           <h3>
             历史记录
@@ -43,12 +43,12 @@
 <script setup lang="ts">
 import { queryProfileRequest } from '@/service/api/query';
 import { onMounted, ref } from 'vue';
-import { LOGIN_TOKEN, ROLE, UID } from '@/global/constant/login';
+import { UID } from '@/global/constant/login';
 import { UserFilled } from '@element-plus/icons-vue';
 import { localCache } from '@/utils/cache';
 import ROUTE from '@/global/constant/route';
 import { useRouter } from 'vue-router';
-
+import removeLoginData from '@/utils/remove';
 const router = useRouter();
 
 // 默认昵称和头像
@@ -57,15 +57,9 @@ const imgUrl = ref('');
 
 // 加载昵称和头像
 function loadUserData() {
-  // 获取UID
-  const uid = localCache.getItem(UID);
-  if (uid === null && uid === '') router.push(ROUTE.PATH.LOGIN);
-
-  // 发送请求，获取昵称和头像
-  queryProfileRequest(uid)
+  queryProfileRequest(localCache.getItem(UID))
     .then((res) => {
       const code = res.data.code; // 业务状态码
-
       if (code === 0) {
         nickname.value = res.data.data.nickname;
         imgUrl.value = res.data.data.avatar === null ? '' : res.data.data.avatar;
@@ -79,8 +73,7 @@ function loadUserData() {
 }
 
 onMounted(() => {
-  // 组件挂载后，执行加载数据
-  loadUserData();
+  loadUserData(); // 当组件挂载完成后，加载用户数据
 });
 
 // 头像菜单的函数
@@ -91,25 +84,53 @@ function setting() {
 
 // 2.退出登录
 function logout() {
-  localCache.removeItem(UID);
-  localCache.removeItem(LOGIN_TOKEN);
-  localCache.removeItem(ROLE);
+  removeLoginData();
   router.push(ROUTE.PATH.INDEX);
 }
 
-// 历史记录
-// 点击历史记录图标时显示记录卡片left: -6px；点击卡片不做操作；点击其他地方，隐藏卡片left: -320px
-document.querySelector('.record')?.addEventListener('click', (e) => {
-  e.stopPropagation(); // 阻止事件冒泡
-  const recordCard = document.querySelector('#record-card');
-  if (recordCard) {
-    if (recordCard.style.left === '-320px') {
-      recordCard.style.left = '-6px';
-    } else {
-      recordCard.style.left = '-320px';
-    }
+// 卡片显示状态
+let isCardOpen = false;
+// 控制卡片显示状态
+function toggleCard() {
+  // 获取卡片元素
+  const card = document.querySelector('#record-card') as HTMLElement | null;
+  if (!card) return;
+
+  // 修改显示状态
+  isCardOpen = !isCardOpen;
+
+  // 根据显示状态进行相应操作
+  if (isCardOpen) {
+    card.style.left = '-6px'; // 显示卡片
+    // 延迟绑定外部点击事件
+    // 如果直接在 toggleSidebar() 中同步绑定事件，当前的点击事件会继续冒泡到 document，卡片刚打开就又被关闭
+    setTimeout(() => {
+      document.addEventListener('click', handleOutsideClick);
+    }, 0);
+  } else {
+    card.style.left = '-320px'; // 隐藏卡片
+    document.removeEventListener('click', handleOutsideClick);
   }
-});
+}
+
+// 处理外部点击事件
+function handleOutsideClick(e: MouseEvent) {
+  // 获取卡片和图标元素
+  const card = document.querySelector('#record-card') as HTMLElement | null;
+  const icon = document.getElementById('record-icon') as HTMLElement | null;
+  if (!card || !icon) return;
+
+  // 将 e.target 断言为 Node 类型
+  const target = e.target as Node | null;
+  if (!target) return;
+
+  // 检查点击是否发生在卡片或图标之外
+  if (!card.contains(target) && !icon.contains(target)) {
+    isCardOpen = false;
+    card.style.left = '-320px'; // 隐藏卡片
+    document.removeEventListener('click', handleOutsideClick);
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -127,14 +148,20 @@ document.querySelector('.record')?.addEventListener('click', (e) => {
   .left-content {
     flex: 3;
     display: flex;
+    align-items: center;
 
     // 历史记录
     .record {
       margin-left: 20px; // 历史记录距离左边的距离
       position: relative;
+      border-radius: 50%;
+      height: 24px;
 
       &:hover {
         cursor: pointer;
+        background-color: rgb(240, 240, 240);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        transition: all 0.2s;
       }
 
       display: flex;
@@ -191,8 +218,8 @@ document.querySelector('.record')?.addEventListener('click', (e) => {
       }
 
       p:hover {
-        border: 2px solid rgb(214, 234, 255);
-        background-color: rgb(214, 234, 255);
+        border: 2px solid rgb(225, 238, 253);
+        background-color: rgb(225, 238, 253);
         transition: all 0.2s;
       }
     }
