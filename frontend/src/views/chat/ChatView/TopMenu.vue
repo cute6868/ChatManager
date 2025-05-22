@@ -12,9 +12,9 @@
             历史记录
             <el-icon size="18"><Clock /></el-icon>
           </h3>
-          <p v-for="i in 4" :key="i">
+          <p v-for="item in recordList" :key="item.sequence_num">
             <el-icon size="16" class="chat-icon"><ChatDotRound /></el-icon>
-            <span>{{ '今天的天气怎么样呢？我明天要出发，你能陪我一起吗？' }}</span>
+            <span>{{ item.question }}</span>
           </p>
         </el-card>
       </div>
@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { queryProfileRequest } from '@/service/api/query';
+import { queryProfileRequest, queryRecordRequest } from '@/service/api/query';
 import { onMounted, ref } from 'vue';
 import { UID } from '@/global/constant/login';
 import { UserFilled } from '@element-plus/icons-vue';
@@ -49,15 +49,23 @@ import { localCache } from '@/utils/cache';
 import ROUTE from '@/global/constant/route';
 import { useRouter } from 'vue-router';
 import removeLoginData from '@/utils/remove';
-const router = useRouter();
+import logoutRequest from '@/service/api/logout';
 
-// 默认昵称和头像
+interface RecordItem {
+  question: string;
+  time: string;
+  sequence_num: number;
+}
+
+const router = useRouter();
 const nickname = ref('');
 const imgUrl = ref('');
+const recordList = ref<RecordItem[]>([]);
+const uid = localCache.getItem(UID);
 
 // 加载昵称和头像
 function loadUserData() {
-  queryProfileRequest(localCache.getItem(UID))
+  queryProfileRequest(uid)
     .then((res) => {
       const code = res.data.code; // 业务状态码
       if (code === 0) {
@@ -84,13 +92,24 @@ function setting() {
 
 // 2.退出登录
 function logout() {
-  removeLoginData();
-  router.push(ROUTE.PATH.INDEX);
+  logoutRequest(uid)
+    .then((res) => {
+      const code = res.data.code;
+      if (code === 0) {
+        removeLoginData(); // 清除本地登录数据
+        router.push(ROUTE.PATH.INDEX);
+      } else {
+        ElMessage({ message: res.data.msg, type: 'error' });
+      }
+    })
+    .catch(() => {
+      ElMessage({ message: '网络异常', type: 'error' });
+    });
 }
 
 // 卡片显示状态
 let isCardOpen = false;
-// 控制卡片显示状态
+
 function toggleCard() {
   // 获取卡片元素
   const card = document.querySelector('#record-card') as HTMLElement | null;
@@ -101,7 +120,22 @@ function toggleCard() {
 
   // 根据显示状态进行相应操作
   if (isCardOpen) {
+    // 获取数据
+    queryRecordRequest(uid)
+      .then((res) => {
+        const code = res.data.code;
+        if (code === 0) {
+          recordList.value = res.data.data;
+        } else {
+          ElMessage({ message: res.data.msg, type: 'error' });
+        }
+      })
+      .catch(() => {
+        ElMessage({ message: '网络异常', type: 'error' });
+      });
+
     card.style.left = '-6px'; // 显示卡片
+
     // 延迟绑定外部点击事件
     // 如果直接在 toggleSidebar() 中同步绑定事件，当前的点击事件会继续冒泡到 document，卡片刚打开就又被关闭
     setTimeout(() => {
@@ -179,6 +213,26 @@ function handleOutsideClick(e: MouseEvent) {
       height: 80vh;
       background-color: rgb(243, 244, 246);
       overflow-y: auto;
+
+      // 滚动条宽度
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      // 滚动条轨道
+      &::-webkit-scrollbar-track {
+        background: rgb(243, 244, 246);
+        border-radius: 16px;
+      }
+
+      // 滚动条滑块
+      &::-webkit-scrollbar-thumb {
+        background: rgb(204, 204, 204);
+        border-radius: 10px;
+      }
+      &::-webkit-scrollbar-thumb:hover {
+        background: rgb(153, 153, 153);
+      }
 
       // 标题
       h3 {
