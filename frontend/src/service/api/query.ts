@@ -33,3 +33,19 @@ export function queryModelConfigRequest(uid: string) {
     method: 'get'
   });
 }
+
+// 查询所有模型
+export function queryAllModelsRequest() {
+  return request({
+    url: `/api/query/service/models`,
+    method: 'get'
+  });
+}
+
+// 查询可用模型
+export function queryAvailableModelsRequest(uid: string) {
+  return request({
+    url: `/api/query/${uid}/models`,
+    method: 'get'
+  });
+}
