@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import site.chatmanager.mapper.QueryMapper;
+import site.chatmanager.model.enums.Model;
+import site.chatmanager.model.utils.ModelConfigChecker;
 import site.chatmanager.pojo.container.ModelsConfig;
 import site.chatmanager.pojo.universal.Result;
 import site.chatmanager.pojo.container.ContactData;
@@ -15,7 +17,10 @@ import site.chatmanager.service.QueryService;
 import site.chatmanager.service.universal.RecordService;
 import site.chatmanager.utils.EncryptionUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -94,6 +99,51 @@ public class QueryServiceImpl implements QueryService {
 
         // 返回数据
         Result result = Result.success("查询成功", modelsConfig);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @Override
+    public ResponseEntity<Result> queryModelsOfServiceSupport() {
+
+        // 返回数据
+        Result result = Result.success("查询成功", Model.getDataOfModels());
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @Override
+    public ResponseEntity<Result> queryModelsOfUserSupport(Long uid) {
+
+        // 查询数据库
+        String config = queryMapper.queryModelsConfig(uid);
+        if (config == null) {
+            Result result = Result.failure("没有可用的模型");
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        }
+
+        // 获取模型配置对象
+        Map<String, Map<String, String>> modelsConfig = ModelConfigChecker.validateAndParseConfig(config);
+        if (modelsConfig == null) {
+            Result result = Result.failure("模型配置有误，请检查");
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        }
+
+        // 从模型配置对象中获取模型名称
+        List<String> modelsName = modelsConfig.keySet().stream().toList();
+
+        // 根据模型名称获取模型数据
+        List<Map<String, Object>> modelsData = new ArrayList<>();
+        modelsName.forEach(modelName -> {
+            Model model = Model.fromName(modelName);
+            if (model != null) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("name", model.getAlias());
+                map.put("modelId", model.getModelId());
+                modelsData.add(map);
+            }
+        });
+
+        // 返回数据
+        Result result = Result.success("查询成功", modelsData);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

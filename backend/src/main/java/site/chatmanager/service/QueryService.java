@@ -17,4 +17,10 @@ public interface QueryService {
     // 查询用户模型配置
     public ResponseEntity<Result> queryUserModelConfig(Long uid);
 
+    // 查询服务器支持的模型
+    public ResponseEntity<Result> queryModelsOfServiceSupport();
+
+    // 查询用户当前可用的模型（已经配置成功的模型）
+    public ResponseEntity<Result> queryModelsOfUserSupport(Long uid);
+
 }

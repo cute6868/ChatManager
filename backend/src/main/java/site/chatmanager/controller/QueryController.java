@@ -40,4 +40,16 @@ public class QueryController {
         return queryService.queryUserModelConfig(uid);
     }
 
+    // 查询服务器支持的模型
+    @GetMapping("/service/models")
+    public ResponseEntity<Result> queryModelsOfServiceSupport() {
+        return queryService.queryModelsOfServiceSupport();
+    }
+
+    // 查询用户当前可用的模型（已经配置成功的模型）
+    @GetMapping("/{uid}/models")
+    public ResponseEntity<Result> queryModelsOfUserSupport(@PathVariable("uid") Long uid) {
+        return queryService.queryModelsOfUserSupport(uid);
+    }
+
 }

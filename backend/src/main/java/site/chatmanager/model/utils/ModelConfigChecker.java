@@ -45,8 +45,8 @@ public class ModelConfigChecker {
             }
 
             for (Map.Entry<String, Map<String, String>> entry : config.entrySet()) {
-                String serviceName = entry.getKey();
-                Map<String, String> serviceConfig = entry.getValue();
+                String serviceName = entry.getKey();                    // 模型名称
+                Map<String, String> serviceConfig = entry.getValue();   // 模型相关的配置
 
                 if (validators.containsKey(serviceName) && validateConfigLength(serviceConfig) &&
                         validators.get(serviceName).validate(serviceConfig)) {
