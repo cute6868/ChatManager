@@ -154,12 +154,12 @@ public class ChatServiceImpl implements ChatService {
                         response.setResponse(rawResponse);  // 直接使用模型响应的原始JSON字符串
                         response.setCode(0);                // 设置响应代码为0，表示成功
                     } else {
-                        response.setResponse("不支持的模型: " + model.getName());
+                        response.setResponse("\"不支持的模型: " + model.getName() + "\"");  // 因为用了生的字符串，所以要添加转义的双引号，下面同理
                         response.setCode(1);    // 设置响应代码为1，表示失败
                     }
                 } catch (Exception e) {
                     // 若出现异常，设置错误提示信息
-                    response.setResponse("调用 " + model.getName() + " 模型时出现问题，请检查模型配置后重试");
+                    response.setResponse("\"调用 " + model.getName() + " 模型时出现问题，请检查模型配置后重试\"");
                     response.setCode(1);        // 设置响应代码为1，表示失败
                     // 记录错误日志
                     log.error(e.getMessage());
