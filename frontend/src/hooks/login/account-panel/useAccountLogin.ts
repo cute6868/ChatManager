@@ -51,7 +51,7 @@ export default function useAccountLogin(formData: FormDataTypeA) {
             }
           })
           .catch(() => {
-            ElMessage({ message: '网络异常', type: 'error' }); // 一般是网络异常导致
+            ElMessage({ message: '网络异常', type: 'error', grouping: true }); // 一般是网络异常导致
           });
       } else {
         // 没有通过表单验证

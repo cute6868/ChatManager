@@ -46,7 +46,7 @@ export default function useVerifyCode(form: FormDataTypeB | FormDataTypeD) {
         }
       })
       .catch(() => {
-        ElMessage({ message: '网络异常', type: 'error' });
+        ElMessage({ message: '网络异常', type: 'error', grouping: true });
       });
   }
 

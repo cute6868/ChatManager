@@ -44,7 +44,7 @@ export default function useVerifyCode(form: FormDataTypeB | FormDataTypeD) {
         }
       })
       .catch(() => {
-        ElMessage({ message: '网络异常', type: 'error' }); // 一般情况下是网络异常
+        ElMessage({ message: '网络异常', type: 'error', grouping: true }); // 一般情况下是网络异常
       });
   }
 

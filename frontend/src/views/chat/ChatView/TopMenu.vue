@@ -76,7 +76,7 @@ function loadUserData() {
       }
     })
     .catch(() => {
-      ElMessage({ message: '网络异常', type: 'error' });
+      ElMessage({ message: '网络异常', type: 'error', grouping: true });
     });
 }
 
@@ -103,7 +103,7 @@ function logout() {
       }
     })
     .catch(() => {
-      ElMessage({ message: '网络异常', type: 'error' });
+      ElMessage({ message: '网络异常', type: 'error', grouping: true });
     });
 }
 
@@ -131,7 +131,7 @@ function toggleCard() {
         }
       })
       .catch(() => {
-        ElMessage({ message: '网络异常', type: 'error' });
+        ElMessage({ message: '网络异常', type: 'error', grouping: true });
       });
 
     card.style.left = '-6px'; // 显示卡片

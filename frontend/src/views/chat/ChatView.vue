@@ -4,13 +4,16 @@
       <!-- 顶部菜单栏 -->
       <TopMenu />
     </div>
-
-    <div class="middle"></div>
+    <!-- 功能面板 -->
+    <div class="other">
+      <FunctionPanel />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import TopMenu from './ChatView/TopMenu.vue';
+import FunctionPanel from './ChatView/FunctionPanel.vue';
 </script>
 
 <style scoped lang="scss">
@@ -21,13 +24,12 @@ import TopMenu from './ChatView/TopMenu.vue';
   .top {
     width: 100%;
     height: 8%;
-    background-color: pink;
+    // background-color: pink;
   }
 
-  .middle {
+  .other {
     width: 100%;
     height: 92%;
-    background-color: gray;
   }
 }
 </style>

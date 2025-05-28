@@ -42,7 +42,7 @@ export default function useEmailLogin(formData: FormDataTypeB) {
             }
           })
           .catch(() => {
-            ElMessage({ message: '网络异常', type: 'error' }); // 一般是网络异常的问题
+            ElMessage({ message: '网络异常', type: 'error', grouping: true }); // 一般是网络异常的问题
           });
       } else {
         // 没有通过表单验证，提示错误原因

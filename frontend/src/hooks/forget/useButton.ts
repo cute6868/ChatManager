@@ -34,7 +34,7 @@ export default function useButton(formData: FormDataTypeC) {
             }
           })
           .catch(() => {
-            ElMessage({ message: '网络异常', type: 'error' }); // 一般情况下是网络异常
+            ElMessage({ message: '网络异常', type: 'error', grouping: true }); // 一般情况下是网络异常
           });
       } else {
         // 表单验证不通过，提示信息
