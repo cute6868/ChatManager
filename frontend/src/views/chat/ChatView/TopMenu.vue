@@ -4,14 +4,11 @@
       <!-- 历史记录 -->
       <div class="record">
         <!-- 历史记录图标 -->
-        <el-icon id="record-icon" size="24" @click="toggleCard"><Clock /></el-icon>
+        <el-icon id="record-icon" size="23" @click="toggleCard"><Clock /></el-icon>
 
         <!-- 历史记录卡片 -->
         <el-card id="record-card">
-          <h3>
-            历史记录
-            <el-icon size="18"><Clock /></el-icon>
-          </h3>
+          <h3>历史记录</h3>
           <p v-for="item in recordList" :key="item.sequence_num">
             <el-icon size="16" class="chat-icon"><ChatDotRound /></el-icon>
             <span>{{ item.question }}</span>
@@ -169,7 +166,13 @@ function handleOutsideClick(e: MouseEvent) {
 
 <style scoped lang="scss">
 .top-menu {
-  height: 100%;
+  position: fixed;
+  top: 0px;
+
+  width: 100%;
+  height: max(8%, 50px);
+  z-index: 100;
+  background-color: #fff;
 
   display: flex;
   justify-content: space-between;
@@ -206,17 +209,19 @@ function handleOutsideClick(e: MouseEvent) {
     // 历史记录卡片
     #record-card {
       position: absolute;
-      top: 50px;
+      top: 36px;
       left: -320px; // 当left: -6px时，才能显示卡片
+      z-index: 1000;
 
       width: 280px;
       height: 80vh;
-      background-color: rgb(243, 244, 246);
+      background-color: rgb(248, 248, 248);
       overflow-y: auto;
+      border-radius: 10px;
 
       // 滚动条宽度
       &::-webkit-scrollbar {
-        width: 6px;
+        width: 5px;
       }
 
       // 滚动条轨道
@@ -227,18 +232,18 @@ function handleOutsideClick(e: MouseEvent) {
 
       // 滚动条滑块
       &::-webkit-scrollbar-thumb {
-        background: rgb(204, 204, 204);
+        background: rgb(220, 220, 220);
         border-radius: 10px;
       }
       &::-webkit-scrollbar-thumb:hover {
-        background: rgb(153, 153, 153);
+        background: rgb(180, 180, 180);
       }
 
       // 标题
       h3 {
         font-size: 22px;
         padding: 5px 0 16px;
-        border-bottom: 1px solid rgb(31, 41, 59);
+        border-bottom: 2px solid rgba(31, 41, 59, 0.7);
         margin-bottom: 10px;
 
         display: flex;

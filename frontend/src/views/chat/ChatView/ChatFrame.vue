@@ -34,7 +34,10 @@
       </div>
       <!-- 功能按钮 -->
       <div class="btn-area">
-        <el-button class="cancel-btn" @click="empty">清空已选</el-button>
+        <el-button class="cancel-btn" @click="empty">
+          <el-icon class="delete-icon"><DeleteFilled /></el-icon>
+          <span class="delete-text">清空已选</span>
+        </el-button>
         <el-button
           class="send-btn"
           type="primary"
@@ -62,16 +65,35 @@ import { onUnmounted, ref, watch } from 'vue';
 const uid = localCache.getItem(UID);
 
 // 内容占位符（3秒切换内容）
-const placeholderContent = ref('温馨提示：在设置中配置模型后才能正常使用。');
-let flag = false;
-const timerId = setInterval(() => {
-  flag = !flag;
-  placeholderContent.value = flag
-    ? '选择您喜欢的模型，与它们对话吧！'
-    : '温馨提示：在设置中配置模型后才能正常使用。';
-}, 6 * 1000);
+const content = ['温馨提示：在设置中配置模型后才能正常使用。', '选择您喜欢的模型，与它们对话吧！'];
+const placeholderContent = ref(content[0]); // 默认展示的内容
+const displayDuration = 20 * 1000; //  每个句子的展示时长为20秒
+let sentenceIndex = 0; // 当前句子索引
+const typingSpeed = 80; // 每个字符的展示间隔为80ms
+let timerId2: number;
+const timerId1 = setInterval(() => {
+  // 1.立即准备好下一个句子
+  sentenceIndex = sentenceIndex < content.length - 1 ? sentenceIndex + 1 : 0;
+  const sentence = content[sentenceIndex];
+
+  // 2.清空原来的句子内容
+  placeholderContent.value = '';
+  let index = 0;
+
+  // 3.模拟打字效果，不断输出新句中的内容
+  timerId2 = setInterval(() => {
+    if (index < sentence.length) {
+      placeholderContent.value += sentence[index];
+      index++;
+    } else {
+      clearInterval(timerId2); // 当所有字符都显示完后，清除定时器
+    }
+  }, typingSpeed);
+}, displayDuration);
 onUnmounted(() => {
-  clearInterval(timerId); // 清除定时器
+  // 清除定时器
+  clearInterval(timerId1);
+  clearInterval(timerId2); // 防止中途突然切换页面，导致没有清除定时器
 });
 
 // 定义：模型名称和ID的映射关系
@@ -168,12 +190,18 @@ onUnmounted(() => {
   stopWatching();
 });
 
+// 实现子传父
+import { defineEmits } from 'vue';
+const emit = defineEmits(['sendMsg', 'dataUpdate', 'dataEnd']);
 // 发送信息
 function sendMessage() {
   if (selected.value.length === 0) {
     ElMessage.warning('至少选择一个模型');
     return;
   }
+
+  // 发送按钮点击事件，触发父组件的点击事件
+  emit('sendMsg');
 
   // 将模型名称转为模型ID
   const modelIds = selected.value.map((modelName) => {
@@ -182,9 +210,11 @@ function sendMessage() {
 
   chatRequest(uid, textarea.value, modelIds, {
     onData: (data) => {
-      console.log(data);
+      emit('dataUpdate', data); // 触发父组件的数据更新事件，并传递data数据给父组件
     },
-    onComplete: () => {},
+    onComplete: () => {
+      emit('dataEnd'); // 触发父组件的数据结束事件
+    },
     onError: (error) => {
       // 一般情况下是网络异常，少数情况是读取数据错误或解析JSON数据错误
       ElMessage({ message: '网络异常', type: 'error', grouping: true }); // 提示网络异常
@@ -203,6 +233,7 @@ const wrapSendMessage = throttle(sendMessage, THROTTLE_TIME);
 .chat-frame {
   width: min(94vw, 800px);
   height: max(24vh, 184px);
+  background-color: #fff;
 }
 
 .select-area {
@@ -244,6 +275,7 @@ const wrapSendMessage = throttle(sendMessage, THROTTLE_TIME);
 
 // 输入区
 .input-area {
+  background-color: #fff;
   margin-top: 10px;
   width: 100%;
   height: 80%;
@@ -290,15 +322,22 @@ const wrapSendMessage = throttle(sendMessage, THROTTLE_TIME);
 
   // 取消已选按钮
   .cancel-btn {
-    width: 90px;
     height: 26px;
-    font-size: 12px;
-    font-weight: 400;
-    letter-spacing: 2px;
-    border: 1px solid #b1b1b1;
+    border: 1px solid #e0e0e0;
 
     &:hover {
       font-weight: 500;
+    }
+
+    .delete-icon {
+      margin-top: 1px;
+      font-size: 14px;
+    }
+
+    .delete-text {
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 1px;
     }
   }
 

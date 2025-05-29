@@ -24,12 +24,13 @@ import FunctionPanel from './ChatView/FunctionPanel.vue';
   .top {
     width: 100%;
     height: 8%;
-    // background-color: pink;
+    position: absolute;
   }
 
   .other {
     width: 100%;
     height: 92%;
+    position: absolute;
   }
 }
 </style>
