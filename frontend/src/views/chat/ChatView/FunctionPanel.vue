@@ -14,8 +14,10 @@
 
   <!-- 工作模式时的功能面板 -->
   <div class="work-function-panel" v-if="!isWorkingMode">
-    <!-- 展示框 -->
-    <div class="show-box">123456</div>
+    <!-- 展示区 -->
+    <div class="show-area">
+      <!-- <div v-for="item in [0, 1, 2, 3, 4]" :key="item">我是{{ item }}号模型</div> -->
+    </div>
 
     <!-- 聊天框 -->
     <div class="chat"><ChatFrame /></div>
@@ -25,6 +27,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import ChatFrame from './ChatFrame.vue';
+import { Key } from '@element-plus/icons-vue';
 const isFadeOut = ref(false); // 是否淡出
 const isWorkingMode = ref(false); //  是否处于工作模式
 
@@ -86,16 +89,29 @@ function switchMode() {
   flex-direction: column;
   align-items: center;
 
-  .show-box {
-    background-color: pink;
+  .show-area {
+    // 固定基本样式（与其他地方配合密切，不要改动）
     width: 100%;
     height: 100%;
-    margin-bottom: 220px;
+    margin-top: 56px;
+    margin-bottom: 168px;
   }
 
   .chat {
     position: fixed;
     bottom: 26px;
+  }
+}
+
+// 数据输出面板
+.work-function-panel > .show-area {
+  background-color: pink; // 测试
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  div {
   }
 }
 </style>

@@ -170,7 +170,7 @@ function handleOutsideClick(e: MouseEvent) {
   top: 0px;
 
   width: 100%;
-  height: max(8%, 50px);
+  height: 56px;
   z-index: 100;
   background-color: #fff;
 

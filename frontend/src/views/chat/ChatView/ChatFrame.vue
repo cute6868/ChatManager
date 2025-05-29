@@ -58,6 +58,7 @@ import { chatRequest } from '@/service/api/chat';
 import { queryAllModelsRequest, queryAvailableModelsRequest } from '@/service/api/query';
 import { localCache } from '@/utils/cache';
 import throttle from '@/utils/throttle';
+import { typing } from '@/utils/typing';
 import { Top } from '@element-plus/icons-vue';
 import { onUnmounted, ref, watch } from 'vue';
 
@@ -69,26 +70,14 @@ const content = ['温馨提示：在设置中配置模型后才能正常使用�
 const placeholderContent = ref(content[0]); // 默认展示的内容
 const displayDuration = 20 * 1000; //  每个句子的展示时长为20秒
 let sentenceIndex = 0; // 当前句子索引
-const typingSpeed = 80; // 每个字符的展示间隔为80ms
+const speed = 80; // 每个字符的展示间隔为80ms
 let timerId2: number;
 const timerId1 = setInterval(() => {
   // 1.立即准备好下一个句子
   sentenceIndex = sentenceIndex < content.length - 1 ? sentenceIndex + 1 : 0;
   const sentence = content[sentenceIndex];
 
-  // 2.清空原来的句子内容
-  placeholderContent.value = '';
-  let index = 0;
-
-  // 3.模拟打字效果，不断输出新句中的内容
-  timerId2 = setInterval(() => {
-    if (index < sentence.length) {
-      placeholderContent.value += sentence[index];
-      index++;
-    } else {
-      clearInterval(timerId2); // 当所有字符都显示完后，清除定时器
-    }
-  }, typingSpeed);
+  timerId2 = typing(sentence, speed, placeholderContent);
 }, displayDuration);
 onUnmounted(() => {
   // 清除定时器
