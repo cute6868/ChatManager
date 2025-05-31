@@ -43,6 +43,9 @@ public interface QueryMapper {
     // 查询：用户兴趣爱好（不直接对外）
     public String queryInterests(Long uid);
 
+    // 查询：模型头像
+    public String queryModelAvatar(Integer modelId);
+
 
     // ~~~~~ users_core_info 表 ~~~~~
     // 查询：用户账号、用户邮箱、用户手机（不得查询密码，但是可以修改密码）

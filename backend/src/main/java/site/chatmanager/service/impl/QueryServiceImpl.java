@@ -103,6 +103,21 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
+    public ResponseEntity<Result> queryModelAvatar(Integer modelId) {
+
+        // 查询模型头像
+        String avatarUrl = queryMapper.queryModelAvatar(modelId);
+        if (avatarUrl == null) {
+            Result result = Result.failure("数据为空");
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        }
+
+        // 返回数据
+        Result result = Result.success("查询成功", avatarUrl);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @Override
     public ResponseEntity<Result> queryModelsOfServiceSupport() {
 
         // 返回数据

@@ -12,16 +12,12 @@ import site.chatmanager.service.universal.RedisService;
 import site.chatmanager.utils.JwtUtils;
 
 import java.io.PrintWriter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
 
     @Autowired
     private RedisService redisService;
-
-    private static final Pattern UID_PATTERN = Pattern.compile("/(\\d+)(/|$)");
 
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
@@ -93,26 +89,29 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         // 5.检查请求路径是否需要验证 uid
-        if (path.contains("/api/query/")
-                || path.contains("/api/chat/")
-                || path.contains("/api/logout/")
-                || path.contains("/api/authenticate/")
-                || path.contains("/api/update/")
-                || path.contains("/api/deactivate/")) {
-            // 从路径中提取 uid
-            Matcher matcher = UID_PATTERN.matcher(path);
-            if (matcher.find()) {
-                try {
-                    Long pathUid = Long.parseLong(matcher.group(1));
-                    // 比较路径中的 uid 和 token 中的 uid
-                    if (!uid.equals(pathUid)) {
-                        sendErrorResult(response, "登录信息异常，请重新登录");
-                        return false;
+        if (path.startsWith("/api/query/")
+                || path.startsWith("/api/chat/")
+                || path.startsWith("/api/logout/")
+                || path.startsWith("/api/authenticate/")
+                || path.startsWith("/api/update/")
+                || path.startsWith("/api/deactivate/")) {
+
+            // 提取路径中的第一个路径段
+            String[] pathSegments = path.split("/");
+            if (pathSegments.length >= 4) { // 确保路径至少有4个部分：空字符串、api、路径前缀、数字
+                    try {
+                        // 提取并验证紧跟在路径前缀后的数字
+                        String segmentAfterPrefix = pathSegments[3];
+                        Long pathUid = Long.parseLong(segmentAfterPrefix);
+
+                        // 比较路径中的 uid 和 token 中的 uid
+                        if (!uid.equals(pathUid)) {
+                            sendErrorResult(response, "登录信息异常，请重新登录");
+                            return false;
+                        }
+                    } catch (NumberFormatException e) {
+                        // 该段不是数字，不进行验证
                     }
-                } catch (NumberFormatException e) {
-                    sendErrorResult(response, "登录信息异常，请重新登录");
-                    return false;
-                }
             }
         }
 

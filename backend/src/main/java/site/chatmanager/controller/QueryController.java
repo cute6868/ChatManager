@@ -40,6 +40,12 @@ public class QueryController {
         return queryService.queryUserModelConfig(uid);
     }
 
+    // 查询模型头像
+    @GetMapping("/avatar/{modelid}")
+    public ResponseEntity<Result> queryModelAvatar(@PathVariable("modelid") Integer modelId) {
+        return queryService.queryModelAvatar(modelId);
+    }
+
     // 查询服务器支持的模型
     @GetMapping("/service/models")
     public ResponseEntity<Result> queryModelsOfServiceSupport() {
