@@ -162,4 +162,18 @@ public class QueryServiceImpl implements QueryService {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
+    @Override
+    public ResponseEntity<Result> queryUserSelectedModels(Long uid) {
+        // 查询用户已经选择的模型
+        String data = queryMapper.querySelectedModels(uid);
+        if (data == null) {
+            Result result = Result.failure("数据为空");
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        }
+
+        // 返回数据
+        Result result = Result.success("查询成功", data);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
 }

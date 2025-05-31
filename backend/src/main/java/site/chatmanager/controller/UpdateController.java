@@ -33,6 +33,12 @@ public class UpdateController {
         return updateService.updateUserModelConfig(uid, data);
     }
 
+    // 更新用户模型选择
+    @PutMapping("/{uid}/selected")
+    public ResponseEntity<Result> updateUserSelectedModels(@PathVariable Long uid, @RequestBody String data) {
+        return updateService.updateUserSelectedModels(uid, data);
+    }
+
     // 更新用户账号
     @PutMapping("/{uid}/account")
     public ResponseEntity<Result> updateUserAccount(@PathVariable Long uid, @RequestBody UpdateData data) {
@@ -42,7 +48,6 @@ public class UpdateController {
     // 更新用户邮箱 - 身份确认
     @PutMapping("/{uid}/email/auth")
     public ResponseEntity<Result> authBeforeUpdateUserEmail(@PathVariable Long uid, @RequestBody UpdateData data) {
-        System.out.println("run to here");
         return updateService.authBeforeUpdateUserEmail(uid, data);
     }
 

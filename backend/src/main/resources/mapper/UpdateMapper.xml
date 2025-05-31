@@ -26,6 +26,13 @@
         where uid = #{uid}
     </update>
 
+    <!-- 更新用户模型选择 -->
+    <update id="updateSelectedModels">
+        update users_basic_info
+        set selected = #{selected}
+        where uid = #{uid}
+    </update>
+
     <!-- ===================== users_core_info 表 ===================== -->
     <!-- 更新用户账号 -->
     <update id="updateAccount">

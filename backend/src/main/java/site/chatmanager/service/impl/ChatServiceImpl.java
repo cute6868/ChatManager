@@ -159,7 +159,7 @@ public class ChatServiceImpl implements ChatService {
                     }
                 } catch (Exception e) {
                     // 若出现异常，设置错误提示信息
-                    response.setResponse("\"调用 " + model.getAlias() + " 模型时出现问题，请检查模型配置后重试\"");
+                    response.setResponse("\"调用" + model.getAlias() + "模型时出现问题，请检查模型配置后重试\"");
                     response.setCode(1);        // 设置响应代码为1，表示失败
                     // 记录错误日志
                     log.error(e.getMessage());

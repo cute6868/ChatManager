@@ -17,6 +17,9 @@ public interface UpdateService {
     // 更新用户模型配置
     public ResponseEntity<Result> updateUserModelConfig(Long uid, String modelConfig);
 
+    // 更新用户模型选择
+     public ResponseEntity<Result> updateUserSelectedModels(Long uid, String data);
+
 
     // ========================= 账号、密码、邮箱（需要验证） =========================
     // 更新用户账号

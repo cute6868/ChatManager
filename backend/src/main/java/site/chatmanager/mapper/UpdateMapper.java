@@ -18,6 +18,9 @@ public interface UpdateMapper {
     // 更新用户兴趣爱好（不直接对外）
     public int updateInterests(@Param("uid") Long uid, @Param("interests") String interests);
 
+    // 更新用户模型选择
+    public int updateSelectedModels(@Param("uid") Long uid, @Param("selected") String selected);
+
 
     // ===================== users_core_info 表 =====================
     // 更新用户账号

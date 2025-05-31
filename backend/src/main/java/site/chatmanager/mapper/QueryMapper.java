@@ -43,6 +43,11 @@ public interface QueryMapper {
     // 查询：用户兴趣爱好（不直接对外）
     public String queryInterests(Long uid);
 
+    // 查询：用户已经选择的模型
+    public String querySelectedModels(Long uid);
+
+
+    // ~~~~~ models_avatar 表 ~~~~~
     // 查询：模型头像
     public String queryModelAvatar(Integer modelId);
 

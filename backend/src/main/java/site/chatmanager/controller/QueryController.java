@@ -58,4 +58,10 @@ public class QueryController {
         return queryService.queryModelsOfUserSupport(uid);
     }
 
+    // 查询用户已经选择的模型
+    @GetMapping("/{uid}/selected")
+    public ResponseEntity<Result> queryUserSelectedModels(@PathVariable("uid") Long uid) {
+         return queryService.queryUserSelectedModels(uid);
+    }
+
 }

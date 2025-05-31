@@ -105,6 +105,24 @@ public class UpdateServiceImpl implements UpdateService {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
+     @Override
+     public ResponseEntity<Result> updateUserSelectedModels(Long uid, String data) {
+
+         // 检测格式合法性
+         if (data == null || data.isEmpty()|| !FormatChecker.checkJsonArray(data)) {
+             Result result = Result.failure("修改失败，格式不符合要求");
+             return ResponseEntity.status(HttpStatus.OK).body(result);
+         }
+
+         // 更新配置
+         int num = updateMapper.updateSelectedModels(uid, data);
+         if (num <= 0) throw new CustomException("修改失败，服务器错误");
+
+         // 返回响应
+         Result result = Result.success("修改成功");
+         return ResponseEntity.status(HttpStatus.OK).body(result);
+     }
+
     @Override
     public ResponseEntity<Result> updateUserAccount(Long uid, UpdateData data) {
 

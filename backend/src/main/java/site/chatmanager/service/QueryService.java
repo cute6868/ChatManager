@@ -26,4 +26,7 @@ public interface QueryService {
     // 查询用户当前可用的模型（已经配置成功的模型）
     public ResponseEntity<Result> queryModelsOfUserSupport(Long uid);
 
+    // 查询用户已经选择的模型
+    public ResponseEntity<Result> queryUserSelectedModels(Long uid);
+
 }

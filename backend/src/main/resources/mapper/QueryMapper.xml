@@ -50,6 +50,12 @@
         select interests from users_basic_info where uid = #{uid}
     </select>
 
+    <!-- 查询：用户已经选择的模型 -->
+    <select id="querySelectedModels" resultType="java.lang.String">
+        select selected from users_basic_info where uid = #{uid}
+    </select>
+
+    <!-- ~~~~~ models_avatar 表 ~~~~~ -->
     <!-- 查询模型头像 -->
     <select id="queryModelAvatar" resultType="java.lang.String">
         select avatar from models_avatar where modelId = #{modelId}

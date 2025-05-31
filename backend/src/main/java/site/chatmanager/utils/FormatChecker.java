@@ -1,5 +1,12 @@
 package site.chatmanager.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import java.util.HashSet;
+import java.util.Set;
+
 import java.util.regex.Pattern;
 
 public final class FormatChecker {
@@ -70,4 +77,46 @@ public final class FormatChecker {
         if (avatarUrl == null) return false;
         return AVATAR_URL_REGEX.matcher(avatarUrl).matches();
     }
+
+    // 检查输入的字符串是否为有效的JSON数组，并且数组中的数字不重复（用户模型选择JSON字符串格式校验）
+    public static boolean checkJsonArray(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            return false;
+        }
+
+        try {
+            // 解析JSON数组
+            Gson gson = new Gson();
+            JsonArray jsonArray = gson.fromJson(input, JsonArray.class);
+
+            // 验证是否为数组
+            if (jsonArray == null) {
+                return false;
+            }
+
+            // 验证数组元素
+            Set<Double> numberSet = new HashSet<>();
+            for (JsonElement element : jsonArray) {
+                // 验证是否为数字
+                if (!element.isJsonPrimitive() || !element.getAsJsonPrimitive().isNumber()) {
+                    return false;
+                }
+
+                // 验证是否重复
+                double number = element.getAsDouble();
+                if (!numberSet.add(number)) {
+                    return false;
+                }
+            }
+
+            return true;
+        } catch (JsonParseException e) {
+            // 非有效JSON格式
+            return false;
+        } catch (NumberFormatException e) {
+            // 无法转换为数字
+            return false;
+        }
+    }
+
 }
