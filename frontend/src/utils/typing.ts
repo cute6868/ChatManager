@@ -8,7 +8,7 @@ import type { Ref } from 'vue';
  * @returns timerId 定时器ID（可用于打字未完成时，手动取消定时器）
  */
 
-export function typing(text: string, speed: number, refObj: Ref) {
+export function typing(text: string, speed: number, refObj: Ref): number {
   let index = 0;
   refObj.value = '';
   const timerId = setInterval(() => {

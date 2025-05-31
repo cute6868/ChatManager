@@ -1,5 +1,6 @@
 import { localCache } from '@/utils/cache';
 import { LOGIN_TOKEN } from '@/global/constant/login';
+import type { ModelResponseData } from '@/types';
 
 // 由于后端的POST请求和SSE混用架构，导致前端无法使用单纯的axios和SSE进行请求
 // 所以这样使用 fetch + 流式响应，模拟了SSE的功能
@@ -14,9 +15,9 @@ export function chatRequest(
     onComplete, // 请求完成回调函数
     onError // 错误处理回调函数
   }: {
-    onData: (data: any) => void;
+    onData: (data: ModelResponseData) => void;
     onComplete: () => void;
-    onError: (error: any) => void;
+    onError: (error: Error | unknown) => void;
   }
 ) {
   const token = localCache.getItem(LOGIN_TOKEN); // 获取token令牌
@@ -80,14 +81,16 @@ export function chatRequest(
                   try {
                     const data = JSON.parse(result); // 解析JSON数据
                     onData?.(data); // 调用回调函数，处理数据
-                  } catch (error: any) {
-                    onError?.(new Error(`Json Parsing failure: ${error.message}`));
+                  } catch (error: Error | unknown) {
+                    if (error instanceof Error) {
+                      onError?.(new Error(`Json Parsing failure: ${error.message}`));
+                    }
                   }
                 }
               }
             });
           }
-        } catch (error) {
+        } catch (error: Error | unknown) {
           isCompleted = true;
           onError?.(error); // 捕获读取过程中的错误
         }

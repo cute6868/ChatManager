@@ -6,7 +6,7 @@
         ref="checkboxGroupRef"
         @mouseenter="handleMouseEnter"
         @mouseleave="handleMouseLeave"
-        v-model="selected"
+        v-model="modelsStore.selectedModels"
         size="small"
         fill="#51a4dd"
         :max="maxSelectableQuantity"
@@ -30,6 +30,7 @@
           :placeholder="placeholderContent"
           v-model="textarea"
           :autosize="{ minRows: 3, maxRows: 3 }"
+          ref="textareaRef"
         />
       </div>
       <!-- 功能按钮 -->
@@ -53,17 +54,26 @@
 
 <script setup lang="ts">
 import { UID } from '@/global/constant/login';
-import { THROTTLE_TIME } from '@/global/constant/rule';
 import { chatRequest } from '@/service/api/chat';
 import { queryAllModelsRequest, queryAvailableModelsRequest } from '@/service/api/query';
+import useModelsStore from '@/store/models';
 import { localCache } from '@/utils/cache';
 import throttle from '@/utils/throttle';
 import { typing } from '@/utils/typing';
 import { Top } from '@element-plus/icons-vue';
-import { onUnmounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 
 // 获取用户uid
 const uid = localCache.getItem(UID);
+
+// 使用Pinia内存存储库
+const modelsStore = useModelsStore();
+
+// 引用输入框对象
+const textareaRef = ref();
+onMounted(() => {
+  textareaRef.value.focus(); // 当页面挂载完毕，自动聚焦输入框
+});
 
 // 内容占位符（3秒切换内容）
 const content = ['温馨提示：在设置中配置模型后才能正常使用。', '选择您喜欢的模型，与它们对话吧！'];
@@ -73,10 +83,11 @@ let sentenceIndex = 0; // 当前句子索引
 const speed = 80; // 每个字符的展示间隔为80ms
 let timerId2: number;
 const timerId1 = setInterval(() => {
-  // 1.立即准备好下一个句子
+  // 立即准备好下一个句子
   sentenceIndex = sentenceIndex < content.length - 1 ? sentenceIndex + 1 : 0;
   const sentence = content[sentenceIndex];
 
+  // 启动打字效果
   timerId2 = typing(sentence, speed, placeholderContent);
 }, displayDuration);
 onUnmounted(() => {
@@ -85,8 +96,26 @@ onUnmounted(() => {
   clearInterval(timerId2); // 防止中途突然切换页面，导致没有清除定时器
 });
 
+function handleKeydown(event: KeyboardEvent) {
+  // 按下回车键触发"发送按钮"（不含shift）
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    wrapSendMessage();
+    return;
+  }
+}
+onMounted(() => {
+  document.addEventListener('keydown', handleKeydown);
+});
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown);
+});
+
 // 定义：模型名称和ID的映射关系
 const nameAndIdMap = new Map();
+
+// 输入框的文本内容
+const textarea = ref(modelsStore.question); // 同步pinia中的内容
 
 // 定义：服务器支持的模型
 const support = ref<string[]>([]);
@@ -99,6 +128,12 @@ queryAllModelsRequest()
         support.value.push(model.name); // 更新：服务器支持的模型
         nameAndIdMap.set(model.name, model.modelId); // 更新：模型名称和ID的映射关系
       });
+      // 加载完nameAndIdMap映射关系后，检测pinia里面是否有用户的提问
+      // 如果有用户的提问，说明当前是由"初始模式"刚转为"工作模式"，需要完成任务的交接！（初始模式是不干活的，工作模式要把初始模式的提问完成）
+      if (modelsStore.question !== '') {
+        modelsStore.question = ''; // 清空在"初始模式"时候所遗留的提问内容
+        wrapSendMessage(); // 触发函数，完成"初始模式"时候没有完成的提问请求
+      }
     } else {
       ElMessage({ message: '服务器异常', type: 'error', grouping: true });
     }
@@ -125,11 +160,7 @@ queryAvailableModelsRequest(uid)
     ElMessage({ message: '网络异常', type: 'error', grouping: true });
   });
 
-const selected = ref([]); // 用户已经选择的模型
 const maxSelectableQuantity = 10; // 最多可选数量
-
-// 输入框的文本内容
-const textarea = ref('');
 
 // 容器的引用（复选框对象）
 const checkboxGroupRef = ref();
@@ -163,46 +194,62 @@ function handleMouseLeave() {
 
 // 清空用户已选择的模型
 function empty() {
-  selected.value = [];
+  modelsStore.selectedModels = [];
 }
 
 // 禁用发信息按钮
 const isForbidden = ref(true);
 
 // 监听输入框的内容，如果内容为空，则禁用发送按钮
-const stopWatching = watch(textarea, (newValue) => {
+const stopWatchingTextarea = watch(textarea, (newValue) => {
   isForbidden.value = newValue === '' ? true : false;
 });
 
 // 组件卸载时销毁监听
 onUnmounted(() => {
-  stopWatching();
+  stopWatchingTextarea();
 });
 
 // 实现子传父
-import { defineEmits } from 'vue';
-const emit = defineEmits(['sendMsg', 'dataUpdate', 'dataEnd']);
+const emit = defineEmits(['firstClick']);
+
+//
 // 发送信息
 function sendMessage() {
-  if (selected.value.length === 0) {
+  if (modelsStore.selectedModels.length === 0) {
     ElMessage.warning('至少选择一个模型');
     return;
   }
 
-  // 发送按钮点击事件，触发父组件的点击事件
-  emit('sendMsg');
+  // 第一次点击按钮是"初始模式"，之后才是"工作模式"
+  // 如果是初始模式，则不进行任何处理，而是移交给工作模式处理
+  if (!modelsStore.isWorkingMode) {
+    modelsStore.question = textarea.value; // 保存问题内容，方便移交数据
+    textarea.value = ''; // 清空输入框
+    emit('firstClick'); // 触发父组件的点击事件
+    return;
+  }
 
   // 将模型名称转为模型ID
-  const modelIds = selected.value.map((modelName) => {
-    return nameAndIdMap.get(modelName);
+  const modelIds: number[] = [];
+  modelsStore.selectedModels.forEach((modelName) => {
+    if (nameAndIdMap.get(modelName) === 'undefined') {
+      ElMessage({ message: '网络不通畅，请重试', type: 'warning', grouping: true });
+      return;
+    } else {
+      modelIds.push(nameAndIdMap.get(modelName));
+    }
   });
+
+  // 清空上一次的响应数据
+  modelsStore.emptyModelsResponse();
 
   chatRequest(uid, textarea.value, modelIds, {
     onData: (data) => {
-      emit('dataUpdate', data); // 触发父组件的数据更新事件，并传递data数据给父组件
+      modelsStore.modelsResponse.push(data); // 更新pinia中的数据
     },
     onComplete: () => {
-      emit('dataEnd'); // 触发父组件的数据结束事件
+      modelsStore.wasCompleted = true; // 更新pinia中的数据
     },
     onError: (error) => {
       // 一般情况下是网络异常，少数情况是读取数据错误或解析JSON数据错误
@@ -215,7 +262,7 @@ function sendMessage() {
 }
 
 // 节流
-const wrapSendMessage = throttle(sendMessage, THROTTLE_TIME);
+const wrapSendMessage = throttle(sendMessage, 1 * 1000);
 </script>
 
 <style scoped lang="scss">
@@ -258,6 +305,9 @@ const wrapSendMessage = throttle(sendMessage, THROTTLE_TIME);
       border-radius: 10px;
       border: 1px solid rgb(186, 214, 234);
       margin: 0 4px 0;
+
+      // 消除移动端浏览器的默认触摸高亮效果
+      -webkit-tap-highlight-color: transparent;
     }
   }
 }

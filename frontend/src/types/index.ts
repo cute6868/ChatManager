@@ -29,4 +29,11 @@ type FormDataTypeD = Reactive<{
   verifyCode: string;
 }>;
 
-export type { FormDataTypeA, FormDataTypeB, FormDataTypeC, FormDataTypeD };
+// 模型响应的数据类型
+interface ModelResponseData {
+  code: number;
+  model: string;
+  response: object;
+}
+
+export type { FormDataTypeA, FormDataTypeB, FormDataTypeC, FormDataTypeD, ModelResponseData };
