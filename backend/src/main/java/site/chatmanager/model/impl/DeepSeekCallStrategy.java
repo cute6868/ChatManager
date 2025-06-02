@@ -2,6 +2,7 @@ package site.chatmanager.model.impl;
 
 import okhttp3.*;
 import site.chatmanager.model.ModelCallStrategy;
+import site.chatmanager.model.utils.JsonResponseFormatter;
 
 import java.io.IOException;
 import java.util.Map;
@@ -37,7 +38,8 @@ public class DeepSeekCallStrategy implements ModelCallStrategy {
 
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful() && response.body() != null) {
-                return response.body().string();
+                String originalResponse = response.body().string();
+                return JsonResponseFormatter.formatResponse(originalResponse);
             } else {
                 throw new IOException("调用 DeepSeek 模型时返回非成功状态码: " + response.code());
             }
