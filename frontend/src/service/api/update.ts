@@ -35,6 +35,18 @@ export function updateModelConfigRequest(uid: string, modelConfig: string) {
   });
 }
 
+// 更新已选模型
+export function updateSeletedModelsRequest(uid: string, modelIds: string) {
+  return request({
+    url: `/api/update/${uid}/selected`,
+    method: 'put',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: modelIds // JSON格式的number[]
+  });
+}
+
 // 更新账号
 export function updateAccountRequest(uid: string, account: string, verifyCode: string) {
   return request({

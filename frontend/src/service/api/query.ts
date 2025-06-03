@@ -34,6 +34,14 @@ export function queryModelConfigRequest(uid: string) {
   });
 }
 
+// 查询模型头像
+export function queryModelAvatarRequest(modelId: number) {
+  return request({
+    url: `/api/query/avatar/${modelId}`,
+    method: 'get'
+  });
+}
+
 // 查询所有模型
 export function queryAllModelsRequest() {
   return request({
@@ -46,6 +54,14 @@ export function queryAllModelsRequest() {
 export function queryAvailableModelsRequest(uid: string) {
   return request({
     url: `/api/query/${uid}/models`,
+    method: 'get'
+  });
+}
+
+// 查询已选模型
+export function querySelectedModelsRequest(uid: string) {
+  return request({
+    url: `/api/query/${uid}/selected`,
     method: 'get'
   });
 }

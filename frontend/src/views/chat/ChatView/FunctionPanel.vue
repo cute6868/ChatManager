@@ -19,25 +19,38 @@
       <div
         class="show-panel"
         :class="{
-          'show-panel-single-model': !isMultipleModels,
-          'show-panel-multi-models': isMultipleModels
+          'show-panel-single-model': modelsStore.selectedModels.length < 2,
+          'show-panel-multi-models': modelsStore.selectedModels.length >= 2
         }"
-        v-for="data in modelsStore.modelsResponse"
-        :key="data.model"
+        v-for="modelName in modelsStore.selectedModels"
+        :key="modelName"
       >
         <!-- 模型外观内容 -->
         <div class="model-appearance">
           <!-- 头像 -->
           <el-divider>
-            <el-avatar :size="32" :src="modelAvatarURL" />
+            <el-avatar
+              :size="32"
+              @error="reloadAvatar(modelName)"
+              :src="modelsStore.modelNameAndAvatarMap.get(modelName)"
+            />
           </el-divider>
 
           <!-- 名称 -->
-          <div class="model-name">{{ data.model }}</div>
+          <div class="model-name">{{ modelName }}</div>
         </div>
         <!-- 模型响应内容 -->
-        <div class="model-response" v-loading="!data">
-          {{ data.response }}
+        <div
+          class="model-response"
+          v-loading="modelsStore.lastSelectedModels.includes(modelName) && !getAnswer(modelName)"
+          element-loading-text="模型思考中..."
+        >
+          <el-collapse style="margin-bottom: 16px">
+            <el-collapse-item title="深度思考" name="1">
+              <div v-html="getReasoning(modelName)"></div>
+            </el-collapse-item>
+          </el-collapse>
+          <div v-html="getAnswer(modelName)"></div>
         </div>
       </div>
     </div>
@@ -53,11 +66,49 @@ import ChatFrame from './ChatFrame.vue';
 import useModelsStore from '@/store/models';
 import { ref, onMounted, onUnmounted } from 'vue';
 import { typing } from '@/utils/typing';
+import { queryModelAvatarRequest } from '@/service/api/query';
+import MarkdownIt from 'markdown-it';
+import hljs from 'highlight.js';
+import DOMPurify from 'dompurify';
+
+// ================== 处理markdown语法的文本 ==================
+// 初始化Markdown解析器
+const md = MarkdownIt({
+  html: true, // 允许解析html标签
+  linkify: true, // 自动识别链接
+  typographer: true, // 智能排版
+  breaks: true, // 转换换行符为<br>
+  // 代码高亮配置
+  highlight: (str, lang) => {
+    if (lang && hljs.getLanguage(lang)) {
+      return hljs.highlight(str, { language: lang }).value;
+    }
+    return ''; // 未指定语言时不高亮
+  }
+});
+
+// 自定义图片渲染规则（添加懒加载）
+md.renderer.rules.image = (tokens, idx, options, env, self) => {
+  const token = tokens[idx]; // 获取当前token
+  const srcIndex = token.attrIndex('src'); // 获取src属性的索引
+  // 如果有src属性，则修改为data-src实现懒加载
+  if (srcIndex >= 0 && token.attrs) {
+    token.attrs[srcIndex][0] = 'data-src'; // 改为data-src实现懒加载
+    token.attrPush(['loading', 'lazy']); // 添加原生懒加载属性
+  }
+  return self.renderToken(tokens, idx, options);
+};
+
+// 解析Markdown并清理XSS的函数
+const parseMarkdown = (text: string) => {
+  if (!text) return '';
+  const html = md.render(text);
+  return DOMPurify.sanitize(html);
+};
 
 // 使用Pinia存储库
 const modelsStore = useModelsStore();
 const isFadeOut = ref(false); // 是否淡出
-const isMultipleModels = ref(false); // 是否多个模型响应
 
 const titleContent = '欢迎使用 ChatManager';
 const title = ref('欢迎使用 ChatManager'); // 用于展示标题
@@ -94,10 +145,7 @@ let scrollLeft = 0; // 初始滚动位置
 
 // 启动拖拽：按住鼠标右键可以左右拖动展示面板以展示更多内容
 function enableDrag() {
-  if (!showArea.value) {
-    console.log('showArea.value is null');
-    return;
-  }
+  if (!showArea.value) return;
 
   // 开启各种事件监听
   showArea.value.addEventListener('mousedown', handleMouseDown); // 监听show-area元素上的鼠标按下事件
@@ -162,8 +210,7 @@ function preventDefault(event: MouseEvent) {
 const stopWatchingModelsResponse = watch(
   () => modelsStore.modelsResponse,
   () => {
-    // 根据模型响应的数量来判断是否为多个模型响应，从而启动不同的CSS样式
-    isMultipleModels.value = modelsStore.modelsResponse.length > 1 ? true : false;
+    // 可以做些事情...
   },
   { deep: true } // 启动深度监听
 );
@@ -178,16 +225,41 @@ const stopWatchingCompletionStatus = watch(
     }
   }
 );
-
 onUnmounted(() => {
   stopWatchingModelsResponse();
   stopWatchingCompletionStatus();
 });
 
-// 模型头像地址
-const modelAvatarURL = ref(
-  'https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/doubao/logo-doubao-overflow.png'
-);
+// 重新加载模型头像
+function reloadAvatar(modelName: string) {
+  queryModelAvatarRequest(modelsStore.modelNameAndIdMap.get(modelName))
+    .then((res) => {
+      if (res.data.code === 0) {
+        modelsStore.modelNameAndAvatarMap.set(modelName, res.data.data);
+      }
+    })
+    .catch(() => {
+      ElMessage({ message: '网络不通畅，请重试', type: 'warning', grouping: true });
+    });
+}
+
+// 获取模型响应内容中的推理部分
+function getReasoning(modelName: string) {
+  const responseData = modelsStore.modelsResponse.find((item) => item.model === modelName);
+  if (typeof responseData?.response !== 'string') {
+    return parseMarkdown(responseData?.response.reasoning as string);
+  }
+  return '';
+}
+
+// 获取模型响应内容中的答案部分
+function getAnswer(modelName: string) {
+  const responseData = modelsStore.modelsResponse.find((item) => item.model === modelName);
+  if (typeof responseData?.response !== 'string') {
+    return parseMarkdown(responseData?.response.answer as string);
+  }
+  return responseData?.response;
+}
 </script>
 
 <style scoped lang="scss">
@@ -210,6 +282,7 @@ const modelAvatarURL = ref(
     font-size: min(5.9vw, 32px);
     letter-spacing: 1px;
     margin-top: min(25vh, 200px);
+    user-select: none; // 禁止用户选择文本
   }
 
   .chat {
@@ -275,8 +348,8 @@ const modelAvatarURL = ref(
 .show-panel {
   .model-response {
     font-size: 16px;
+    line-height: 1.6;
     font-weight: 400;
-    line-height: 28px;
     color: rgba(0, 0, 0, 0.85);
     color-scheme: light; // 这个属性是为了适配暗黑模式
   }
@@ -309,6 +382,7 @@ const modelAvatarURL = ref(
 
   // 模型外观
   .model-appearance {
+    height: 52px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -348,5 +422,10 @@ const modelAvatarURL = ref(
       background-color: #eee;
     }
   }
+}
+
+// 模型头像的背景色设置为透明
+:deep(.el-avatar) {
+  background-color: transparent;
 }
 </style>

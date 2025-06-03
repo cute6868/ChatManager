@@ -8,7 +8,7 @@
         @mouseleave="handleMouseLeave"
         v-model="modelsStore.selectedModels"
         size="small"
-        fill="#51a4dd"
+        fill="#6eaced"
         :max="maxSelectableQuantity"
       >
         <el-checkbox-button
@@ -24,21 +24,36 @@
     <!-- 输入区 -->
     <div class="input-area">
       <!-- 输入框 -->
-      <div class="text-area">
+      <div class="text-area" ref="textAreaRef" @keydown="handleKeydown">
         <el-input
           type="textarea"
           :placeholder="placeholderContent"
-          v-model="textarea"
+          v-model="inputContent"
           :autosize="{ minRows: 3, maxRows: 3 }"
-          ref="textareaRef"
+          :autofocus="true"
         />
       </div>
       <!-- 功能按钮 -->
       <div class="btn-area">
-        <el-button class="cancel-btn" @click="empty">
-          <el-icon class="delete-icon"><DeleteFilled /></el-icon>
-          <span class="delete-text">清空已选</span>
-        </el-button>
+        <!-- 左边的功能按钮 -->
+        <div class="left-btns">
+          <el-button class="cancel-btn" @click="empty">
+            <el-icon class="delete-icon"><DeleteFilled /></el-icon>
+            <span class="delete-text">清空已选</span>
+          </el-button>
+          <el-button class="upload-btn" @click="clickUploadBtn" :disabled="disableUploadBtn">
+            <el-icon class="upload-icon"><Upload /></el-icon>
+            <span class="upload-text">备份已选</span>
+          </el-button>
+          <div
+            class="loading-state"
+            v-loading="showLoading"
+            element-loading-background="rgba(255, 255, 255, 0.7)"
+          >
+            {{ uploadPrompt }}
+          </div>
+        </div>
+        <!-- 右边的功能按钮 -->
         <el-button
           class="send-btn"
           type="primary"
@@ -53,15 +68,20 @@
 </template>
 
 <script setup lang="ts">
-import { UID } from '@/global/constant/login';
+import { SELECTED_MODELS, UID } from '@/global/constant/login';
 import { chatRequest } from '@/service/api/chat';
-import { queryAllModelsRequest, queryAvailableModelsRequest } from '@/service/api/query';
+import {
+  queryAllModelsRequest,
+  queryAvailableModelsRequest,
+  queryModelAvatarRequest,
+  querySelectedModelsRequest
+} from '@/service/api/query';
 import useModelsStore from '@/store/models';
 import { localCache } from '@/utils/cache';
 import throttle from '@/utils/throttle';
 import { typing } from '@/utils/typing';
 import { Top } from '@element-plus/icons-vue';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, toRaw, watch } from 'vue';
 
 // 获取用户uid
 const uid = localCache.getItem(UID);
@@ -69,55 +89,78 @@ const uid = localCache.getItem(UID);
 // 使用Pinia内存存储库
 const modelsStore = useModelsStore();
 
-// 引用输入框对象
-const textareaRef = ref();
-onMounted(() => {
-  textareaRef.value.focus(); // 当页面挂载完毕，自动聚焦输入框
-});
-
-// 内容占位符（3秒切换内容）
-const content = ['温馨提示：在设置中配置模型后才能正常使用。', '选择您喜欢的模型，与它们对话吧！'];
-const placeholderContent = ref(content[0]); // 默认展示的内容
-const displayDuration = 20 * 1000; //  每个句子的展示时长为20秒
-let sentenceIndex = 0; // 当前句子索引
-const speed = 80; // 每个字符的展示间隔为80ms
-let timerId2: number;
-const timerId1 = setInterval(() => {
-  // 立即准备好下一个句子
-  sentenceIndex = sentenceIndex < content.length - 1 ? sentenceIndex + 1 : 0;
-  const sentence = content[sentenceIndex];
-
-  // 启动打字效果
-  timerId2 = typing(sentence, speed, placeholderContent);
-}, displayDuration);
-onUnmounted(() => {
-  // 清除定时器
-  clearInterval(timerId1);
-  clearInterval(timerId2); // 防止中途突然切换页面，导致没有清除定时器
-});
-
+// 通过输入框对象，绑定回车键
 function handleKeydown(event: KeyboardEvent) {
-  // 按下回车键触发"发送按钮"（不含shift）
+  // 按下回车键（不含shift）将触发"发送按钮"
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
     wrapSendMessage();
-    return;
   }
 }
-onMounted(() => {
-  document.addEventListener('keydown', handleKeydown);
-});
-onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeydown);
-});
 
-// 定义：模型名称和ID的映射关系
-const nameAndIdMap = new Map();
+// 内容占位符
+const content = [
+  '在设置中完成模型配置后，即可使用。',
+  '选择您喜欢的模型，与它们对话吧！',
+  '按住鼠标右键，左右拖动模型展示区域，可以浏览更多内容。'
+];
+const placeholderContent = ref(content[0]); // 默认展示的内容
+const displayDuration = 20 * 1000; //  每个句子的展示时长为20秒
+let sentenceIndex = 0; // 当前句子索引
+const speed = 80; // 每个字符的展示间隔80ms
+let timerId1: number | null = null; // 主定时器ID
+let timerId2: number | null = null; // 打字效果定时器ID
+let isVisible = true; // 页面可见性
+
+// 开启打字循环
+function startTypingCycle() {
+  // 清除可能存在的旧定时器
+  if (timerId1 !== null) clearInterval(timerId1);
+  if (timerId2 !== null) clearInterval(timerId2);
+
+  timerId1 = setInterval(() => {
+    // 只在页面可见时执行内容切换
+    if (isVisible) {
+      sentenceIndex = sentenceIndex < content.length - 1 ? sentenceIndex + 1 : 0; // 立即准备好下一个句子的索引
+      timerId2 = typing(content[sentenceIndex], speed, placeholderContent); // 启动打字效果
+    }
+  }, displayDuration);
+}
+
+// 处理事件: 页面可见性发生改变
+function handleVisibilitychange() {
+  isVisible = document.visibilityState === 'visible';
+
+  if (isVisible) {
+    // 页面重新可见，重置定时器
+    if (timerId1 !== null) clearInterval(timerId1);
+    if (timerId2 !== null) clearInterval(timerId2);
+
+    // 立即显示当前句子的完整内容
+    placeholderContent.value = content[sentenceIndex];
+
+    // 重新启动定时器
+    startTypingCycle();
+  }
+}
+
+// 监听页面是否可见
+document.addEventListener('visibilitychange', handleVisibilitychange);
+
+// 初始启动
+startTypingCycle();
+
+// 组件卸载时完成清理
+onUnmounted(() => {
+  if (timerId1 !== null) clearInterval(timerId1);
+  if (timerId2 !== null) clearInterval(timerId2);
+  document.removeEventListener('visibilitychange', handleVisibilitychange);
+});
 
 // 输入框的文本内容
-const textarea = ref(modelsStore.question); // 同步pinia中的内容
+const inputContent = ref(modelsStore.question); // 同步pinia中的内容
 
-// 定义：服务器支持的模型
+// 服务器支持的模型
 const support = ref<string[]>([]);
 queryAllModelsRequest()
   .then((res) => {
@@ -125,10 +168,18 @@ queryAllModelsRequest()
     if (code === 0) {
       const modelArr = res.data.data;
       modelArr.forEach((model: { name: string; modelId: number }) => {
-        support.value.push(model.name); // 更新：服务器支持的模型
-        nameAndIdMap.set(model.name, model.modelId); // 更新：模型名称和ID的映射关系
+        support.value.push(model.name); // 更新服务器支持的模型
+        modelsStore.modelNameAndIdMap.set(model.name, model.modelId); // 更新模型名称和ID的映射关系
+        modelsStore.modelIdAndNameMap.set(model.modelId, model.name); // 更新模型ID和名称的映射关系
+        // 更新模型名称和头像的映射关系
+        queryModelAvatarRequest(model.modelId).then((res) => {
+          if (res.data.code === 0) {
+            modelsStore.modelNameAndAvatarMap.set(model.name, res.data.data);
+          }
+        });
       });
-      // 加载完nameAndIdMap映射关系后，检测pinia里面是否有用户的提问
+
+      // 加载完modelNameAndIdMap映射关系后，检测pinia里面是否有用户的提问
       // 如果有用户的提问，说明当前是由"初始模式"刚转为"工作模式"，需要完成任务的交接！（初始模式是不干活的，工作模式要把初始模式的提问完成）
       if (modelsStore.question !== '') {
         modelsStore.question = ''; // 清空在"初始模式"时候所遗留的提问内容
@@ -142,7 +193,7 @@ queryAllModelsRequest()
     ElMessage({ message: '网络异常', type: 'error', grouping: true });
   });
 
-// 定义：用户可用的模型（用户已配置的模型为可用模型）
+// 用户可用的模型（用户已配置的模型为可用模型）
 const available = ref<string[]>([]);
 queryAvailableModelsRequest(uid)
   .then((res) => {
@@ -153,12 +204,120 @@ queryAvailableModelsRequest(uid)
         available.value.push(model.name); // 更新：用户可用的模型
       });
     } else {
-      ElMessage({ message: '服务器异常', type: 'error', grouping: true });
+      ElMessage({
+        message: '没有检测到模型配置',
+        type: 'warning',
+        grouping: true
+      });
     }
   })
   .catch(() => {
     ElMessage({ message: '网络异常', type: 'error', grouping: true });
   });
+
+// 用户已经选择的模型
+onMounted(() => {
+  // 组件挂载成功后，优先从本地存储中获取模型选择
+  // 如果本地存储不存在数据，则从服务器中获取
+  const jsonString = localCache.getItem(SELECTED_MODELS);
+  if (jsonString) {
+    modelsStore.selectedModels = JSON.parse(jsonString); // 直接解析即可使用
+  } else {
+    querySelectedModelsRequest(uid)
+      .then((res) => {
+        if (res.data.code === 0) {
+          const modelIds: number[] = JSON.parse(res.data.data);
+          // 解析后需要将模型id数组转为模型名称数组，才可以使用
+          modelsStore.selectedModels = modelIds.map((modelId) => {
+            return modelsStore.modelIdAndNameMap.get(modelId);
+          });
+        }
+      })
+      .catch(() => {
+        ElMessage({ message: '网络异常', type: 'error', grouping: true });
+      });
+  }
+});
+
+const disableUploadBtn = ref(false); // 禁止点击上传（备份）按钮
+const showLoading = ref(false); // 展示加载效果
+const uploadPrompt = ref(''); // 上传状态提示词
+
+let timerId3: number | null = null;
+watch(
+  () => modelsStore.selectedModels,
+  () => {
+    // 获取选中的模型（普通数组对象）
+    const arr = toRaw(modelsStore.selectedModels).filter((item) => item !== null);
+
+    // 将选中的模型保存到本地存储
+    const jsonString = JSON.stringify(arr); // 将对象转换为JSON字符串
+    localCache.setItem(SELECTED_MODELS, jsonString); //  保存字符串
+
+    // 当发生变化时，30秒后才将本地数据保存到服务器，避免重复发生请求
+    if (timerId3) clearTimeout(timerId3);
+    timerId3 = setTimeout(() => {
+      disableUploadBtn.value = true; // 禁用按钮
+      showLoading.value = true; // 开启加载效果
+      uploadPrompt.value = '自动备份中...';
+      modelsStore.wrapUploadSelectedModels(uid); // 上传数据到服务器
+      timerId3 = null;
+    }, 30 * 1000);
+  },
+  { deep: true }
+);
+onUnmounted(() => {
+  if (timerId3 !== null) clearTimeout(timerId3);
+});
+
+// 上传已选择的模型
+function clickUploadBtn() {
+  disableUploadBtn.value = true; // 禁用按钮
+  uploadPrompt.value = '正在备份...';
+  modelsStore.wrapUploadSelectedModels(uid); // 上传数据到服务器
+}
+
+// 监听上传是否成功
+let timerId4: number | null = null;
+watch(
+  () => modelsStore.uploadCompleted,
+  (newValue) => {
+    if (newValue) {
+      // 上传成功
+      // 1.重置状态标志
+      modelsStore.uploadCompleted = false;
+      // 2.在三秒后重置数据，让所有的上传效果失效，恢复正常
+      if (timerId4) clearTimeout(timerId4);
+      timerId4 = setTimeout(() => {
+        disableUploadBtn.value = false;
+        showLoading.value = false;
+        uploadPrompt.value = '备份成功';
+      }, 3 * 1000);
+    }
+  }
+);
+onUnmounted(() => {
+  if (timerId4 !== null) clearTimeout(timerId4);
+});
+
+let timerId5: number | null = null;
+watch(uploadPrompt, (newValue) => {
+  if (newValue === '备份成功') {
+    // 一秒后不显示内容
+    if (timerId5) clearTimeout(timerId5);
+    timerId5 = setTimeout(() => {
+      uploadPrompt.value = '';
+    }, 1000);
+  }
+});
+onUnmounted(() => {
+  if (timerId5 !== null) clearTimeout(timerId5);
+});
+
+// 清空用户已选择的模型
+function empty() {
+  modelsStore.selectedModels = [];
+}
 
 const maxSelectableQuantity = 10; // 最多可选数量
 
@@ -192,16 +351,11 @@ function handleMouseLeave() {
   }
 }
 
-// 清空用户已选择的模型
-function empty() {
-  modelsStore.selectedModels = [];
-}
-
 // 禁用发信息按钮
 const isForbidden = ref(true);
 
 // 监听输入框的内容，如果内容为空，则禁用发送按钮
-const stopWatchingTextarea = watch(textarea, (newValue) => {
+const stopWatchingTextarea = watch(inputContent, (newValue) => {
   isForbidden.value = newValue === '' ? true : false;
 });
 
@@ -224,8 +378,8 @@ function sendMessage() {
   // 第一次点击按钮是"初始模式"，之后才是"工作模式"
   // 如果是初始模式，则不进行任何处理，而是移交给工作模式处理
   if (!modelsStore.isWorkingMode) {
-    modelsStore.question = textarea.value; // 保存问题内容，方便移交数据
-    textarea.value = ''; // 清空输入框
+    modelsStore.question = inputContent.value; // 保存问题内容，方便移交数据
+    inputContent.value = ''; // 清空输入框
     emit('firstClick'); // 触发父组件的点击事件
     return;
   }
@@ -233,18 +387,21 @@ function sendMessage() {
   // 将模型名称转为模型ID
   const modelIds: number[] = [];
   modelsStore.selectedModels.forEach((modelName) => {
-    if (nameAndIdMap.get(modelName) === 'undefined') {
+    if (modelsStore.modelNameAndIdMap.get(modelName) === 'undefined') {
       ElMessage({ message: '网络不通畅，请重试', type: 'warning', grouping: true });
       return;
     } else {
-      modelIds.push(nameAndIdMap.get(modelName));
+      modelIds.push(modelsStore.modelNameAndIdMap.get(modelName));
     }
   });
 
   // 清空上一次的响应数据
   modelsStore.emptyModelsResponse();
 
-  chatRequest(uid, textarea.value, modelIds, {
+  // 覆盖上一次的选中的模型
+  modelsStore.lastSelectedModels = modelsStore.selectedModels;
+
+  chatRequest(uid, inputContent.value, modelIds, {
     onData: (data) => {
       modelsStore.modelsResponse.push(data); // 更新pinia中的数据
     },
@@ -258,7 +415,7 @@ function sendMessage() {
     }
   });
 
-  textarea.value = ''; // 清空输入框
+  inputContent.value = ''; // 清空输入框
 }
 
 // 节流
@@ -335,6 +492,10 @@ const wrapSendMessage = throttle(sendMessage, 1 * 1000);
     box-shadow: none; // 去掉阴影
     resize: none; // 去掉拉伸
 
+    &::placeholder {
+      user-select: none; // 禁止选择占位符
+    }
+
     // 字体
     font-size: 16px;
     color: #262626;
@@ -356,27 +517,47 @@ const wrapSendMessage = throttle(sendMessage, 1 * 1000);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin: 14px 9px 0;
 
-  margin: 14px 10px 0;
+  .left-btns {
+    display: flex;
+  }
 
-  // 取消已选按钮
-  .cancel-btn {
-    height: 26px;
+  // 取消已选按钮和上传按钮
+  .cancel-btn,
+  .upload-btn {
+    width: 92px;
+    height: 24px;
     border: 1px solid #e0e0e0;
 
-    &:hover {
-      font-weight: 500;
-    }
-
-    .delete-icon {
+    .delete-icon,
+    .upload-icon {
       margin-top: 1px;
       font-size: 14px;
     }
 
-    .delete-text {
+    .delete-text,
+    .upload-text {
       font-size: 12px;
       font-weight: 400;
       letter-spacing: 1px;
+    }
+  }
+
+  // 上传按钮右边的加载样式
+  .loading-state {
+    height: 20px;
+    margin-top: 3px;
+    margin-left: 10px;
+    user-select: none; // 禁止用户选中文字
+
+    display: flex;
+    align-items: center;
+    letter-spacing: 1px;
+    font-size: 9px;
+
+    :deep(.circular) {
+      width: 20px;
     }
   }
 

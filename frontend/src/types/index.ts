@@ -33,7 +33,12 @@ type FormDataTypeD = Reactive<{
 interface ModelResponseData {
   code: number;
   model: string;
-  response: object;
+  response:
+    | string
+    | {
+        reasoning: string;
+        answer: string;
+      };
 }
 
 export type { FormDataTypeA, FormDataTypeB, FormDataTypeC, FormDataTypeD, ModelResponseData };

@@ -6,5 +6,6 @@ const ACCOUNT = 'account'; // 账号
 const PASSWORD = 'password'; // 密码
 const NICKNAME = 'nickname'; // 昵称
 const AVATAR_URL = 'avatar-url'; // 头像 URL
+const SELECTED_MODELS = 'selected-models'; // 用户已经选择的模型
 
-export { UID, LOGIN_TOKEN, ROLE, ACCOUNT, PASSWORD, NICKNAME, AVATAR_URL };
+export { UID, LOGIN_TOKEN, ROLE, ACCOUNT, PASSWORD, NICKNAME, AVATAR_URL, SELECTED_MODELS };

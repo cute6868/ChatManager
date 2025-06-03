@@ -4,7 +4,7 @@
       <!-- 历史记录 -->
       <div class="record">
         <!-- 历史记录图标 -->
-        <el-icon id="record-icon" size="23" @click="toggleCard"><Clock /></el-icon>
+        <el-icon id="record-icon" size="18" @click="toggleCard"><Notebook /></el-icon>
 
         <!-- 历史记录卡片 -->
         <el-card id="record-card">
@@ -47,6 +47,7 @@ import ROUTE from '@/global/constant/route';
 import { useRouter } from 'vue-router';
 import removeLoginData from '@/utils/remove';
 import logoutRequest from '@/service/api/logout';
+import useModelsStore from '@/store/models';
 
 interface RecordItem {
   question: string;
@@ -59,6 +60,7 @@ const nickname = ref('');
 const imgUrl = ref('');
 const recordList = ref<RecordItem[]>([]);
 const uid = localCache.getItem(UID);
+const modelsStore = useModelsStore();
 
 // 加载昵称和头像
 function loadUserData() {
@@ -93,14 +95,20 @@ function logout() {
     .then((res) => {
       const code = res.data.code;
       if (code === 0) {
+        // 登录信息没有过期，成功在服务器把token注销
+        modelsStore.wrapUploadSelectedModels(uid); // 退出登录之前，先上传模型选择数据到服务器
         removeLoginData(); // 清除本地登录数据
         router.push(ROUTE.PATH.INDEX);
       } else {
-        ElMessage({ message: res.data.msg, type: 'error' });
+        // 登录信息过期了，在服务器注销token失败
+        removeLoginData(); // 直接清除本地登录数据
+        router.push(ROUTE.PATH.INDEX);
       }
     })
     .catch(() => {
-      ElMessage({ message: '网络异常', type: 'error', grouping: true });
+      // 网络异常，清除本地登录数据
+      removeLoginData();
+      router.push(ROUTE.PATH.INDEX);
     });
 }
 
@@ -123,8 +131,6 @@ function toggleCard() {
         const code = res.data.code;
         if (code === 0) {
           recordList.value = res.data.data;
-        } else {
-          ElMessage({ message: res.data.msg, type: 'error' });
         }
       })
       .catch(() => {
