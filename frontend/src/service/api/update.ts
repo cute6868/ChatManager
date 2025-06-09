@@ -29,9 +29,10 @@ export function updateModelConfigRequest(uid: string, modelConfig: string) {
   return request({
     url: `/api/update/${uid}/config`,
     method: 'put',
-    data: {
-      modelConfig: modelConfig
-    }
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: modelConfig // JSON字符串格式 { ... }
   });
 }
 
@@ -43,7 +44,7 @@ export function updateSeletedModelsRequest(uid: string, modelIds: string) {
     headers: {
       'Content-Type': 'application/json'
     },
-    data: modelIds // JSON格式的number[]
+    data: modelIds // JSON格式字符串 number[]
   });
 }
 
