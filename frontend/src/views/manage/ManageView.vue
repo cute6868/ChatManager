@@ -408,7 +408,7 @@ function getConfig() {
   queryModelConfigRequest(uid)
     .then((res) => {
       if (res.data.code === 0) {
-        config.value = JSON.stringify(res.data.data, null, 2);
+        config.value = JSON.stringify(res.data.data.config, null, 2);
         originalConfig = config.value;
       }
     })
@@ -420,33 +420,30 @@ getConfig();
 
 // 更新模型配置
 function updateConfig() {
-  if (config.value === originalConfig) return;
-  let parsed;
+  if (config.value === originalConfig || config.value === '') return;
+  let modelConfig;
 
   try {
-    if (config.value === '') throw new Error('JSON字符串为空');
-    parsed = JSON.parse(config.value);
+    modelConfig = JSON.stringify(JSON.parse(config.value)); // 解析成对象再转换成字符串，从而去除空格和换行符等内容
+    updateModelConfigRequest(uid, modelConfig)
+      .then((res) => {
+        if (res.data.code === 0) {
+          ElMessage({ message: '修改成功', type: 'success', grouping: true });
+          originalConfig = config.value;
+        } else {
+          ElMessage({ message: '修改失败，内容不符合要求', type: 'error', grouping: true });
+          config.value = originalConfig;
+        }
+      })
+      .catch(() => {
+        ElMessage({ message: '修改失败，内容不符合要求', type: 'error', grouping: true });
+        config.value = originalConfig;
+      });
   } catch (error) {
     console.info(error);
     ElMessage({ message: '修改失败，内容不符合要求', type: 'error', grouping: true });
     config.value = originalConfig;
-    return;
   }
-
-  updateModelConfigRequest(uid, JSON.stringify(parsed.config))
-    .then((res) => {
-      if (res.data.code === 0) {
-        ElMessage({ message: '修改成功', type: 'success', grouping: true });
-        originalConfig = config.value;
-      } else {
-        ElMessage({ message: '修改失败，内容不符合要求', type: 'error', grouping: true });
-        config.value = originalConfig;
-      }
-    })
-    .catch(() => {
-      ElMessage({ message: '修改失败，内容不符合要求', type: 'error', grouping: true });
-      config.value = originalConfig;
-    });
 }
 const wrapUpdateConfig = throttle(updateConfig, THROTTLE_TIME);
 
