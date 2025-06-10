@@ -47,6 +47,9 @@ public class ChatServiceImpl implements ChatService {
     private final ExecutorService executorService;                              // 线程池容器
     private final Map<Model, ModelCallStrategy> strategyMap = new HashMap<>();  // 用来存储模型对应的调用策略的容器
 
+    // 模型响应超时时长（单位：秒）
+    private static final int MODEL_RESPONSE_TIMEOUT = 90;
+
     // 在构造函数中完成初始化（向容器里面填入内容）
     public ChatServiceImpl() {
 
@@ -55,7 +58,7 @@ public class ChatServiceImpl implements ChatService {
                 // 设置参数
                 4,                                          // 核心线程数（根据CPU核心数调整，如果4核心就写4）
                 8,                                          // 最大线程数（根据系统负载上限进行设置）
-                60, TimeUnit.SECONDS,                       // 空闲线程存活时间
+                MODEL_RESPONSE_TIMEOUT, TimeUnit.SECONDS,                       // 空闲线程存活时间
                 new LinkedBlockingQueue<>(30)       // 任务队列（默认为无界队列，这里设置队列容量为30）
         );
 
@@ -71,7 +74,7 @@ public class ChatServiceImpl implements ChatService {
     public SseEmitter processRequest(Long uid, UserChatRequest request) {
 
         // 创建一个 SseEmitter 对象，用于发送 SSE 事件
-        SseEmitter emitter = new SseEmitter();
+        SseEmitter emitter = new SseEmitter(MODEL_RESPONSE_TIMEOUT * 1000L);
 
         // 非空校验
         String question = request.getQuestion();
@@ -175,7 +178,7 @@ public class ChatServiceImpl implements ChatService {
             try {
                 for (int i = 0; i < models.size(); i++) {
                     // 获取已经完成的任务结果
-                    UserChatResponse response = completionService.take().get();
+                    UserChatResponse response = completionService.take().get(MODEL_RESPONSE_TIMEOUT, TimeUnit.SECONDS);
                     // 发送 SSE 事件，将获取结果发送给前端
                     emitter.send(SseEmitter.event().data(response));
                 }

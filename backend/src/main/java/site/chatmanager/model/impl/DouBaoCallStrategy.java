@@ -11,8 +11,8 @@ import java.util.concurrent.TimeUnit;
 public class DouBaoCallStrategy implements ModelCallStrategy {
     private static final String API_URL = "https://ark.cn-beijing.volces.com/api/v3/chat/completions";
     private final OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(90, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
             .connectionPool(new ConnectionPool(10, 5, TimeUnit.MINUTES))      // 保持10个空闲连接，存活5分钟
             .build();
