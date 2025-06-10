@@ -1,16 +1,12 @@
 <template>
   <div class="forget">
     <div class="white-panel">
+      <!-- 标题 -->
+      <h3 class="title">重置密码</h3>
+
       <!-- 重置密码面板 -->
       <div class="reset-password-panel">
-        <h3 class="title">重置密码</h3>
-        <el-form
-          ref="formRef"
-          :model="formData"
-          :rules="formRules"
-          style="width: 260px"
-          label-width="auto"
-        >
+        <el-form ref="formRef" :model="formData" :rules="formRules" label-width="auto">
           <el-form-item label="新密码" prop="newPassword">
             <el-input v-model="formData.newPassword" type="password" show-password />
           </el-form-item>
@@ -37,10 +33,10 @@
             </el-input>
           </el-form-item>
         </el-form>
-
-        <!-- 确认按钮 -->
-        <el-button class="confirm-btn" type="primary" @click="wrapReset">确认</el-button>
       </div>
+
+      <!-- 确认按钮 -->
+      <el-button class="confirm-btn" type="primary" @click="wrapReset">确认</el-button>
     </div>
   </div>
 </template>
@@ -74,78 +70,77 @@ const { formRef, wrapReset } = useButton(formData);
   background-size: cover;
 
   .white-panel {
-    width: max(24%, 320px);
+    width: max(29%, 360px);
+    height: max(56%, 420px);
     background-color: #fff;
 
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+
+    box-sizing: border-box;
 
     margin-bottom: 6%;
     border-radius: 2%;
-
-    padding: max(3%, 22px) 0;
   }
 
-  // 重置密码面板
-  .reset-password-panel {
-    width: max(78%, 250px);
-    border: 2px solid #e6e6e6;
-    border-radius: 1%;
+  // 标题样式
+  .title {
+    margin-top: 32px;
+    margin-bottom: 20px;
 
-    // 让面板容器里面元素居中
+    font-size: 22px;
+    letter-spacing: 2px;
+  }
+
+  .reset-password-panel {
+    width: max(80%, 300px);
+    height: max(9%, 270px);
+
     display: flex;
-    flex-direction: column;
+    justify-content: center;
+
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.1);
+
+    :deep(.el-form--default) {
+      width: 90%;
+
+      .el-form-item {
+        margin-top: 28px;
+      }
+    }
+  }
+
+  // 确认按钮样式
+  .confirm-btn {
+    width: max(80%, 300px);
+    margin-top: 18px;
+  }
+
+  // 验证码样式
+  .get-code {
+    width: 62px;
+    height: 14px;
+    letter-spacing: 1px;
+    font-size: 10px;
+    display: flex;
     justify-content: center;
     align-items: center;
-
-    // 设置面板容器与里面元素之间内部间距
-    padding-top: max(2%, 20px);
-    padding-right: max(2%, 14px);
-    padding-bottom: max(1.5%, 16px);
-    padding-left: max(2%, 12px);
-
-    // 标题样式
-    .title {
-      font-size: 22px;
-      margin-bottom: 26px;
+    cursor: pointer;
+    &:hover {
+      color: rgb(64, 158, 255);
     }
-
-    // 确认按钮样式
-    .confirm-btn {
-      // 登录按钮
-      width: 100%;
-      margin-top: 2%;
+    &:active {
+      color: rgb(181, 213, 246);
     }
+  }
 
-    // 每个输入框之间的距离
-    .el-form-item {
-      margin-bottom: 30px;
-    }
-
-    // 验证码样式
-    .get-code {
-      width: 62px;
-      height: 14px;
-      letter-spacing: 1px;
-      font-size: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      &:hover {
-        color: rgb(64, 158, 255);
-      }
-      &:active {
-        color: rgb(181, 213, 246);
-      }
-    }
-
-    // 验证码样式
-    // 禁用元素
-    .disabled-element {
-      pointer-events: none;
-    }
+  // 验证码样式
+  // 禁用元素
+  .disabled-element {
+    pointer-events: none;
   }
 }
 </style>
