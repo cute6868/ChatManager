@@ -16,16 +16,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<Result> handleException(Exception e) {
         log.error("全局异常：", e);      // 第一时间记录下来，方便排查问题
-        Result result = Result.failure(-1, "服务器异常，请重试");  // 搪塞用户
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+        Result result = Result.failure(-1, "请求错误");  // 搪塞用户
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 
     // 捕获自定义异常（属于业务的一部分，一般不用处理）
     @ExceptionHandler
     public ResponseEntity<Result> handleCustomException(CustomException e) {
         log.warn("自定义异常：", e);      // 第一时间记录下来，方便排查问题
-        String exceptionMessage = e.getMessage();
-        Result result = Result.failure(-2, exceptionMessage);
+        Result result = Result.failure(-2, "操作异常，请重试");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
     }
 

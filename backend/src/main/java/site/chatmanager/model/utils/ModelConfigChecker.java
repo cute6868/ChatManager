@@ -57,7 +57,6 @@ public class ModelConfigChecker {
             }
             return validConfig;
         } catch (Exception e) {
-            log.info("解析用户的Json配置失败: " + e.getMessage());
             return null;
         }
     }

@@ -174,9 +174,6 @@ public class UpdateServiceImpl implements UpdateService {
     @Override
     public ResponseEntity<Result> authBeforeUpdateUserEmail(Long uid, UpdateData data) {
 
-        log.info("123456789");
-
-
         // ================= 身份验证（Start） =================
         // 获取验证码
         String verifyCode = data.getVerifyCode();

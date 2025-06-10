@@ -38,7 +38,7 @@ public class QueryServiceImpl implements QueryService {
         // 查询用户昵称、用户头像
         ProfileData data = queryMapper.queryProfile(uid);
         if (data == null) {
-            Result result = Result.failure("数据为空");
+            Result result = Result.failure("没有查找到昵称和头像");
             return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
@@ -54,7 +54,7 @@ public class QueryServiceImpl implements QueryService {
         // 查询用户记录
         List<RecordData> data = recordService.getRecord(uid);
         if (data == null) {
-            Result result = Result.failure("数据为空");
+            Result result = Result.failure("没有查找到历史记录");
             return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
@@ -70,7 +70,7 @@ public class QueryServiceImpl implements QueryService {
         // 查询用户联系信息：账号、邮箱、手机号
         ContactData data = queryMapper.queryContactInfo(uid);
         if (data == null) {
-            Result result = Result.failure("数据为空");
+            Result result = Result.failure("没有查找到联系信息");
             return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
@@ -89,7 +89,7 @@ public class QueryServiceImpl implements QueryService {
         // 查询用户模型配置
         String data = queryMapper.queryModelsConfig(uid);
         if (data == null) {
-            Result result = Result.failure("数据为空");
+            Result result = Result.failure("没有查找到模型配置信息");
             return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
@@ -108,7 +108,7 @@ public class QueryServiceImpl implements QueryService {
         // 查询模型头像
         String avatarUrl = queryMapper.queryModelAvatar(modelId);
         if (avatarUrl == null) {
-            Result result = Result.failure("数据为空");
+            Result result = Result.failure("没有查找到模型头像数据");
             return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
@@ -167,7 +167,7 @@ public class QueryServiceImpl implements QueryService {
         // 查询用户已经选择的模型
         String data = queryMapper.querySelectedModels(uid);
         if (data == null) {
-            Result result = Result.failure("数据为空");
+            Result result = Result.failure("没有查找到用户已选的模型");
             return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
