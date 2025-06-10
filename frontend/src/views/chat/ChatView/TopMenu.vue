@@ -10,7 +10,7 @@
         <el-card id="record-card">
           <h3>历史记录</h3>
           <p v-for="item in recordList" :key="item.sequence_num">
-            <el-icon size="16" class="chat-icon"><ChatDotRound /></el-icon>
+            <el-icon size="12" class="chat-icon"><ChatDotRound /></el-icon>
             <span>{{ item.question }}</span>
           </p>
         </el-card>
@@ -149,11 +149,45 @@ function handleOutsideClick(e: MouseEvent) {
   const target = e.target as Node | null;
   if (!target) return;
 
-  // 检查点击是否发生在卡片或图标之外
   if (!card.contains(target) && !icon.contains(target)) {
+    // 说明点击发生在卡片和图标之外的区域
     isCardOpen = false;
     card.style.left = '-320px'; // 隐藏卡片
     document.removeEventListener('click', handleOutsideClick);
+  } else {
+    // 说明点击发生在卡片和图标内的区域
+    // 检查点击的元素或其祖先是否是p标签（图标里面没有p标签，只有卡片有）
+    let currentElement = target as HTMLElement;
+    while (currentElement) {
+      // 1.先判断点击元素是否是p标签
+      if (currentElement.tagName === 'P') {
+        // 1.1 获取p标签内的span元素
+        const spanElement = currentElement.querySelector('span');
+        if (spanElement) {
+          // 1.2 获取span元素的文本内容
+          const text = spanElement.textContent || '';
+
+          // 复制文本到剪贴板
+          navigator.clipboard
+            .writeText(text)
+            .then(() => {
+              ElMessage({ message: '已复制到剪贴板', type: 'success', grouping: true });
+            })
+            .catch((error) => {
+              console.info('复制失败:', error);
+            });
+        }
+
+        break; // 找到p标签后停止遍历
+      }
+
+      // 2.如果不是，则向上遍历父元素
+      if (currentElement.parentElement !== null) {
+        currentElement = currentElement.parentElement;
+      } else {
+        break; // 父元素为null时停止遍历
+      }
+    }
   }
 }
 </script>
@@ -215,7 +249,7 @@ function handleOutsideClick(e: MouseEvent) {
 
       // 滚动条宽度
       &::-webkit-scrollbar {
-        width: 5px;
+        width: 4px;
       }
 
       // 滚动条轨道
@@ -251,10 +285,10 @@ function handleOutsideClick(e: MouseEvent) {
         text-overflow: ellipsis; // 显示省略号
         white-space: nowrap; // 不换行
 
-        margin-top: 10px; // 每行文本的间隔距离
+        margin: 10px 0; // 每行文本的间隔距离
         border: 2px solid rgba(0, 0, 0, 0);
-        border-radius: 10px;
-        padding: 5px 8px 0;
+        border-radius: 4px;
+        padding: 5px 8px;
 
         // 字体样式
         font-family: Arial, Helvetica, sans-serif;
@@ -266,14 +300,19 @@ function handleOutsideClick(e: MouseEvent) {
           // 图片对齐文字
           display: inline-flex;
           vertical-align: middle;
-          margin-bottom: 5px;
+          margin-bottom: 3px;
         }
-      }
 
-      p:hover {
-        border: 2px solid rgb(225, 238, 253);
-        background-color: rgb(225, 238, 253);
-        transition: all 0.2s;
+        &:hover {
+          border: 2px solid rgb(235, 235, 235);
+          background-color: rgb(235, 235, 235);
+          transition: all 0.3s;
+        }
+
+        &:active {
+          border: 2px solid rgb(245, 245, 245);
+          background-color: rgb(245, 245, 245);
+        }
       }
     }
   }
