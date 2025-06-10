@@ -34,7 +34,7 @@
         </el-form>
       </div>
 
-      <el-button class="btn" @click="wrapRegisterHandler">立即注册</el-button>
+      <el-button type="primary" class="btn" @click="wrapRegisterHandler">立即注册</el-button>
     </div>
   </div>
 </template>
@@ -105,6 +105,7 @@ const { formRef, wrapRegisterHandler } = useButton(formData);
     // 注册按钮
     .btn {
       width: min(84%, 410px);
+      height: 36px;
       margin-top: 20px;
       border: 1px solid #e6e6e6;
       font-weight: 600;
