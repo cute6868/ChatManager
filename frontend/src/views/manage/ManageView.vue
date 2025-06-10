@@ -70,6 +70,12 @@
         </div>
       </div>
 
+      <!-- 返回聊天页 -->
+      <div class="return">
+        <span>返回聊天页</span>
+        <el-button @click="gotoChat">返回</el-button>
+      </div>
+
       <!-- 注销账号 -->
       <div class="deactivate">
         <span>注销账号</span>
@@ -118,8 +124,8 @@ import {
 import { deactivateAccountRequest } from '@/service/api/deactivate';
 import { useRouter } from 'vue-router';
 import ROUTE from '@/global/constant/route';
-import { parse } from 'vue/compiler-sfc';
 
+const router = useRouter();
 const uid = localCache.getItem(UID); // 获取UID
 const verifyCode1 = ref(''); // 修改账号验证码
 const verifyCode2 = ref(''); // 修改邮箱验证码
@@ -438,14 +444,18 @@ function updateConfig() {
       }
     })
     .catch(() => {
-      ElMessage({ message: '网络异常', type: 'error', grouping: true });
+      ElMessage({ message: '修改失败，内容不符合要求', type: 'error', grouping: true });
       config.value = originalConfig;
     });
 }
 const wrapUpdateConfig = throttle(updateConfig, THROTTLE_TIME);
 
+// ==================== 返回聊天 ====================
+function gotoChat() {
+  router.push(ROUTE.PATH.CHAT);
+}
+
 // ==================== 注销账号 ====================
-const router = useRouter();
 // 注销账号
 function deactivateAccount() {
   authRequestForDeactivateAccount(uid)
@@ -544,6 +554,7 @@ const wrapDeactivateAccount = throttle(deactivateAccount, THROTTLE_TIME);
 .account,
 .email,
 .config,
+.return,
 .deactivate {
   width: 76%;
   font-size: 16px;
@@ -598,7 +609,26 @@ const wrapDeactivateAccount = throttle(deactivateAccount, THROTTLE_TIME);
   }
 }
 
+.return {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+
+  &:deep(.el-button) {
+    width: 99%;
+    margin-top: 16px;
+    background-color: rgb(248, 248, 248);
+
+    &:hover {
+      color: rgb(64, 158, 255);
+      border: 1px solid rgb(64, 158, 255);
+    }
+  }
+}
+
 .deactivate {
+  margin-top: 20px;
+
   .deactivate-account {
     margin-top: 16px;
     display: flex;
@@ -606,7 +636,7 @@ const wrapDeactivateAccount = throttle(deactivateAccount, THROTTLE_TIME);
 
     span {
       font-weight: 600;
-      font-size: 13px;
+      font-size: 12px;
       color: rgb(180, 20, 20);
       margin-bottom: 14px;
     }
