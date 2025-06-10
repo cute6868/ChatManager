@@ -47,10 +47,10 @@
         >
           <el-collapse style="margin-bottom: 16px">
             <el-collapse-item title="深度思考" name="1">
-              <div v-html="getReasoning(modelName)"></div>
+              <div class="markdown-body" v-html="getReasoning(modelName)"></div>
             </el-collapse-item>
           </el-collapse>
-          <div v-html="getAnswer(modelName)"></div>
+          <div class="markdown-body" v-html="getAnswer(modelName)"></div>
         </div>
       </div>
     </div>
@@ -70,6 +70,8 @@ import { queryModelAvatarRequest } from '@/service/api/query';
 import MarkdownIt from 'markdown-it';
 import hljs from 'highlight.js';
 import DOMPurify from 'dompurify';
+import 'highlight.js/styles/github.min.css';
+import 'github-markdown-css/github-markdown.css'; // 引入 GitHub Markdown 样式
 
 // ================== 处理markdown语法的文本 ==================
 // 初始化Markdown解析器
@@ -77,13 +79,14 @@ const md = MarkdownIt({
   html: true, // 允许解析html标签
   linkify: true, // 自动识别链接
   typographer: true, // 智能排版
-  breaks: true, // 转换换行符为<br>
+  breaks: false, // 转换换行符为<br>
   // 代码高亮配置
   highlight: (str, lang) => {
     if (lang && hljs.getLanguage(lang)) {
-      return hljs.highlight(str, { language: lang }).value;
+      // 保持 GitHub 风格的代码高亮
+      return `<pre class="hljs"><code class="language-${lang}">${hljs.highlight(str, { language: lang }).value}</code></pre>`;
     }
-    return ''; // 未指定语言时不高亮
+    return `<pre><code>${str}</code></pre>`; // 未指定语言时不高亮
   }
 });
 
@@ -427,5 +430,19 @@ function getAnswer(modelName: string) {
 // 模型头像的背景色设置为透明
 :deep(.el-avatar) {
   background-color: transparent;
+}
+
+// 穿透作用域，调整Markdown样式
+::v-deep(.markdown-body) {
+  // 覆盖Markdown-GitHub样式的最大宽度限制
+  max-width: 100% !important;
+
+  // 代码块样式优化
+  .hljs {
+    border-radius: 8px;
+    margin: 1rem 0;
+    padding: 1rem;
+    overflow-x: auto;
+  }
 }
 </style>
