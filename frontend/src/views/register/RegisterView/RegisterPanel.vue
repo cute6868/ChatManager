@@ -56,7 +56,7 @@ const { formRef, wrapRegisterHandler } = useButton(formData);
 <style scoped lang="scss">
 .register-panel {
   // 白色面板
-  width: max(34%, 340px);
+  width: max(32%, 360px);
   height: max(66%, 490px);
   background-color: white;
   border-radius: 2%;
@@ -68,9 +68,8 @@ const { formRef, wrapRegisterHandler } = useButton(formData);
 
   // 非白色面板的内容
   .content {
-    width: 74%;
-    height: 84%;
-    // background-color: pink;
+    width: 100%;
+    height: 100%;
 
     display: flex;
     flex-direction: column;
@@ -78,19 +77,24 @@ const { formRef, wrapRegisterHandler } = useButton(formData);
 
     // 文字标题："注册账号"
     .title {
+      margin-top: 32px;
+      margin-bottom: 28px;
+
       font-size: 26px;
       font-weight: 600;
       letter-spacing: 4px;
-      margin-bottom: 8%;
     }
 
     // 表单
     .form {
-      width: 94%;
-      border: 2px solid #e6e6e6;
-      border-radius: 2px;
-      padding: 10px;
-      margin-bottom: 14px;
+      width: min(84%, 410px);
+
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+
+      box-sizing: border-box;
+      padding: 24px 16px 0;
 
       // 每个输入框之间的距离
       .el-form-item {
@@ -100,8 +104,10 @@ const { formRef, wrapRegisterHandler } = useButton(formData);
 
     // 注册按钮
     .btn {
-      border: 2px solid #e6e6e6;
-      width: 100%;
+      width: min(84%, 410px);
+      margin-top: 20px;
+      border: 1px solid #e6e6e6;
+      font-weight: 600;
     }
   }
 
