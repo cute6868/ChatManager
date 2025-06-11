@@ -72,6 +72,8 @@ import hljs from 'highlight.js';
 import DOMPurify from 'dompurify';
 import 'highlight.js/styles/github.min.css';
 import 'github-markdown-css/github-markdown.css'; // 引入 GitHub Markdown 样式
+import katex from 'katex';
+import 'katex/dist/katex.min.css'; // 引入Katex样式
 
 // ================== 处理markdown语法的文本 ==================
 // 初始化Markdown解析器
@@ -90,6 +92,19 @@ const md = MarkdownIt({
   }
 });
 
+// 注册脚注插件
+import MarkdownItFootnote from 'markdown-it-footnote';
+md.use(MarkdownItFootnote);
+
+// 注册Katex插件来支持数学公式
+import MarkdownItKatex from 'markdown-it-katex';
+md.use(MarkdownItKatex, {
+  delimiters: 'dollars', // 使用$$包裹公式
+  throwOnError: false,
+  errorColor: '#cc0000',
+  escape: false
+});
+
 // 自定义图片渲染规则（添加懒加载）
 md.renderer.rules.image = (tokens, idx, options, env, self) => {
   const token = tokens[idx]; // 获取当前token
@@ -100,6 +115,32 @@ md.renderer.rules.image = (tokens, idx, options, env, self) => {
     token.attrPush(['loading', 'lazy']); // 添加原生懒加载属性
   }
   return self.renderToken(tokens, idx, options);
+};
+
+// 自定义Katex渲染规则，确保公式正确显示
+md.renderer.rules.katex_inline = (tokens, idx) => {
+  const formula = tokens[idx].content;
+  try {
+    return katex.renderToString(formula, {
+      throwOnError: false,
+      errorColor: '#cc0000'
+    });
+  } catch (e) {
+    return `<span class="katex-error">${e.message}</span>`;
+  }
+};
+
+md.renderer.rules.katex_block = (tokens, idx) => {
+  const formula = tokens[idx].content;
+  try {
+    return `<div class="katex-block">${katex.renderToString(formula, {
+      throwOnError: false,
+      errorColor: '#cc0000',
+      displayMode: true
+    })}</div>`;
+  } catch (e) {
+    return `<div class="katex-error">${e.message}</div>`;
+  }
 };
 
 // 解析Markdown并清理XSS的函数
@@ -304,6 +345,7 @@ function getAnswer(modelName: string) {
 .work-function-panel {
   width: 100%;
   height: 100%;
+  overflow: hidden; // 解决子孙元素过长超越父类形成溢出的问题
   position: absolute;
 
   display: flex;
