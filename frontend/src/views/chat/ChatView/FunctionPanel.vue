@@ -42,15 +42,30 @@
         <!-- 模型响应内容 -->
         <div
           class="model-response"
-          v-loading="modelsStore.lastSelectedModels.includes(modelName) && !getAnswer(modelName)"
+          v-loading="startLoading(modelName)"
           element-loading-text="模型思考中..."
         >
-          <el-collapse style="margin-bottom: 16px">
+          <!-- 如果模型响应没有超时，显示模型思考 -->
+          <el-collapse
+            style="margin-bottom: 16px"
+            v-if="modelsStore.modelResponseStatus.get(modelName)"
+          >
             <el-collapse-item title="深度思考" name="1">
-              <div class="markdown-body" v-html="getReasoning(modelName)"></div>
+              <div
+                class="markdown-body"
+                v-html="getReasoning(modelName)"
+                style="opacity: 0.5"
+              ></div>
             </el-collapse-item>
           </el-collapse>
-          <div class="markdown-body" v-html="getAnswer(modelName)"></div>
+          <!-- 如果模型响应没有超时，显示响应内容 -->
+          <div
+            class="markdown-body"
+            v-if="modelsStore.modelResponseStatus.get(modelName)"
+            v-html="getAnswer(modelName)"
+          ></div>
+          <!-- 如果模型响应超时，提示超时信息 -->
+          <div v-if="!modelsStore.modelResponseStatus.get(modelName)">模型响应超时，请重试！</div>
         </div>
       </div>
     </div>
@@ -74,6 +89,20 @@ import 'highlight.js/styles/github.min.css';
 import 'github-markdown-css/github-markdown.css'; // 引入 GitHub Markdown 样式
 import katex from 'katex';
 import 'katex/dist/katex.min.css'; // 引入Katex样式
+
+function startLoading(modelName: string) {
+  // 该模型是否参与本次聊天（如果模型没有参与本次聊天，则没有发送请求，更不可能有响应，所以不显示加载动画）
+  const inChat = modelsStore.lastSelectedModels.includes(modelName);
+
+  // 没有超时 true (初始状态true) + 没有响应 null = 显示加载动画 (true)
+  // 没有超时 true (清除了定时器后所保持true) + 有响应 data = 隐藏加载动画 (false)
+  // 超时 false + 没有响应 null = 隐藏加载动画 (false)
+  // 超时 false + 有响应 data = 隐藏加载动画 (false)
+  const showLoading = modelsStore.modelResponseStatus.get(modelName) && !getAnswer(modelName);
+
+  // 最终是否开始加载动画 = 模型参与了本次聊天 + 同意显示加载动画
+  return inChat && showLoading;
+}
 
 // ================== 处理markdown语法的文本 ==================
 // 初始化Markdown解析器
@@ -391,6 +420,17 @@ function getAnswer(modelName: string) {
 // 模型展示面板
 // 公共样式：不论是单个模型还是多个模型，都使用这个样式
 .show-panel {
+  .model-appearance {
+    // 模型名称与下文内容之间的间距
+    margin-bottom: 10px;
+
+    // 模型名称
+    .model-name {
+      margin-top: 5px;
+      font-size: 11px;
+    }
+  }
+
   .model-response {
     font-size: 16px;
     line-height: 1.6;
@@ -438,12 +478,6 @@ function getAnswer(modelName: string) {
       margin-top: 17px;
       margin-bottom: 16px;
     }
-
-    // 模型名称
-    .model-name {
-      font-size: 11px;
-      margin-bottom: 5px; // 模型名称与下文之间的间距
-    }
   }
 
   // 模型响应
@@ -472,6 +506,10 @@ function getAnswer(modelName: string) {
 // 模型头像的背景色设置为透明
 :deep(.el-avatar) {
   background-color: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+
+  .model-name {
+  }
 }
 
 // 穿透作用域，调整Markdown样式

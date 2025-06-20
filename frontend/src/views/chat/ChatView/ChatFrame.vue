@@ -367,7 +367,6 @@ onUnmounted(() => {
 // 实现子传父
 const emit = defineEmits(['firstClick']);
 
-//
 // 发送信息
 function sendMessage() {
   if (modelsStore.selectedModels.length === 0) {
@@ -401,9 +400,19 @@ function sendMessage() {
   // 覆盖上一次的选中的模型
   modelsStore.lastSelectedModels = modelsStore.selectedModels;
 
+  // 开启模型响应定时，判断是否响应超时
+  modelsStore.selectedModels.forEach((modelName) => {
+    modelsStore.modelResponseTimer(modelName);
+  });
+
   chatRequest(uid, inputContent.value, modelIds, {
     onData: (data) => {
-      modelsStore.modelsResponse.push(data); // 更新pinia中的数据
+      // 收到响应数据，停止计时器
+      const timerId = modelsStore.modelTimerIds.get(data.model);
+      if (timerId !== null) clearTimeout(timerId);
+
+      // 更新pinia中的数据
+      modelsStore.modelsResponse.push(data);
     },
     onComplete: () => {
       modelsStore.wasCompleted = true; // 更新pinia中的数据
