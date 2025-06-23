@@ -39,17 +39,15 @@
           <!-- 名称 -->
           <div class="model-name">{{ modelName }}</div>
         </div>
-        <!-- 模型响应内容 -->
+        <!-- 如果模型响应没有超时，则正常显示 -->
         <div
           class="model-response"
-          v-loading="startLoading(modelName)"
-          element-loading-text="模型思考中..."
+          v-loading="autoLoading(modelName)"
+          v-if="!responseTimeout(modelName)"
+          element-loading-text="正在思考......"
         >
-          <!-- 如果模型响应没有超时，显示模型思考 -->
-          <el-collapse
-            style="margin-bottom: 16px"
-            v-if="modelsStore.modelResponseStatus.get(modelName)"
-          >
+          <!-- 模型思考内容 -->
+          <el-collapse style="margin-bottom: 16px" v-if="getReasoning(modelName)">
             <el-collapse-item title="深度思考" name="1">
               <div
                 class="markdown-body"
@@ -58,15 +56,15 @@
               ></div>
             </el-collapse-item>
           </el-collapse>
-          <!-- 如果模型响应没有超时，显示响应内容 -->
+          <!-- 模型回答正文 -->
           <div
             class="markdown-body"
-            v-if="modelsStore.modelResponseStatus.get(modelName)"
+            v-if="getAnswer(modelName)"
             v-html="getAnswer(modelName)"
           ></div>
-          <!-- 如果模型响应超时，提示超时信息 -->
-          <div v-if="!modelsStore.modelResponseStatus.get(modelName)">模型响应超时，请重试！</div>
         </div>
+        <!-- 如果模型响应超时，则提示超时信息 -->
+        <div v-if="responseTimeout(modelName)" style="margin-top: 26px">模型响应超时，请重试！</div>
       </div>
     </div>
 
@@ -90,7 +88,8 @@ import 'github-markdown-css/github-markdown.css'; // 引入 GitHub Markdown 样�
 import katex from 'katex';
 import 'katex/dist/katex.min.css'; // 引入Katex样式
 
-function startLoading(modelName: string) {
+// 根据实际情况自动决定是否加载动画
+function autoLoading(modelName: string) {
   // 该模型是否参与本次聊天（如果模型没有参与本次聊天，则没有发送请求，更不可能有响应，所以不显示加载动画）
   const inChat = modelsStore.lastSelectedModels.includes(modelName);
 
@@ -102,6 +101,17 @@ function startLoading(modelName: string) {
 
   // 最终是否开始加载动画 = 模型参与了本次聊天 + 同意显示加载动画
   return inChat && showLoading;
+}
+
+// 展示模型响应超时的提示
+function responseTimeout(modelName: string) {
+  // 该模型是否参与本次聊天（如果模型没有参与本次聊天，则没有发送请求，更不可能有响应）
+  const inChat = modelsStore.lastSelectedModels.includes(modelName);
+
+  // 模型响应是否正常
+  const isNormal = modelsStore.modelResponseStatus.get(modelName);
+
+  return inChat && !isNormal;
 }
 
 // ================== 处理markdown语法的文本 ==================
@@ -437,6 +447,14 @@ function getAnswer(modelName: string) {
     font-weight: 400;
     color: rgba(0, 0, 0, 0.85);
     color-scheme: light; // 这个属性是为了适配暗黑模式
+  }
+
+  &:deep(.el-loading-spinner) {
+    user-select: none; // 禁止复制
+  }
+
+  &:deep(.el-loading-mask) {
+    z-index: 1;
   }
 }
 

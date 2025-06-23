@@ -239,7 +239,7 @@ function handleOutsideClick(e: MouseEvent) {
       position: absolute;
       top: 36px;
       left: -320px; // 当left: -6px时，才能显示卡片
-      z-index: 1000;
+      z-index: 99999;
 
       width: 280px;
       height: 80vh;
