@@ -74,246 +74,19 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue';
+import { ref } from 'vue';
 import ChatFrame from './ChatFrame.vue';
 import useModelsStore from '@/store/models';
-import { ref, onMounted, onUnmounted } from 'vue';
-import { typing } from '@/utils/typing';
 import { queryModelAvatarRequest } from '@/service/api/query';
-import MarkdownIt from 'markdown-it';
-import hljs from 'highlight.js';
-import DOMPurify from 'dompurify';
-import 'highlight.js/styles/github.min.css';
-import 'github-markdown-css/github-markdown.css'; // 引入 GitHub Markdown 样式
-import katex from 'katex';
+
 import 'katex/dist/katex.min.css'; // 引入Katex样式
-
-// 根据实际情况自动决定是否加载动画
-function autoLoading(modelName: string) {
-  // 该模型是否参与本次聊天（如果模型没有参与本次聊天，则没有发送请求，更不可能有响应，所以不显示加载动画）
-  const inChat = modelsStore.lastSelectedModels.includes(modelName);
-
-  // 没有超时 true (初始状态true) + 没有响应 null = 显示加载动画 (true)
-  // 没有超时 true (清除了定时器后所保持true) + 有响应 data = 隐藏加载动画 (false)
-  // 超时 false + 没有响应 null = 隐藏加载动画 (false)
-  // 超时 false + 有响应 data = 隐藏加载动画 (false)
-  const showLoading = modelsStore.modelResponseStatus.get(modelName) && !getAnswer(modelName);
-
-  // 最终是否开始加载动画 = 模型参与了本次聊天 + 同意显示加载动画
-  return inChat && showLoading;
-}
-
-// 展示模型响应超时的提示
-function responseTimeout(modelName: string) {
-  // 该模型是否参与本次聊天（如果模型没有参与本次聊天，则没有发送请求，更不可能有响应）
-  const inChat = modelsStore.lastSelectedModels.includes(modelName);
-
-  // 模型响应是否正常
-  const isNormal = modelsStore.modelResponseStatus.get(modelName);
-
-  return inChat && !isNormal;
-}
-
-// ================== 处理markdown语法的文本 ==================
-// 初始化Markdown解析器
-const md = MarkdownIt({
-  html: true, // 允许解析html标签
-  linkify: true, // 自动识别链接
-  typographer: true, // 智能排版
-  breaks: false, // 转换换行符为<br>
-  // 代码高亮配置
-  highlight: (str, lang) => {
-    if (lang && hljs.getLanguage(lang)) {
-      // 保持 GitHub 风格的代码高亮
-      return `<pre class="hljs"><code class="language-${lang}">${hljs.highlight(str, { language: lang }).value}</code></pre>`;
-    }
-    return `<pre><code>${str}</code></pre>`; // 未指定语言时不高亮
-  }
-});
-
-// 注册脚注插件
-import MarkdownItFootnote from 'markdown-it-footnote';
-md.use(MarkdownItFootnote);
-
-// 注册Katex插件来支持数学公式
-import MarkdownItKatex from 'markdown-it-katex';
-md.use(MarkdownItKatex, {
-  delimiters: 'dollars', // 使用$$包裹公式
-  throwOnError: false,
-  errorColor: '#cc0000',
-  escape: false
-});
-
-// 自定义图片渲染规则（添加懒加载）
-md.renderer.rules.image = (tokens, idx, options, env, self) => {
-  const token = tokens[idx]; // 获取当前token
-  const srcIndex = token.attrIndex('src'); // 获取src属性的索引
-  // 如果有src属性，则修改为data-src实现懒加载
-  if (srcIndex >= 0 && token.attrs) {
-    token.attrs[srcIndex][0] = 'data-src'; // 改为data-src实现懒加载
-    token.attrPush(['loading', 'lazy']); // 添加原生懒加载属性
-  }
-  return self.renderToken(tokens, idx, options);
-};
-
-// 自定义Katex渲染规则，确保公式正确显示
-md.renderer.rules.katex_inline = (tokens, idx) => {
-  const formula = tokens[idx].content;
-  try {
-    return katex.renderToString(formula, {
-      throwOnError: false,
-      errorColor: '#cc0000'
-    });
-  } catch (e) {
-    return `<span class="katex-error">${e.message}</span>`;
-  }
-};
-
-md.renderer.rules.katex_block = (tokens, idx) => {
-  const formula = tokens[idx].content;
-  try {
-    return `<div class="katex-block">${katex.renderToString(formula, {
-      throwOnError: false,
-      errorColor: '#cc0000',
-      displayMode: true
-    })}</div>`;
-  } catch (e) {
-    return `<div class="katex-error">${e.message}</div>`;
-  }
-};
-
-// 解析Markdown并清理XSS的函数
-const parseMarkdown = (text: string) => {
-  if (!text) return '';
-  const html = md.render(text);
-  return DOMPurify.sanitize(html);
-};
+import 'highlight.js/styles/github.min.css'; // 引入高亮样式
+import 'github-markdown-css/github-markdown.css'; // 引入 GitHub Markdown 样式
 
 // 使用Pinia存储库
 const modelsStore = useModelsStore();
-const isFadeOut = ref(false); // 是否淡出
 
-const titleContent = '欢迎使用 ChatManager';
-const title = ref('欢迎使用 ChatManager'); // 用于展示标题
-let timerId: number;
-onMounted(() => {
-  timerId = typing(titleContent, 18, title);
-});
-onUnmounted(() => {
-  clearTimeout(timerId);
-});
-
-// 切换到工作模式
-function switchWorkingMode() {
-  // 开启淡出动画
-  isFadeOut.value = true;
-
-  // 动画快结束时，切换为工作模式
-  setTimeout(() => {
-    // 切换为工作模式
-    modelsStore.isWorkingMode = true;
-
-    // 启动拖拽功能，使用setTimeout(..., 0)是为了确保"show-area"元素挂载成功
-    setTimeout(() => {
-      enableDrag(); // 启动拖拽
-    }, 0);
-  }, 300);
-}
-
-// ================== 鼠标右键按下拖动功能（start） ==================
-const showArea = ref<HTMLElement | null>(null); // 引用元素对象
-let isDragging = false; // 是否处于拖动状态
-let startX = 0; //  鼠标按下的X坐标
-let scrollLeft = 0; // 初始滚动位置
-
-// 启动拖拽：按住鼠标右键可以左右拖动展示面板以展示更多内容
-function enableDrag() {
-  if (!showArea.value) return;
-
-  // 开启各种事件监听
-  showArea.value.addEventListener('mousedown', handleMouseDown); // 监听show-area元素上的鼠标按下事件
-  document.addEventListener('mousemove', hanldeMouseMove); // 监听鼠标移动事件（因为可能从show-area移动到其他元素）
-  document.addEventListener('mouseup', handleMouseUp); // 监听鼠标抬起事件（同理）
-  showArea.value.addEventListener('mouseleave', handleMouseLeave); //  监听show-area元素上的鼠标离开事件
-  showArea.value.addEventListener('contextmenu', preventDefault); // 阻止整个容器的右键菜单
-}
-
-onUnmounted(() => {
-  if (!showArea.value) return;
-
-  // 关闭各种事件监听
-  showArea.value.removeEventListener('mousedown', handleMouseDown);
-  document.removeEventListener('mousemove', hanldeMouseMove);
-  document.removeEventListener('mouseup', handleMouseUp);
-  showArea.value.removeEventListener('mouseleave', handleMouseLeave);
-  showArea.value.removeEventListener('contextmenu', preventDefault);
-});
-
-// 处理鼠标按下事件
-function handleMouseDown(event: MouseEvent) {
-  if (!showArea.value) return;
-  if (event.button !== 2) return; // 不是鼠标右键的不处理
-  event.preventDefault(); // 阻止默认行为，防止右键菜单弹出
-  startX = event.clientX; // 记录当前鼠标的X坐标
-  scrollLeft = showArea.value.scrollLeft; // 记录当前滚动条的X坐标
-  isDragging = true;
-  showArea.value.style.cursor = 'grabbing'; // 设置鼠标样式为"抓取"
-}
-
-// 处理鼠标移动事件
-function hanldeMouseMove(event: MouseEvent) {
-  if (!isDragging || !showArea.value) return;
-  const moveX = event.clientX - startX; // 计算鼠标移动的距离
-  showArea.value.scrollLeft = scrollLeft - moveX; // 更新滚动条位置
-}
-
-// 处理鼠标释放事件
-function handleMouseUp(event: MouseEvent) {
-  if (!showArea.value) return;
-  if (event.button !== 2) return; //  不是鼠标右键不处理
-  isDragging = false;
-  showArea.value.style.cursor = ''; // 恢复默认光标
-}
-
-// 处理鼠标离开事件
-function handleMouseLeave() {
-  if (!showArea.value) return;
-  isDragging = false; // 更新拖动标志
-  showArea.value.style.cursor = ''; // 恢复默认光标
-}
-
-// 阻止默认事件
-function preventDefault(event: MouseEvent) {
-  event.preventDefault();
-}
-
-// ================== 鼠标右键按下拖动功能（end） ==================
-
-// 监听模型响应的数据
-const stopWatchingModelsResponse = watch(
-  () => modelsStore.modelsResponse,
-  () => {
-    // 可以做些事情...
-  },
-  { deep: true } // 启动深度监听
-);
-
-// 监听模型响应是否完成
-const stopWatchingCompletionStatus = watch(
-  () => modelsStore.wasCompleted,
-  (newValue) => {
-    if (newValue) {
-      modelsStore.wasCompleted = !newValue; // 重置为false，以标记下次响应完成状态
-      // 可以做其他事情...
-    }
-  }
-);
-onUnmounted(() => {
-  stopWatchingModelsResponse();
-  stopWatchingCompletionStatus();
-});
-
-// 重新加载模型头像
+// 加载头像出错时，重新加载函数
 function reloadAvatar(modelName: string) {
   queryModelAvatarRequest(modelsStore.modelNameAndIdMap.get(modelName))
     .then((res) => {
@@ -326,23 +99,26 @@ function reloadAvatar(modelName: string) {
     });
 }
 
-// 获取模型响应内容中的推理部分
-function getReasoning(modelName: string) {
-  const responseData = modelsStore.modelsResponse.find((item) => item.model === modelName);
-  if (typeof responseData?.response !== 'string') {
-    return parseMarkdown(responseData?.response.reasoning as string);
-  }
-  return '';
-}
+// 标题与打字效果
+import useTitle from '@/hooks/chat/function-panel/useTitle';
+const { title } = useTitle();
 
-// 获取模型响应内容中的答案部分
-function getAnswer(modelName: string) {
-  const responseData = modelsStore.modelsResponse.find((item) => item.model === modelName);
-  if (typeof responseData?.response !== 'string') {
-    return parseMarkdown(responseData?.response.answer as string);
-  }
-  return responseData?.response;
-}
+// 解析Markdown格式的文本
+import useMarkdownHandler from '@/hooks/chat/function-panel/useMarkdownHandler';
+const { parseMarkdown } = useMarkdownHandler();
+
+// 模型响应相关的数据和功能
+import useModelResponse from '@/hooks/chat/function-panel/useModelResponse';
+const { getReasoning, getAnswer, autoLoading, responseTimeout } = useModelResponse(parseMarkdown);
+
+// 按住鼠标右键可以拖拽模型正文的功能
+import useDragging from '@/hooks/chat/function-panel/useDragging';
+const showArea = ref<HTMLElement | null>(null); // 引用元素对象
+const { enableDrag } = useDragging(showArea);
+
+// 切换模式
+import useSwitchingMode from '@/hooks/chat/function-panel/useSwitchingMode';
+const { isFadeOut, switchWorkingMode } = useSwitchingMode(enableDrag);
 </script>
 
 <style scoped lang="scss">
