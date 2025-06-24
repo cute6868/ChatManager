@@ -10,7 +10,9 @@
 
       <!-- 右侧内容 -->
       <el-menu-item index="1">下载App</el-menu-item>
-      <el-menu-item index="2">项目链接</el-menu-item>
+      <el-menu-item index="2">
+        <a href="https://github.com/cute6868/ChatManager/" target="_blank">项目链接</a>
+      </el-menu-item>
       <el-menu-item index="3">赞助作者</el-menu-item>
     </el-menu>
   </div>

@@ -9,15 +9,15 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 
 // https://vite.dev/config/
 export default defineConfig({
-  // 开发环境调试用，配置前端启动时的代理
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://127.0.0.1:8080',
-        changeOrigin: true
-      }
-    }
-  },
+  // 开发环境调试用，配置前端启动时的代理，解决开发阶段的跨域问题
+  // server: {
+  //   proxy: {
+  //     '/api': {
+  //       target: 'http://127.0.0.1:8080', // 代理到后端服务器的URL
+  //       changeOrigin: true
+  //     }
+  //   }
+  // },
 
   plugins: [
     vue(),
